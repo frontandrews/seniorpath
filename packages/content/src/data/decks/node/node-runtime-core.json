@@ -21,7 +21,7 @@
         "distinguish JS execution from the whole runtime"
       ],
       "learnMore": "The phrase 'Node is single-threaded' is only partly true. It is useful as shorthand for the main JavaScript execution path, but it becomes misleading when people forget about libuv, the thread pool, and worker threads.\n\nA strong interview answer separates the event loop from the runtime. That shows you understand why Node handles lots of I/O well, yet can still suffer badly when CPU-heavy work blocks the main thread.",
-      "learnMoreSlug": "node-single-threaded-does-not-mean-what-people-think",
+      "learnMoreGuideId": "node-single-thread",
       "exampleCode": "import { Worker } from 'node:worker_threads'\n\nfunction runHeavyJob() {\n  return new Worker(new URL('./worker.js', import.meta.url))\n}\n\n// main request handling stays responsive while CPU work moves away\nrunHeavyJob()",
       "exampleLanguage": "ts",
       "commonTraps": [

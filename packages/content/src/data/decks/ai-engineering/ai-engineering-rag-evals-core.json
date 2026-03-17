@@ -21,7 +21,7 @@
         "fine-tuning is about changing behavior more than fetching knowledge"
       ],
       "learnMore": "A lot of weak answers treat this like a model choice instead of a systems choice. The better framing is: what problem are we actually trying to solve? If the issue is stale context, missing internal knowledge, or citation needs, retrieval usually gives you a cheaper and faster control point.\n\nFine-tuning starts to make sense when the model keeps failing in the same patterned way even with strong prompts and good context. Then the question becomes whether changing the model behavior is worth the operational cost.",
-      "learnMoreSlug": "rag-vs-fine-tuning-without-false-binaries",
+      "learnMoreGuideId": "rag-vs-fine-tuning",
       "exampleCode": "const retrievedDocs = await retrieveRelevantChunks(query)\nconst prompt = buildPrompt({\n  question: query,\n  context: retrievedDocs,\n})\n\nconst answer = await model.generate(prompt)",
       "exampleLanguage": "ts",
       "commonTraps": [

@@ -2,6 +2,8 @@
 title: Status Updates That Sound Clear in Tech Teams
 description: A repeatable structure for status updates in standups, scrums, and stakeholder syncs.
 summary: Good status updates are simple, structured, and explicit about what changed and what is at risk.
+guideId: status-updates
+locale: en
 pubDate: 2026-03-17
 category: English for Tech
 topic: English for Tech
@@ -11,7 +13,7 @@ path:
   - Status Updates
 order: 10
 relationships:
-  - scope-risk-and-quality-without-fake-certainty
+  - scope-risk-and-quality
 takeaways:
   - "Use the same structure every time: progress, current focus, risk, next step."
   - "Prefer concrete signal over long activity lists."

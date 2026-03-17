@@ -64,7 +64,7 @@ function materialize(nodes: Map<string, MutableGuideTreeNode>): GuideTreeNode[] 
         key: node.key,
         label: node.label,
         postIds: [
-          ...posts.map((post) => post.id),
+          ...posts.map((post) => post.data.guideId),
           ...children.flatMap((child) => child.postIds),
         ],
         posts,

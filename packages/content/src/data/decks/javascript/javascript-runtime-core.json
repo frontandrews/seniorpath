@@ -21,7 +21,7 @@
         "setTimeout is a macrotask"
       ],
       "learnMore": "A useful mental model is: finish the current stack, drain microtasks, then move to the next macrotask. That explains why Promise handlers often run sooner than people expect.\n\nIn interviews, it helps to connect this to responsiveness. Too many microtasks can still starve other work, so understanding the queue order matters for both correctness and performance.",
-      "learnMoreSlug": "javascript-event-loop-without-hand-waving",
+      "learnMoreGuideId": "javascript-event-loop",
       "exampleCode": "console.log('start')\n\nsetTimeout(() => {\n  console.log('timeout')\n}, 0)\n\nPromise.resolve().then(() => {\n  console.log('promise')\n})\n\nconsole.log('end')\n\n// start\n// end\n// promise\n// timeout",
       "exampleLanguage": "ts",
       "commonTraps": [

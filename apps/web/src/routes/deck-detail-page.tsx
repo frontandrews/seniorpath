@@ -136,7 +136,7 @@ export function DeckDetailPage() {
                     <a
                       className="inline-flex min-h-10 items-center justify-center rounded-[0.95rem] border-2 border-[var(--retro-line-strong)] bg-[var(--retro-surface)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--retro-ink)] shadow-[4px_4px_0_var(--retro-shadow)] transition hover:bg-[var(--retro-surface-strong)]"
                       data-testid={testIds.deckDetail.learnMoreLink(article.slug)}
-                      href={getArticleHref(article.slug)}
+                      href={getArticleHref(article.guideId) ?? undefined}
                       rel="noreferrer"
                       target="_blank"
                     >

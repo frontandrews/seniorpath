@@ -30,6 +30,7 @@ describe('article links', () => {
     expect(deck).toBeDefined()
     expect(getDeckArticleLinks(deck!)).toEqual([
       {
+        guideId: 'react-derived-state',
         question: 'Why is derived state dangerous in React?',
         slug: 'react-derived-state-without-extra-bugs',
       },

@@ -33,19 +33,19 @@ const relatedDecks = post.data.relatedDeckIds
   .map((deckId) => getDeckSummaryById(deckId))
   .filter((deck): deck is NonNullable<typeof deck> => Boolean(deck))
 const connectedPosts = allPosts.filter((entry) => {
-  if (entry.id === post.id) {
+  if (entry.data.guideId === post.data.guideId) {
     return false
   }
 
-  return post.data.relationships.includes(entry.id)
+  return post.data.relationships.includes(entry.data.guideId)
 })
 const relatedPosts = allPosts
   .filter((entry) => {
-    if (entry.id === post.id) {
+    if (entry.data.guideId === post.data.guideId) {
       return false
     }
 
-    if (post.data.relationships.includes(entry.id)) {
+    if (post.data.relationships.includes(entry.data.guideId)) {
       return false
     }
 
@@ -64,14 +64,14 @@ const siblingPosts = allPosts
     return entry.data.path.slice(0, -1).join('>') === parentPathKey
   })
   .slice(0, 3)
-const currentIndex = allPosts.findIndex((entry) => entry.id === post.id)
+const currentIndex = allPosts.findIndex((entry) => entry.data.guideId === post.data.guideId)
 const previousPost = currentIndex >= 0 ? allPosts[currentIndex + 1] ?? null : null
 const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
 const nextReads = [...new Map(
   [nextPost, previousPost, ...connectedPosts, ...siblingPosts, ...relatedPosts]
     .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-    .filter((entry) => entry.id !== post.id)
-    .map((entry) => [entry.id, entry]),
+    .filter((entry) => entry.data.guideId !== post.data.guideId)
+    .map((entry) => [entry.data.guideId, entry]),
 ).values()].slice(0, 3)
 const primaryDeck = relatedDecks[0] ?? null
 const articleKicker = post.data.topic && post.data.topic !== post.data.category
@@ -115,7 +115,7 @@ const articlePath = post.data.path[0] === post.data.category
             Practice
           </a>
         ) : null}
-        <button class="button-link" data-guide-complete-toggle data-guide-id={post.id} type="button">
+        <button class="button-link" data-guide-complete-toggle data-guide-id={post.data.guideId} type="button">
           Mark as completed
         </button>
       </div>

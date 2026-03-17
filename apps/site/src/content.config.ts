@@ -10,6 +10,8 @@ const blog = defineCollection({
   schema: z.object({
     category: z.string().min(1).default('Programming'),
     description: z.string().min(1),
+    guideId: z.string().min(1),
+    locale: z.string().min(1).default('en'),
     order: z.number().int().nonnegative().default(100),
     path: z.array(z.string().min(1)).min(1),
     practiceChecklist: z.array(z.string()).default([]),

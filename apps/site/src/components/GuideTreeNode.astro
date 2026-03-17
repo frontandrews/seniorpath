@@ -32,7 +32,7 @@ function getPrimaryDeckHref(post: CollectionEntry<'blog'>) {
     {node.posts.length > 0 ? (
       <div class="guide-tree__posts">
         {node.posts.map((post) => (
-          <article class="guide-tree__post" data-guide-post={post.id}>
+          <article class="guide-tree__post" data-guide-post={post.data.guideId}>
             <a class="guide-tree__post-link" href={`/blog/${post.id}`}>
               <h3 class="guide-tree__post-title">{post.data.title}</h3>
             </a>

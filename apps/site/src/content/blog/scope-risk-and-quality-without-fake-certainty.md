@@ -2,6 +2,8 @@
 title: Scope, Risk, and Quality Without Fake Certainty
 description: How to talk about delivery pressure without hiding risk or pretending every variable can stay fixed.
 summary: Make the tradeoff explicit early and cut scope before you quietly cut quality.
+guideId: scope-risk-and-quality
+locale: en
 pubDate: 2026-03-17
 category: Leadership and Delivery
 topic: Delivery
@@ -11,7 +13,7 @@ path:
   - Scope and Risk
 order: 10
 relationships:
-  - status-updates-that-sound-clear-in-tech-teams
+  - status-updates
 takeaways:
   - "If scope, time, and quality are in tension, say it early."
   - "Separate must-have scope from nice-to-have scope."

@@ -1,3 +1,4 @@
+import { getGuideSlug } from '@prepdeck/content'
 import type { Deck } from '@prepdeck/schemas'
 
 const BLOG_PATH = '/blog'
@@ -16,29 +17,43 @@ export function resolveArticleHref(slug: string, siteBaseUrl?: string): string {
   return `${getBlogBase(siteBaseUrl)}/${slug}`
 }
 
-export function getArticleHref(slug: string): string {
+export function getArticleHref(guideId: string): string | null {
+  const slug = getGuideSlug(guideId)
+
+  if (!slug) {
+    return null
+  }
+
   return resolveArticleHref(slug, import.meta.env.VITE_PUBLIC_SITE_URL)
 }
 
 export type DeckArticleLink = {
+  guideId: string
   question: string
   slug: string
 }
 
 export function getDeckArticleLinks(deck: Deck): DeckArticleLink[] {
-  const seenSlugs = new Set<string>()
+  const seenGuideIds = new Set<string>()
 
   return deck.cards.flatMap((card) => {
-    if (!card.learnMoreSlug || seenSlugs.has(card.learnMoreSlug)) {
+    if (!card.learnMoreGuideId || seenGuideIds.has(card.learnMoreGuideId)) {
       return []
     }
 
-    seenSlugs.add(card.learnMoreSlug)
+    const slug = getGuideSlug(card.learnMoreGuideId)
+
+    if (!slug) {
+      return []
+    }
+
+    seenGuideIds.add(card.learnMoreGuideId)
 
     return [
       {
+        guideId: card.learnMoreGuideId,
         question: card.question,
-        slug: card.learnMoreSlug,
+        slug,
       },
     ]
   })

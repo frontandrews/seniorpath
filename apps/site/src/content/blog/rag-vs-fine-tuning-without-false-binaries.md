@@ -2,6 +2,8 @@
 title: RAG vs Fine-Tuning Without False Binaries
 description: A practical way to explain retrieval and fine-tuning based on the problem you are solving, not on hype.
 summary: Separate knowledge access from behavior change before you pick the system shape.
+guideId: rag-vs-fine-tuning
+locale: en
 pubDate: 2026-03-17
 category: AI Engineering
 topic: AI Engineering
@@ -11,7 +13,7 @@ path:
   - RAG vs Fine-Tuning
 order: 10
 relationships:
-  - scope-risk-and-quality-without-fake-certainty
+  - scope-risk-and-quality
 takeaways:
   - "Use RAG when the main problem is missing or stale context."
   - "Use fine-tuning when the model behavior itself needs to change in a repeatable way."

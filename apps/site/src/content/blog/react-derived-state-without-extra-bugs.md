@@ -2,6 +2,8 @@
 title: React Derived State Without Extra Bugs
 description: Why copying props into state often creates more problems than it solves, and what to reach for instead.
 summary: A cleaner mental model for derived state questions in React interviews.
+guideId: react-derived-state
+locale: en
 pubDate: 2026-03-17
 category: Programming
 topic: React
@@ -11,7 +13,7 @@ path:
   - State
 order: 10
 relationships:
-  - javascript-event-loop-without-hand-waving
+  - javascript-event-loop
 takeaways:
   - "Treat duplicated state as a synchronization risk, not as a convenience."
   - "Derive cheap values during render instead of copying props into state."

@@ -5,6 +5,7 @@ import { sortGuides } from './guide-tree'
 export type GuideMapConnection = {
   category: string
   id: string
+  slug: string
   relation: 'connects_to' | 'referenced_by'
   title: string
 }
@@ -15,6 +16,7 @@ export type GuideMapItem = {
   id: string
   path: string[]
   relatedDeckIds: string[]
+  slug: string
   summary: string
   tags: string[]
   title: string
@@ -28,13 +30,13 @@ export type GuideMapSection = {
 
 export function buildGuideMap(posts: CollectionEntry<'blog'>[]): GuideMapSection[] {
   const sortedPosts = sortGuides(posts)
-  const byId = new Map(sortedPosts.map((post) => [post.id, post]))
+  const byGuideId = new Map(sortedPosts.map((post) => [post.data.guideId, post]))
   const incoming = new Map<string, string[]>()
 
   for (const post of sortedPosts) {
     for (const relatedId of post.data.relationships) {
       const nextIncoming = incoming.get(relatedId) ?? []
-      nextIncoming.push(post.id)
+      nextIncoming.push(post.data.guideId)
       incoming.set(relatedId, nextIncoming)
     }
   }
@@ -44,7 +46,7 @@ export function buildGuideMap(posts: CollectionEntry<'blog'>[]): GuideMapSection
   for (const post of sortedPosts) {
     const category = post.data.path[0] ?? post.data.category
     const explicitConnections = post.data.relationships.flatMap((relatedId) => {
-      const relatedPost = byId.get(relatedId)
+      const relatedPost = byGuideId.get(relatedId)
 
       if (!relatedPost) {
         return []
@@ -53,14 +55,15 @@ export function buildGuideMap(posts: CollectionEntry<'blog'>[]): GuideMapSection
       return [
         {
           category: relatedPost.data.path[0] ?? relatedPost.data.category,
-          id: relatedPost.id,
+          id: relatedPost.data.guideId,
+          slug: relatedPost.id,
           relation: 'connects_to' as const,
           title: relatedPost.data.title,
         },
       ]
     })
-    const incomingConnections = (incoming.get(post.id) ?? []).flatMap((relatedId) => {
-      const relatedPost = byId.get(relatedId)
+    const incomingConnections = (incoming.get(post.data.guideId) ?? []).flatMap((relatedId) => {
+      const relatedPost = byGuideId.get(relatedId)
 
       if (!relatedPost) {
         return []
@@ -69,7 +72,8 @@ export function buildGuideMap(posts: CollectionEntry<'blog'>[]): GuideMapSection
       return [
         {
           category: relatedPost.data.path[0] ?? relatedPost.data.category,
-          id: relatedPost.id,
+          id: relatedPost.data.guideId,
+          slug: relatedPost.id,
           relation: 'referenced_by' as const,
           title: relatedPost.data.title,
         },
@@ -81,9 +85,10 @@ export function buildGuideMap(posts: CollectionEntry<'blog'>[]): GuideMapSection
       connections: [...explicitConnections, ...incomingConnections].sort((left, right) =>
         left.title.localeCompare(right.title),
       ),
-      id: post.id,
+      id: post.data.guideId,
       path: post.data.path,
       relatedDeckIds: post.data.relatedDeckIds,
+      slug: post.id,
       summary: post.data.summary,
       tags: post.data.tags,
       title: post.data.title,

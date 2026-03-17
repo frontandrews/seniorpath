@@ -164,8 +164,8 @@ export function StudySessionPlayer({
   const isInterviewMode = format === 'interview'
   const isRevealLocked = isInterviewMode && interviewSecondsLeft > 0 && !isAnswerVisible
   const answerLabel = isInterviewMode ? 'Strong answer' : 'Answer'
-  const articleHref = currentCard.learnMoreSlug
-    ? getArticleHref(currentCard.learnMoreSlug)
+  const articleHref = currentCard.learnMoreGuideId
+    ? getArticleHref(currentCard.learnMoreGuideId)
     : null
 
   const handleRevealAnswer = () => {

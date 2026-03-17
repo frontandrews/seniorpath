@@ -51,7 +51,7 @@
       "type": "string",
       "minLength": 1
     },
-    "learnMoreSlug": {
+    "learnMoreGuideId": {
       "type": "string",
       "minLength": 1
     },
