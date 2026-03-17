@@ -60,6 +60,18 @@ export function createMockInterviewHref(state?: 'success'): string {
   return query ? `/mock-interview?${query}` : '/mock-interview'
 }
 
+export function createDailyQueueHref(state?: 'success'): string {
+  const params = new URLSearchParams()
+
+  if (state) {
+    params.set('state', state)
+  }
+
+  const query = params.toString()
+
+  return query ? `/daily-queue?${query}` : '/daily-queue'
+}
+
 export function getInterviewDurationSeconds(card: Flashcard): number {
   return INTERVIEW_SECONDS_BY_DIFFICULTY[card.difficulty]
 }

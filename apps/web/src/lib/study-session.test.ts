@@ -2,6 +2,7 @@ import { getDeckById } from '@prepdeck/content'
 
 import { createEmptyProgressStore, setCardStatus } from '@/lib/progress'
 import {
+  createDailyQueueHref,
   createMockInterviewHref,
   createStudyEntries,
   createStudyHref,
@@ -68,6 +69,7 @@ describe('study session helpers', () => {
     expect(createStudyHref(deck.id, { format: 'interview', mode: 'start' })).toBe(
       `/study/${deck.id}?mode=start&format=interview`,
     )
+    expect(createDailyQueueHref()).toBe('/daily-queue')
     expect(createMockInterviewHref()).toBe('/mock-interview')
     expect(getInterviewDurationSeconds(deck.cards[0])).toBe(90)
     expect(entries[0]?.deckTitle).toBe(deck.title)
