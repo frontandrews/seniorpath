@@ -21,6 +21,7 @@ import {
   type StudyCardEntry,
   type StudyFormat,
 } from '@/lib/study-session'
+import { testIds } from '@/lib/test-ids'
 import { getTopicLabel } from '@/lib/topic-labels'
 import { cn } from '@/lib/utils'
 import { usePreferences } from '@/state/preferences-context'
@@ -216,7 +217,7 @@ export function StudySessionPlayer({
   }
 
   return (
-    <section className="space-y-5">
+    <section className="space-y-5" data-testid={testIds.study.page}>
       <m.div
         initial="initial"
         variants={cardRevealVariants}
@@ -242,7 +243,7 @@ export function StudySessionPlayer({
                   <Badge tone="success">Awake</Badge>
                 ) : null}
               </div>
-              <h2 className="mt-2 text-2xl font-black text-[var(--retro-ink)]">
+              <h2 className="mt-2 text-2xl font-black text-[var(--retro-ink)]" data-testid={testIds.study.currentStep}>
                 {currentIndex + 1} of {entries.length}
               </h2>
             </div>
@@ -332,7 +333,10 @@ export function StudySessionPlayer({
                       value={isLearnMoreOpen ? 'learn-more' : undefined}
                     >
                       <Accordion.Item className="bg-[var(--retro-bg-strong)]" value="learn-more">
-                        <Accordion.Header className="text-sm text-[var(--retro-ink)]">
+                        <Accordion.Header
+                          className="text-sm text-[var(--retro-ink)]"
+                          data-testid={testIds.study.learnMoreToggle}
+                        >
                           <span>Learn more</span>
                         </Accordion.Header>
                         <Accordion.Content className="border-t border-[var(--retro-line)] bg-transparent px-4 py-4">
@@ -365,6 +369,7 @@ export function StudySessionPlayer({
                                   buttonVariants({ size: 'sm', variant: 'secondary' }),
                                   'w-full sm:w-auto',
                                 )}
+                                data-testid={testIds.study.learnMoreLink}
                                 href={articleHref}
                                 rel="noreferrer"
                                 target="_blank"
@@ -382,6 +387,7 @@ export function StudySessionPlayer({
                     note={currentNote}
                     onClearNote={() => clearCardNote(currentEntry.deckId, currentCard.id)}
                     onSaveNote={(note) => setCardNote(currentEntry.deckId, currentCard.id, note)}
+                    testIdPrefix="study-note"
                   />
                 </div>
               ) : (
@@ -497,6 +503,7 @@ export function StudySessionPlayer({
             <div className="grid grid-cols-3 gap-2 sm:gap-3">
               <Button
                 className="min-h-14 px-2 text-[0.68rem] sm:px-4 sm:text-sm"
+                data-testid={testIds.study.rateButton('learned')}
                 onClick={() => handleRateCard('learned')}
                 size="sm"
                 type="button"
@@ -506,6 +513,7 @@ export function StudySessionPlayer({
               </Button>
               <Button
                 className="min-h-14 px-2 text-[0.68rem] sm:px-4 sm:text-sm"
+                data-testid={testIds.study.rateButton('partial')}
                 onClick={() => handleRateCard('partial')}
                 size="sm"
                 type="button"
@@ -515,6 +523,7 @@ export function StudySessionPlayer({
               </Button>
               <Button
                 className="min-h-14 px-2 text-[0.68rem] sm:px-4 sm:text-sm"
+                data-testid={testIds.study.rateButton('not_learned')}
                 onClick={() => handleRateCard('not_learned')}
                 size="sm"
                 type="button"
@@ -527,6 +536,7 @@ export function StudySessionPlayer({
             <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
               <Button
                 className="w-full"
+                data-testid={testIds.study.revealButton}
                 disabled={isRevealLocked}
                 onClick={handleRevealAnswer}
                 type="button"
@@ -536,6 +546,7 @@ export function StudySessionPlayer({
               </Button>
               {isRevealLocked ? (
                 <Button
+                  data-testid={testIds.study.endEarlyButton}
                   onClick={() => setInterviewSecondsLeft(0)}
                   type="button"
                   variant="secondary"
@@ -547,6 +558,7 @@ export function StudySessionPlayer({
           ) : (
             <Button
               className="w-full"
+              data-testid={testIds.study.revealButton}
               onClick={handleRevealAnswer}
               type="button"
               variant="primary"

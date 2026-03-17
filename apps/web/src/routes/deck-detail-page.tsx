@@ -12,6 +12,7 @@ import { Panel } from '@/components/ui/panel'
 import { getArticleHref, getDeckArticleLinks } from '@/lib/article-links'
 import { ProgressMeter } from '@/components/ui/progress-meter'
 import { getDeckCounts } from '@/lib/progress'
+import { testIds } from '@/lib/test-ids'
 import { getTrackLabel } from '@/lib/track-labels'
 import { createStudyHref } from '@/lib/study-session'
 import { getTopicLabel } from '@/lib/topic-labels'
@@ -40,7 +41,7 @@ export function DeckDetailPage() {
 
   return (
     <>
-      <Panel className="bg-[var(--retro-surface)] p-5">
+      <Panel className="bg-[var(--retro-surface)] p-5" data-testid={testIds.deckDetail.page}>
         <div className="flex flex-wrap gap-2">
           <Badge tone="accent">{getTrackLabel(deck.track)}</Badge>
           <Badge>{getTopicLabel(deck.topic)}</Badge>
@@ -68,6 +69,7 @@ export function DeckDetailPage() {
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
           <Button
+            data-testid={testIds.deckDetail.startButton}
             onClick={() => navigate(createStudyHref(deck.id, { mode: 'start' }))}
             type="button"
             variant="primary"
@@ -75,6 +77,7 @@ export function DeckDetailPage() {
             Start deck
           </Button>
           <Button
+            data-testid={testIds.deckDetail.interviewButton}
             onClick={() => navigate(createStudyHref(deck.id, { format: 'interview', mode: 'start' }))}
             type="button"
             variant="secondary"
@@ -82,6 +85,7 @@ export function DeckDetailPage() {
             Interview mode
           </Button>
           <Button
+            data-testid={testIds.deckDetail.continueButton}
             onClick={() => navigate(createStudyHref(deck.id, { mode: 'continue' }))}
             type="button"
             variant="ghost"
@@ -90,6 +94,7 @@ export function DeckDetailPage() {
           </Button>
           {weakCardCount > 0 ? (
             <Button
+              data-testid={testIds.deckDetail.weakCardsButton}
               onClick={() => navigate(createStudyHref(deck.id, { mode: 'start', scope: 'weak' }))}
               type="button"
               variant="warning"
@@ -97,10 +102,10 @@ export function DeckDetailPage() {
               Study weak cards
             </Button>
           ) : null}
-          <LinkButton to={`/decks/${deck.id}/review`} variant="ghost">
+          <LinkButton data-testid={testIds.deckDetail.reviewLink} to={`/decks/${deck.id}/review`} variant="ghost">
             Review progress
           </LinkButton>
-          <Button onClick={() => setIsResetOpen(true)} type="button" variant="danger">
+          <Button data-testid={testIds.deckDetail.resetButton} onClick={() => setIsResetOpen(true)} type="button" variant="danger">
             Reset deck
           </Button>
         </div>
@@ -110,7 +115,7 @@ export function DeckDetailPage() {
         </div>
 
         {articleLinks.length > 0 ? (
-          <Panel className="mt-6 bg-[var(--retro-surface-muted)] p-4" inset>
+          <Panel className="mt-6 bg-[var(--retro-surface-muted)] p-4" data-testid={testIds.deckDetail.learnMoreSection} inset>
             <div className="flex items-center justify-between gap-3">
               <h3 className="text-xl font-black text-[var(--retro-ink)]">
                 Learn more
@@ -130,6 +135,7 @@ export function DeckDetailPage() {
                   <div className="flex flex-wrap gap-2">
                     <a
                       className="inline-flex min-h-10 items-center justify-center rounded-[0.95rem] border-2 border-[var(--retro-line-strong)] bg-[var(--retro-surface)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--retro-ink)] shadow-[4px_4px_0_var(--retro-shadow)] transition hover:bg-[var(--retro-surface-strong)]"
+                      data-testid={testIds.deckDetail.learnMoreLink(article.slug)}
                       href={getArticleHref(article.slug)}
                       rel="noreferrer"
                       target="_blank"

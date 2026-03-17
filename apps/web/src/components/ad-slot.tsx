@@ -1,5 +1,6 @@
 import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
+import { testIds } from '@/lib/test-ids'
 import { useMonetization } from '@/state/monetization-context'
 
 type AdSlotProps = {
@@ -34,7 +35,10 @@ export function AdSlot({ placement }: AdSlotProps) {
   const copy = COPY[placement]
 
   return (
-    <Panel className="border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.03)] p-4">
+    <Panel
+      className="border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.03)] p-4"
+      data-testid={testIds.adSlot(placement)}
+    >
       <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
         {copy.title}
       </p>

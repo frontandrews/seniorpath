@@ -21,6 +21,7 @@ import {
 import { getSessionHistorySnapshot } from '@/lib/session-history'
 import { getSessionPresets, type SessionPreset } from '@/lib/session-presets'
 import { getStudyGoalsSnapshot } from '@/lib/study-goals'
+import { testIds } from '@/lib/test-ids'
 import { getTrackLabel } from '@/lib/track-labels'
 import { usePreferences } from '@/state/preferences-context'
 import { useProgress } from '@/state/progress-context'
@@ -75,8 +76,12 @@ export function HomePage() {
   const starterDecks = getStarterDeckRecords(deckRecords, 3).map((record) => record.summary)
 
   return (
-    <>
-      <section aria-labelledby="deck-library-region-heading" className="mb-6">
+    <div data-testid={testIds.home.page}>
+      <section
+        aria-labelledby="deck-library-region-heading"
+        className="mb-6"
+        data-testid={testIds.home.deckLibrary}
+      >
         <Panel className="mb-4 p-4 sm:p-5">
           <p
             className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]"
@@ -105,6 +110,7 @@ export function HomePage() {
           </div>
           <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
             <Button
+              data-testid={testIds.home.trackFilter('all')}
               onClick={() => setSelectedTrack('all')}
               size="sm"
               type="button"
@@ -114,6 +120,7 @@ export function HomePage() {
             </Button>
             {trackEntries.map(([track, summaries]) => (
               <Button
+                data-testid={testIds.home.trackFilter(track)}
                 key={track}
                 onClick={() => setSelectedTrack(track)}
                 size="sm"
@@ -137,6 +144,7 @@ export function HomePage() {
               </label>
               <input
                 className="mt-3 min-h-12 w-full rounded-[0.95rem] border-2 border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.04)] px-4 text-sm text-[var(--retro-ink)] outline-none transition placeholder:text-white/40 focus:border-[var(--retro-line-strong)]"
+                data-testid={testIds.home.deckSearch}
                 id="deck-library-search"
                 onChange={(event) => setLibraryQuery(event.target.value)}
                 placeholder="React, RAG, standups, delivery, ownership..."
@@ -152,6 +160,7 @@ export function HomePage() {
                 <div className="mt-3 flex flex-wrap gap-2">
                   {(['all', 'easy', 'medium', 'hard'] as const).map((difficulty) => (
                     <Button
+                      data-testid={testIds.home.difficultyFilter(difficulty)}
                       key={difficulty}
                       onClick={() => setLibraryDifficulty(difficulty)}
                       size="sm"
@@ -175,6 +184,7 @@ export function HomePage() {
                     ['started', 'Started'],
                   ].map(([status, label]) => (
                     <Button
+                      data-testid={testIds.home.statusFilter(status)}
                       key={status}
                       onClick={() => setLibraryStatus(status as DeckLibraryFilters['status'])}
                       size="sm"
@@ -253,7 +263,11 @@ export function HomePage() {
         </div>
       </section>
 
-      <section aria-labelledby="progress-hub-heading" className="mb-6">
+      <section
+        aria-labelledby="progress-hub-heading"
+        className="mb-6"
+        data-testid={testIds.home.progressSection}
+      >
         <div className="mb-3 flex items-center justify-between gap-4">
           <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="progress-hub-heading">
             Progress
@@ -268,14 +282,13 @@ export function HomePage() {
           <HubSignalCard label="Review debt" value={`${masterySnapshot.reviewDebt} cards`} />
         </div>
       </section>
-
-    </>
+    </div>
   )
 }
 
 function SessionPresetCard({ preset }: { preset: SessionPreset }) {
   return (
-    <Panel className="flex h-full flex-col justify-between gap-4 p-4">
+    <Panel className="flex h-full flex-col justify-between gap-4 p-4" data-testid={testIds.home.presetCard(preset.id)}>
       <div>
         <h3 className="text-xl font-black text-[var(--retro-ink)]">{preset.title}</h3>
         <p className="mt-2 text-sm leading-6 text-white/80">{preset.detail}</p>
@@ -284,7 +297,7 @@ function SessionPresetCard({ preset }: { preset: SessionPreset }) {
         <p className="text-xs uppercase tracking-[0.16em] text-[var(--retro-ink-soft)]">
           {preset.meta.join(' · ')}
         </p>
-        <LinkButton to={preset.href} variant="secondary">
+        <LinkButton data-testid={testIds.home.presetLink(preset.id)} to={preset.href} variant="secondary">
           {preset.label}
         </LinkButton>
       </div>

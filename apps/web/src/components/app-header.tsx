@@ -3,6 +3,7 @@ import { MoonStar, SunMedium } from 'lucide-react'
 import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
 import { Switch } from '@/components/retroui/Switch'
+import { testIds } from '@/lib/test-ids'
 import { useTheme } from '@/state/theme-context'
 
 type AppHeaderProps = {
@@ -37,13 +38,18 @@ export function AppHeader({
       <Panel className="mb-4 px-3 py-3">
         <div className="flex items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <LinkButton size="sm" to="/progress" variant="ghost">
+            <LinkButton data-testid={testIds.appShell.homeProgressLink} size="sm" to="/progress" variant="ghost">
               Progress
             </LinkButton>
-            <LinkButton size="sm" to="/settings" variant="ghost">
+            <LinkButton data-testid={testIds.appShell.homeSettingsLink} size="sm" to="/settings" variant="ghost">
               Settings
             </LinkButton>
-            <LinkButton size="sm" to="/premium" variant={isPremium ? 'ghost' : 'secondary'}>
+            <LinkButton
+              data-testid={testIds.appShell.homePremiumLink}
+              size="sm"
+              to="/premium"
+              variant={isPremium ? 'ghost' : 'secondary'}
+            >
               {isPremium ? 'Premium' : 'Go premium'}
             </LinkButton>
           </div>
@@ -59,7 +65,7 @@ export function AppHeader({
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
             {backTo ? (
-              <LinkButton size="sm" to={backTo} variant="ghost">
+              <LinkButton data-testid={testIds.appShell.compactBackLink} size="sm" to={backTo} variant="ghost">
                 {backLabel}
               </LinkButton>
             ) : null}
@@ -69,17 +75,17 @@ export function AppHeader({
               </LinkButton>
             ) : null}
             {showProgressShortcut ? (
-              <LinkButton size="sm" to="/progress" variant="ghost">
+              <LinkButton data-testid={testIds.appShell.homeProgressLink} size="sm" to="/progress" variant="ghost">
                 Progress
               </LinkButton>
             ) : null}
             {showSettingsShortcut ? (
-              <LinkButton size="sm" to="/settings" variant="ghost">
+              <LinkButton data-testid={testIds.appShell.homeSettingsLink} size="sm" to="/settings" variant="ghost">
                 Settings
               </LinkButton>
             ) : null}
             {showPremiumShortcut ? (
-              <LinkButton size="sm" to="/premium" variant="ghost">
+              <LinkButton data-testid={testIds.appShell.homePremiumLink} size="sm" to="/premium" variant="ghost">
                 Premium
               </LinkButton>
             ) : null}
@@ -110,6 +116,7 @@ function ThemeToggle({
       <Switch
         aria-label="Toggle dark mode"
         checked={isDark}
+        data-testid={testIds.appShell.themeToggle}
         onCheckedChange={onToggle}
       />
       <MoonStar aria-hidden="true" className="size-3.5 text-[var(--retro-ink-soft)]" />

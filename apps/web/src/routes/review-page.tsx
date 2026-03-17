@@ -15,6 +15,7 @@ import {
   type ReviewFilterMode,
 } from '@/lib/review-filters'
 import { getCardStatus, getDeckCounts } from '@/lib/progress'
+import { testIds } from '@/lib/test-ids'
 import { useProgress } from '@/state/progress-context'
 
 const EMPTY_COUNTS = {
@@ -83,7 +84,7 @@ export function ReviewPage() {
 
   return (
     <>
-      <Panel className="bg-[var(--retro-surface)] p-5">
+      <Panel className="bg-[var(--retro-surface)] p-5" data-testid={testIds.review.page}>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--retro-line)]">
@@ -97,14 +98,18 @@ export function ReviewPage() {
           </div>
           <div className="flex flex-wrap gap-3">
             {counts.partial + counts.notLearned > 0 ? (
-              <LinkButton to={`/study/${deck.id}?mode=start&scope=weak`} variant="secondary">
+              <LinkButton
+                data-testid={testIds.review.studyWeakCardsLink}
+                to={`/study/${deck.id}?mode=start&scope=weak`}
+                variant="secondary"
+              >
                 Study weak cards
               </LinkButton>
             ) : null}
             <LinkButton to={`/decks/${deck.id}`} variant="ghost">
               Back to deck
             </LinkButton>
-            <Button onClick={() => setIsResetOpen(true)} type="button" variant="danger">
+            <Button data-testid={testIds.review.resetButton} onClick={() => setIsResetOpen(true)} type="button" variant="danger">
               Reset deck
             </Button>
           </div>
@@ -134,6 +139,7 @@ export function ReviewPage() {
               </label>
               <input
                 className="mt-3 min-h-12 w-full rounded-[0.95rem] border-2 border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.04)] px-4 text-sm text-[var(--retro-ink)] outline-none transition placeholder:text-white/40 focus:border-[var(--retro-line-strong)]"
+                data-testid={testIds.review.searchInput}
                 id="review-search"
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Search by question, answer, note, tag, or follow-up..."
@@ -152,6 +158,7 @@ export function ReviewPage() {
                   ['follow_ups', 'Has follow-ups'],
                 ] as const).map(([mode, label]) => (
                   <Button
+                    data-testid={testIds.review.quickFilter(mode)}
                     key={mode}
                     onClick={() => setFilterMode(mode)}
                     size="sm"
@@ -190,7 +197,10 @@ export function ReviewPage() {
             />
           ))
         ) : (
-          <Panel className="border-dashed bg-[var(--retro-surface-muted)] p-6 text-sm text-white/80">
+          <Panel
+            className="border-dashed bg-[var(--retro-surface-muted)] p-6 text-sm text-white/80"
+            data-testid={testIds.review.emptyState}
+          >
             {cardRecordsForActiveStatus.length
               ? 'No cards match the current review filters.'
               : 'There are no cards in this bucket yet.'}

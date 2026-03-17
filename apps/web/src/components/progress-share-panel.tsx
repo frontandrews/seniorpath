@@ -10,6 +10,7 @@ import {
   createProgressShareCardSvg,
   getProgressShareCardFilename,
 } from '@/lib/progress-share-card'
+import { testIds } from '@/lib/test-ids'
 import { useProgress } from '@/state/progress-context'
 
 type FeedbackState = {
@@ -49,7 +50,7 @@ export function ProgressSharePanel() {
   }
 
   return (
-    <Panel className="p-5">
+    <Panel className="p-5" data-testid={testIds.progress.shareCardPanel}>
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
         <div>
           <div className="flex flex-wrap gap-2">
@@ -66,7 +67,12 @@ export function ProgressSharePanel() {
             checkpoint of your prep.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <Button onClick={handleDownload} type="button" variant="secondary">
+            <Button
+              data-testid={testIds.progress.shareCardDownloadButton}
+              onClick={handleDownload}
+              type="button"
+              variant="secondary"
+            >
               Download share card
             </Button>
           </div>

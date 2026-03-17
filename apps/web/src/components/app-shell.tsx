@@ -6,6 +6,7 @@ import { AppHeader } from '@/components/app-header'
 import { Panel } from '@/components/ui/panel'
 import { PwaStatusPanel } from '@/components/pwa-status-panel'
 import { getTopicLabel } from '@/lib/topic-labels'
+import { testIds } from '@/lib/test-ids'
 import { useMonetization } from '@/state/monetization-context'
 
 export function AppShell({ children }: PropsWithChildren) {
@@ -185,7 +186,11 @@ function BottomNavigation({ pathname }: { pathname: string }) {
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] sm:hidden">
       <Panel className="pointer-events-auto border-[var(--retro-line-strong)] bg-[color:rgba(8,14,24,0.96)] px-2 py-2 shadow-[0_-8px_32px_rgba(0,0,0,0.28)]">
-        <nav aria-label="Primary" className="grid grid-cols-4 gap-2">
+        <nav
+          aria-label="Primary"
+          className="grid grid-cols-4 gap-2"
+          data-testid={testIds.appShell.primaryNav}
+        >
           {items.map((item) => {
             const isActive = item.match(pathname)
 

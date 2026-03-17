@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
+import { testIds } from '@/lib/test-ids'
 
 const INSTALL_PROMPT_STORAGE_KEY = 'prepdeck.install-prompt.v1'
 
@@ -86,7 +87,10 @@ export function InstallAppPanel() {
   }
 
   return (
-    <Panel className="mb-6 bg-[linear-gradient(145deg,rgba(22,38,63,0.98),rgba(9,16,29,0.96))] p-5">
+    <Panel
+      className="mb-6 bg-[linear-gradient(145deg,rgba(22,38,63,0.98),rgba(9,16,29,0.96))] p-5"
+      data-testid={testIds.install.panel}
+    >
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <div className="flex flex-wrap gap-2">
@@ -103,10 +107,10 @@ export function InstallAppPanel() {
           </p>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Button onClick={handleInstall} type="button" variant="primary">
+          <Button data-testid={testIds.install.installButton} onClick={handleInstall} type="button" variant="primary">
             Install app
           </Button>
-          <Button onClick={handleDismiss} type="button" variant="ghost">
+          <Button data-testid={testIds.install.dismissButton} onClick={handleDismiss} type="button" variant="ghost">
             Not now
           </Button>
         </div>

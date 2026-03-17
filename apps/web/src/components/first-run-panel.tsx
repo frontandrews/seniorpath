@@ -4,6 +4,7 @@ import { Badge } from '@/components/ui/badge'
 import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
 import { getTrackLabel } from '@/lib/track-labels'
+import { testIds } from '@/lib/test-ids'
 import { createStudyHref } from '@/lib/study-session'
 import { getTopicLabel } from '@/lib/topic-labels'
 
@@ -13,7 +14,10 @@ type FirstRunPanelProps = {
 
 export function FirstRunPanel({ starterDecks }: FirstRunPanelProps) {
   return (
-    <Panel className="mb-6 overflow-hidden bg-[linear-gradient(145deg,rgba(27,43,70,0.98),rgba(12,20,34,0.96))] p-5 sm:p-6">
+    <Panel
+      className="mb-6 overflow-hidden bg-[linear-gradient(145deg,rgba(27,43,70,0.98),rgba(12,20,34,0.96))] p-5 sm:p-6"
+      data-testid={testIds.firstRun.page}
+    >
       <div className="flex flex-wrap gap-2">
         <Badge tone="accent">Quick start</Badge>
         <Badge>No login</Badge>
@@ -62,7 +66,11 @@ export function FirstRunPanel({ starterDecks }: FirstRunPanelProps) {
               <h3 className="mt-3 text-xl font-black text-[var(--retro-ink)]">{deck.title}</h3>
               <p className="mt-2 text-sm leading-6 text-white/75">{deck.description}</p>
               <div className="mt-4">
-                <LinkButton to={createStudyHref(deck.id, { mode: 'start' })} variant="primary">
+                <LinkButton
+                  data-testid={testIds.firstRun.startDeckLink(deck.id)}
+                  to={createStudyHref(deck.id, { mode: 'start' })}
+                  variant="primary"
+                >
                   Start {getTrackLabel(deck.track)}
                 </LinkButton>
               </div>

@@ -1,6 +1,7 @@
 import type { ProgressStatus } from '@prepdeck/schemas'
 
 import { Button } from '@/components/ui/button'
+import { testIds } from '@/lib/test-ids'
 
 type StatusTabsProps = {
   activeStatus: ProgressStatus
@@ -30,6 +31,7 @@ export function StatusTabs({
         return (
           <Button
             className="rounded-full"
+            data-testid={testIds.review.statusTab(status)}
             key={status}
             onClick={() => onSelect(status)}
             type="button"

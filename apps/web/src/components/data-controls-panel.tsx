@@ -11,6 +11,7 @@ import {
   parseUserDataBackup,
   serializeUserDataBackup,
 } from '@/lib/user-data-backup'
+import { testIds } from '@/lib/test-ids'
 import { usePreferences } from '@/state/preferences-context'
 import { useProgress } from '@/state/progress-context'
 
@@ -102,7 +103,7 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
 
   return (
     <>
-      <Panel className="p-5">
+      <Panel className="p-5" data-testid={testIds.dataControls.root}>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
             <div className="flex flex-wrap gap-2">
@@ -120,13 +121,13 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
             </p>
           </div>
           <div className="flex w-full flex-col gap-3 sm:w-auto sm:min-w-[13rem]">
-            <Button onClick={handleExport} type="button" variant="secondary">
+            <Button data-testid={testIds.dataControls.exportButton} onClick={handleExport} type="button" variant="secondary">
               Export backup
             </Button>
-            <Button onClick={handleImportClick} type="button" variant="ghost">
+            <Button data-testid={testIds.dataControls.importButton} onClick={handleImportClick} type="button" variant="ghost">
               Import backup
             </Button>
-            <Button onClick={onResetAll} type="button" variant="danger">
+            <Button data-testid={testIds.dataControls.resetAllButton} onClick={onResetAll} type="button" variant="danger">
               Reset all progress
             </Button>
           </div>

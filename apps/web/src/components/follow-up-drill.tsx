@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
+import { testIds } from '@/lib/test-ids'
 
 type FollowUpDrillProps = {
   prompts: string[]
@@ -25,6 +26,7 @@ export function FollowUpDrill({ prompts }: FollowUpDrillProps) {
         aria-label={isOpen ? 'Hide follow-up drill' : 'Open follow-up drill'}
         aria-expanded={isOpen}
         className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-black text-[var(--retro-ink)]"
+        data-testid={testIds.study.followUpToggle}
         onClick={() => {
           if (isOpen) {
             setCurrentIndex(0)
@@ -71,6 +73,7 @@ export function FollowUpDrill({ prompts }: FollowUpDrillProps) {
           <div className="mt-4 flex flex-wrap gap-3">
             {isComplete ? (
               <Button
+                data-testid={testIds.study.followUpRunAgain}
                 onClick={() => setCurrentIndex(0)}
                 type="button"
                 variant="secondary"
@@ -79,6 +82,11 @@ export function FollowUpDrill({ prompts }: FollowUpDrillProps) {
               </Button>
             ) : (
               <Button
+                data-testid={
+                  currentIndex === prompts.length - 1
+                    ? testIds.study.followUpFinish
+                    : testIds.study.followUpNext
+                }
                 onClick={() => setCurrentIndex((index) => index + 1)}
                 type="button"
                 variant="secondary"

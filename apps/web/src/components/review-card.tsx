@@ -3,6 +3,7 @@ import type { Flashcard, ProgressStatus } from '@prepdeck/schemas'
 import { CardNoteEditor } from '@/components/card-note-editor'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
+import { testIds } from '@/lib/test-ids'
 
 type ReviewCardProps = {
   card: Flashcard
@@ -35,6 +36,7 @@ export function ReviewCard({
         {BUTTONS.map((buttonStatus) => (
           <Button
             className="rounded-full"
+            data-testid={testIds.review.statusButton(card.id, buttonStatus)}
             key={buttonStatus}
             onClick={() => onSetStatus(buttonStatus)}
             size="sm"
@@ -45,7 +47,14 @@ export function ReviewCard({
           </Button>
         ))}
         {status === 'learned' ? (
-          <Button className="rounded-full" onClick={onUnmarkLearned} size="sm" type="button" variant="danger">
+          <Button
+            className="rounded-full"
+            data-testid={testIds.review.unmarkButton(card.id)}
+            onClick={onUnmarkLearned}
+            size="sm"
+            type="button"
+            variant="danger"
+          >
             Unmark
           </Button>
         ) : null}
@@ -56,6 +65,7 @@ export function ReviewCard({
           onClearNote={onClearNote}
           onSaveNote={onSaveNote}
           showCollapsedPreview
+          testIdPrefix={`review-note-${card.id}`}
         />
       </div>
     </Panel>

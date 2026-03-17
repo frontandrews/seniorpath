@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
 import { cardRevealVariants, hoverLiftMotionProps } from '@/lib/motion'
+import { testIds } from '@/lib/test-ids'
 import { usePreferences } from '@/state/preferences-context'
 
 const DAILY_TARGETS = [1, 2, 3] as const
@@ -39,7 +40,7 @@ export function SettingsPage() {
   } = usePreferences()
 
   return (
-    <section className="space-y-6">
+    <section className="space-y-6" data-testid={testIds.settings.page}>
       <Panel className="overflow-hidden bg-[linear-gradient(145deg,rgba(28,45,72,0.98),rgba(10,18,31,0.96))] p-5 sm:p-6">
         <div className="flex flex-wrap gap-2">
           <Badge tone="accent">Settings</Badge>
@@ -63,6 +64,7 @@ export function SettingsPage() {
           <div className="flex flex-wrap gap-3">
             {DAILY_TARGETS.map((target) => (
               <Button
+                data-testid={testIds.settings.dailyTarget(target)}
                 key={target}
                 onClick={() => setDailyGoalTarget(target)}
                 type="button"
@@ -81,6 +83,7 @@ export function SettingsPage() {
           <div className="flex flex-wrap gap-3">
             {WEEKLY_TARGETS.map((target) => (
               <Button
+                data-testid={testIds.settings.weeklyTarget(target)}
                 key={target}
                 onClick={() => setWeeklyGoalTarget(target)}
                 type="button"
@@ -119,6 +122,7 @@ export function SettingsPage() {
               </div>
               <div className="mt-4">
                 <Button
+                  data-testid={testIds.settings.timerPreset(preset.value)}
                   onClick={() => setInterviewTimerPreset(preset.value)}
                   type="button"
                   variant={preferences.interviewTimerPreset === preset.value ? 'primary' : 'ghost'}
@@ -137,6 +141,7 @@ export function SettingsPage() {
       >
         <div className="flex flex-wrap gap-3">
           <Button
+            data-testid={testIds.settings.hapticsOn}
             onClick={() => setHapticsEnabled(true)}
             type="button"
             variant={preferences.hapticsEnabled ? 'primary' : 'ghost'}
@@ -144,6 +149,7 @@ export function SettingsPage() {
             Haptics on
           </Button>
           <Button
+            data-testid={testIds.settings.hapticsOff}
             onClick={() => setHapticsEnabled(false)}
             type="button"
             variant={!preferences.hapticsEnabled ? 'secondary' : 'ghost'}
@@ -159,6 +165,7 @@ export function SettingsPage() {
       >
         <div className="flex flex-wrap gap-3">
           <Button
+            data-testid={testIds.settings.keepAwake}
             onClick={() => setKeepScreenAwake(true)}
             type="button"
             variant={preferences.keepScreenAwake ? 'primary' : 'ghost'}
@@ -166,6 +173,7 @@ export function SettingsPage() {
             Keep awake
           </Button>
           <Button
+            data-testid={testIds.settings.letSleep}
             onClick={() => setKeepScreenAwake(false)}
             type="button"
             variant={!preferences.keepScreenAwake ? 'secondary' : 'ghost'}
@@ -193,7 +201,7 @@ export function SettingsPage() {
               notes, or session history.
             </p>
           </div>
-          <Button onClick={resetPreferences} type="button" variant="secondary">
+          <Button data-testid={testIds.settings.restoreDefaults} onClick={resetPreferences} type="button" variant="secondary">
             Restore defaults
           </Button>
         </Panel>

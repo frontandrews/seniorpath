@@ -20,6 +20,7 @@ import {
   type StudyFormat,
   type StudyScope,
 } from '@/lib/study-session'
+import { testIds } from '@/lib/test-ids'
 import { useProgress } from '@/state/progress-context'
 
 export function StudyPage() {
@@ -119,6 +120,8 @@ function StudySuccess({
     <m.section
       animate="animate"
       className="space-y-5"
+      data-success-state={getSuccessStateKey({ counts, format, hasRemainingWeakCards, scope })}
+      data-testid={testIds.study.successPage}
       initial="initial"
       variants={staggerContainerVariants}
     >
@@ -191,7 +194,7 @@ function StudySuccess({
           <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{nextMove.title}</h3>
           <p className="mt-2 max-w-2xl text-sm leading-7 text-white/80">{nextMove.description}</p>
           <div className="mt-5 flex flex-wrap gap-3">
-            <LinkButton to={nextMove.href} variant="secondary">
+            <LinkButton data-testid={testIds.study.successPrimaryAction} to={nextMove.href} variant="secondary">
               {nextMove.label}
             </LinkButton>
             <LinkButton to="/" variant="ghost">
@@ -202,6 +205,32 @@ function StudySuccess({
       </m.div>
     </m.section>
   )
+}
+
+function getSuccessStateKey({
+  counts,
+  format,
+  hasRemainingWeakCards,
+  scope,
+}: {
+  counts: ReturnType<typeof getDeckCounts>
+  format: StudyFormat
+  hasRemainingWeakCards: boolean
+  scope: StudyScope
+}) {
+  if (scope === 'weak') {
+    if (format === 'interview') {
+      return hasRemainingWeakCards ? 'weak_interview_pending' : 'weak_interview_cleared'
+    }
+
+    return hasRemainingWeakCards ? 'weak_pending' : 'weak_cleared'
+  }
+
+  if (format === 'interview') {
+    return 'interview_complete'
+  }
+
+  return counts.allLearned ? 'deck_mastered' : 'deck_seen'
 }
 
 function SuccessStat({

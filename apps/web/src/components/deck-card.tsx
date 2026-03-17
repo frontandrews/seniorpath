@@ -6,6 +6,7 @@ import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
 import { ProgressMeter } from '@/components/ui/progress-meter'
 import { cardRevealVariants, hoverLiftMotionProps } from '@/lib/motion'
+import { testIds } from '@/lib/test-ids'
 import { getTrackLabel } from '@/lib/track-labels'
 import { getTopicLabel } from '@/lib/topic-labels'
 
@@ -36,7 +37,7 @@ export function DeckCard({
       whileInView="animate"
       {...hoverLiftMotionProps}
     >
-      <Panel className="flex h-full flex-col justify-between gap-5 p-5">
+      <Panel className="flex h-full flex-col justify-between gap-5 p-5" data-testid={testIds.deckCard(summary.id)}>
         <div className="flex flex-wrap gap-2">
           <Badge tone="accent">{getTrackLabel(summary.track)}</Badge>
           <Badge>{getTopicLabel(summary.topic)}</Badge>
@@ -67,7 +68,7 @@ export function DeckCard({
           <ProgressMeter current={learnedCount} total={totalCards} />
         </div>
         <div className="mt-auto">
-          <LinkButton to={detailHref} variant="primary">
+          <LinkButton data-testid={testIds.deckCardOpenLink(summary.id)} to={detailHref} variant="primary">
             Open deck
           </LinkButton>
         </div>

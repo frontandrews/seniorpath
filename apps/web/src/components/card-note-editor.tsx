@@ -10,6 +10,7 @@ type CardNoteEditorProps = {
   onClearNote: () => void
   onSaveNote: (note: string) => void
   showCollapsedPreview?: boolean
+  testIdPrefix?: string
 }
 
 export function CardNoteEditor({
@@ -17,6 +18,7 @@ export function CardNoteEditor({
   onClearNote,
   onSaveNote,
   showCollapsedPreview = false,
+  testIdPrefix,
 }: CardNoteEditorProps) {
   const [draft, setDraft] = useState(note)
   const [isOpen, setIsOpen] = useState(false)
@@ -42,7 +44,10 @@ export function CardNoteEditor({
       value={isOpen ? 'note' : undefined}
     >
       <Accordion.Item className="bg-[var(--retro-bg-strong)]" value="note">
-        <Accordion.Header className="text-sm text-[var(--retro-ink)]">
+        <Accordion.Header
+          className="text-sm text-[var(--retro-ink)]"
+          data-testid={testIdPrefix ? `${testIdPrefix}-toggle` : undefined}
+        >
           <span>Your note</span>
         </Accordion.Header>
         <Accordion.Content className="border-t border-[var(--retro-line)] bg-transparent px-4 py-4">
@@ -51,6 +56,7 @@ export function CardNoteEditor({
           </label>
           <textarea
             className="min-h-28 w-full rounded-[1rem] border border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.03)] px-4 py-3 text-sm leading-6 text-[var(--retro-ink)] outline-none placeholder:text-[var(--retro-ink-soft)] focus:border-[var(--retro-line-strong)]"
+            data-testid={testIdPrefix ? `${testIdPrefix}-textarea` : undefined}
             id={textareaId}
             onBlur={(event) => onSaveNote(event.currentTarget.value)}
             onChange={(event) => setDraft(event.currentTarget.value)}
@@ -63,6 +69,7 @@ export function CardNoteEditor({
             </p>
             {note || draft.trim() ? (
               <Button
+                data-testid={testIdPrefix ? `${testIdPrefix}-clear` : undefined}
                 onClick={() => {
                   setDraft('')
                   onClearNote()

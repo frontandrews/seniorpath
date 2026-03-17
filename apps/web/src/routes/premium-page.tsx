@@ -2,13 +2,14 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
+import { testIds } from '@/lib/test-ids'
 import { useMonetization } from '@/state/monetization-context'
 
 export function PremiumPage() {
   const { isPremium, membership, setMembershipTier } = useMonetization()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid={testIds.premium.page}>
       <section>
         <Panel className="overflow-hidden p-6">
           <div className="flex flex-wrap gap-2">
@@ -26,13 +27,14 @@ export function PremiumPage() {
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Button
+              data-testid={testIds.premium.previewButton}
               onClick={() => setMembershipTier(isPremium ? 'free' : 'premium')}
               type="button"
               variant="primary"
             >
               {isPremium ? 'Switch to free preview' : 'Preview premium locally'}
             </Button>
-            <LinkButton to="/" variant="secondary">
+            <LinkButton data-testid={testIds.premium.freePlanLink} to="/" variant="secondary">
               Keep using the free plan
             </LinkButton>
           </div>
@@ -64,7 +66,7 @@ export function PremiumPage() {
         />
       </section>
 
-      <Panel className="p-5">
+      <Panel className="p-5" data-testid={testIds.premium.statusPanel}>
         <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
           Current status
         </p>

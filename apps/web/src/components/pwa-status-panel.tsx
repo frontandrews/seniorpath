@@ -2,6 +2,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
 import { dismissOfflineReady, dismissPwaUpdate, usePwaStatus } from '@/lib/pwa-status'
+import { testIds } from '@/lib/test-ids'
 
 export function PwaStatusPanel({ hasBottomNavigation }: { hasBottomNavigation: boolean }) {
   const { needRefresh, offlineReady, updateServiceWorker } = usePwaStatus()
@@ -19,7 +20,10 @@ export function PwaStatusPanel({ hasBottomNavigation }: { hasBottomNavigation: b
           : 'bottom-6 sm:bottom-6',
       ].join(' ')}
     >
-      <Panel className="pointer-events-auto bg-[linear-gradient(145deg,rgba(22,38,63,0.98),rgba(9,16,29,0.96))] p-4 shadow-[0_10px_40px_rgba(0,0,0,0.32)]">
+      <Panel
+        className="pointer-events-auto bg-[linear-gradient(145deg,rgba(22,38,63,0.98),rgba(9,16,29,0.96))] p-4 shadow-[0_10px_40px_rgba(0,0,0,0.32)]"
+        data-testid={testIds.pwa.panel}
+      >
         <div className="flex items-start justify-between gap-3">
           <div>
             <div className="flex flex-wrap gap-2">
@@ -42,6 +46,7 @@ export function PwaStatusPanel({ hasBottomNavigation }: { hasBottomNavigation: b
           {needRefresh ? (
             <>
               <Button
+                data-testid={testIds.pwa.reloadButton}
                 onClick={() => {
                   void updateServiceWorker?.(true)
                 }}

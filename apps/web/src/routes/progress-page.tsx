@@ -23,6 +23,7 @@ import {
   getSessionKindLabel,
 } from '@/lib/session-history'
 import { getStudyGoalsSnapshot } from '@/lib/study-goals'
+import { testIds } from '@/lib/test-ids'
 import { getTopicLabel } from '@/lib/topic-labels'
 import { usePreferences } from '@/state/preferences-context'
 import { useProgress } from '@/state/progress-context'
@@ -77,7 +78,7 @@ export function ProgressPage() {
 
   return (
     <>
-      <section className="mb-6">
+      <section className="mb-6" data-testid={testIds.progress.page}>
         <Panel className="overflow-hidden bg-[linear-gradient(145deg,rgba(28,45,72,0.98),rgba(10,18,31,0.96))] p-5 sm:p-6">
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
             <div>
@@ -132,7 +133,11 @@ export function ProgressPage() {
         <AdSlot placement="home-primary" />
       </section>
 
-      <section aria-labelledby="momentum-heading" className="mb-6">
+      <section
+        aria-labelledby="momentum-heading"
+        className="mb-6"
+        data-testid={testIds.progress.momentum}
+      >
         <div className="mb-4">
           <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="momentum-heading">
             Momentum
@@ -216,7 +221,11 @@ export function ProgressPage() {
         </div>
       </section>
 
-      <section aria-labelledby="goal-tracker-heading" className="mb-6">
+      <section
+        aria-labelledby="goal-tracker-heading"
+        className="mb-6"
+        data-testid={testIds.progress.goalTracker}
+      >
         <div className="mb-4">
           <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="goal-tracker-heading">
             Goal tracker
@@ -276,7 +285,11 @@ export function ProgressPage() {
         </div>
       </section>
 
-      <section aria-labelledby="mastery-snapshot-heading" className="mb-6">
+      <section
+        aria-labelledby="mastery-snapshot-heading"
+        className="mb-6"
+        data-testid={testIds.progress.masterySnapshot}
+      >
         <div className="mb-4">
           <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="mastery-snapshot-heading">
             Mastery snapshot
@@ -326,7 +339,11 @@ export function ProgressPage() {
         </div>
       </section>
 
-      <section aria-labelledby="local-tools-heading" className="mb-6">
+      <section
+        aria-labelledby="local-tools-heading"
+        className="mb-6"
+        data-testid={testIds.progress.localTools}
+      >
         <div className="mb-4">
           <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="local-tools-heading">
             Local tools
