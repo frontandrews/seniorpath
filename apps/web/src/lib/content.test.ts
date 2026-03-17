@@ -15,6 +15,7 @@ describe('content registry', () => {
       expect(deck?.topic).toBe(summary.topic)
       expect(deck?.estimatedMinutes).toBe(summary.estimatedMinutes)
       expect(deck?.cards.length).toBeGreaterThan(0)
+      expect(deck?.cards.length).toBe(summary.cardCount)
     }
   })
 

@@ -1,4 +1,5 @@
-import { getDeckById, getDeckManifest } from '@prepdeck/content'
+import { getDeckById } from '@prepdeck/content/decks'
+import { getDeckSummaryById } from '@prepdeck/content/manifest'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
@@ -25,7 +26,7 @@ export function DeckDetailPage() {
   }
 
   const deck = getDeckById(deckId)
-  const summary = getDeckManifest().decks.find((entry) => entry.id === deckId)
+  const summary = getDeckSummaryById(deckId)
 
   if (!deck || !summary) {
     return <Navigate replace to="/" />

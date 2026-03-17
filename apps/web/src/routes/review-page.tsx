@@ -1,5 +1,5 @@
 import type { ProgressStatus } from '@prepdeck/schemas'
-import { getDeckById } from '@prepdeck/content'
+import { getDeckById } from '@prepdeck/content/decks'
 import { useMemo, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 

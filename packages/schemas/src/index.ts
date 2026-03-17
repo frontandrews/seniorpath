@@ -41,9 +41,13 @@ export const deckManifestEntrySchema = z.object({
   id: z.string().min(1),
   topic: z.string().min(1),
   title: z.string().min(1),
+  description: z.string().min(1),
   difficulty: difficultySchema,
   path: z.string().min(1),
   estimatedMinutes: z.number().int().positive(),
+  cardCount: z.number().int().positive(),
+  tags: z.array(z.string().min(1)).default([]),
+  searchTerms: z.array(z.string().min(1)).default([]),
 })
 
 export const deckManifestSchema = z.object({

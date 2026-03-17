@@ -1,15 +1,14 @@
-import { getAllDecks, getDeckManifest } from '@prepdeck/content'
+import { getDeckManifest } from '@prepdeck/content'
 
-import { createEmptyProgressStore, getDeckCounts, setCardStatus } from '@/lib/progress'
+import { createEmptyProgressStore, getDeckCountsFromSummary, setCardStatus } from '@/lib/progress'
 import { getSessionPresets } from '@/lib/session-presets'
 
 function buildRecords(store = createEmptyProgressStore()) {
   const summaries = getDeckManifest().decks
 
-  return getAllDecks().map((deck) => ({
-    counts: getDeckCounts(store, deck),
-    deck,
-    summary: summaries.find((entry) => entry.id === deck.id)!,
+  return summaries.map((summary) => ({
+    counts: getDeckCountsFromSummary(store, summary),
+    summary,
   }))
 }
 

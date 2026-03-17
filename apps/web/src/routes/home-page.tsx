@@ -1,5 +1,5 @@
 import type { DeckManifestEntry } from '@prepdeck/schemas'
-import { getDeckById, getDecksByTopic } from '@prepdeck/content'
+import { getDecksByTopic } from '@prepdeck/content/manifest'
 import { m } from 'motion/react'
 import { useMemo, useState } from 'react'
 
@@ -21,7 +21,7 @@ import { cardRevealVariants, hoverLiftMotionProps } from '@/lib/motion'
 import { getMasteryPercent, getMasterySnapshot } from '@/lib/mastery'
 import {
   combineDeckCounts,
-  getDeckCounts,
+  getDeckCountsFromSummary,
   getMostRecentlyStudiedDeckId,
   type DeckCounts,
 } from '@/lib/progress'
@@ -45,17 +45,10 @@ export function HomePage() {
       topicEntries
         .flatMap(([, summaries]) =>
           summaries.map((summary) => {
-            const deck = getDeckById(summary.id)
-
-            if (!deck) {
-              return null
-            }
-
-            const counts = getDeckCounts(progressStore, deck)
+            const counts = getDeckCountsFromSummary(progressStore, summary)
 
             return {
               counts,
-              deck,
               noteCount: Object.keys(progressStore.decks[summary.id]?.notes ?? {}).length,
               reviewDebt: counts.partial + counts.notLearned,
               summary,
@@ -70,12 +63,12 @@ export function HomePage() {
   const totalDecks = deckRecords.length
   const lastStudiedDeckId = getMostRecentlyStudiedDeckId(progressStore)
   const latestRecord =
-    deckRecords.find((record) => record.deck.id === lastStudiedDeckId) ?? null
+    deckRecords.find((record) => record.summary.id === lastStudiedDeckId) ?? null
   const weakestRecord = getWeakestDeckRecord(deckRecords)
   const starterRecord = getStarterDeckRecord(deckRecords)
   const alternateStarterRecord = getStarterDeckRecord(
     deckRecords,
-    starterRecord?.deck.id ?? null,
+    starterRecord?.summary.id ?? null,
   )
   const visibleDeckRecords = filterDeckLibraryRecords(deckRecords, {
     difficulty: libraryDifficulty,
@@ -635,7 +628,7 @@ function getWeakestDeckRecord(records: DeckLibraryRecord[]) {
 
 function getStarterDeckRecord(records: DeckLibraryRecord[], excludeDeckId?: string | null) {
   return [...records]
-    .filter((record) => record.counts.seen === 0 && record.deck.id !== excludeDeckId)
+    .filter((record) => record.counts.seen === 0 && record.summary.id !== excludeDeckId)
     .sort((a, b) => {
       const difficultyRank = getDifficultyRank(a.summary.difficulty) - getDifficultyRank(b.summary.difficulty)
 
@@ -657,11 +650,11 @@ function getPrimaryAction(
 ) {
   if (latestRecord && !latestRecord.counts.allSeen) {
     return {
-      detail: `Resume ${latestRecord.deck.title} without losing your last position or note.`,
+      detail: `Resume ${latestRecord.summary.title} without losing your last position or note.`,
       eyebrow: 'Continue',
-      href: `/study/${latestRecord.deck.id}?mode=continue`,
+      href: `/study/${latestRecord.summary.id}?mode=continue`,
       label: 'Continue latest session',
-      title: latestRecord.deck.title,
+      title: latestRecord.summary.title,
     }
   }
 
@@ -669,9 +662,9 @@ function getPrimaryAction(
     return {
       detail: `Start with a shorter deck and build confidence before you branch out.`,
       eyebrow: 'Start here',
-      href: `/study/${starterRecord.deck.id}?mode=start`,
+      href: `/study/${starterRecord.summary.id}?mode=start`,
       label: 'Start a focused deck',
-      title: starterRecord.deck.title,
+      title: starterRecord.summary.title,
     }
   }
 
@@ -679,9 +672,9 @@ function getPrimaryAction(
     return {
       detail: `You have already seen every card here. Review it again and tighten the phrasing.`,
       eyebrow: 'Latest deck',
-      href: `/decks/${latestRecord.deck.id}/review`,
+      href: `/decks/${latestRecord.summary.id}/review`,
       label: 'Review latest deck',
-      title: latestRecord.deck.title,
+      title: latestRecord.summary.title,
     }
   }
 
@@ -700,11 +693,11 @@ function getSecondaryAction(
 ) {
   if (weakestRecord) {
     return {
-      detail: `${weakestRecord.counts.partial + weakestRecord.counts.notLearned} cards still need work in ${weakestRecord.deck.title}.`,
+      detail: `${weakestRecord.counts.partial + weakestRecord.counts.notLearned} cards still need work in ${weakestRecord.summary.title}.`,
       eyebrow: 'Weak spots',
-      href: `/study/${weakestRecord.deck.id}?mode=start&scope=weak`,
+      href: `/study/${weakestRecord.summary.id}?mode=start&scope=weak`,
       label: 'Fix weak cards',
-      title: weakestRecord.deck.title,
+      title: weakestRecord.summary.title,
     }
   }
 
@@ -712,9 +705,9 @@ function getSecondaryAction(
     return {
       detail: `No weak cards yet. Open another lane and build breadth before the review queue starts growing.`,
       eyebrow: 'Explore',
-      href: `/decks/${starterRecord.deck.id}`,
+      href: `/decks/${starterRecord.summary.id}`,
       label: 'Explore another lane',
-      title: starterRecord.deck.title,
+      title: starterRecord.summary.title,
     }
   }
 

@@ -1,9 +1,9 @@
-import type { Deck } from '@prepdeck/schemas'
-
 import type { DeckLibraryRecord } from '@/lib/deck-library'
 import { filterDeckLibraryRecords } from '@/lib/deck-library'
 
-function createRecord(overrides: Partial<DeckLibraryRecord> & Pick<DeckLibraryRecord, 'deck' | 'summary'>): DeckLibraryRecord {
+function createRecord(
+  overrides: Partial<DeckLibraryRecord> & Pick<DeckLibraryRecord, 'summary'>,
+): DeckLibraryRecord {
   return {
     counts: {
       allLearned: false,
@@ -21,62 +21,38 @@ function createRecord(overrides: Partial<DeckLibraryRecord> & Pick<DeckLibraryRe
   }
 }
 
-function createDeck(id: string, title: string, tags: string[]): Deck {
-  return {
-    cards: [
-      {
-        commonTraps: [],
-        difficulty: 'medium',
-        expectedAnswer: `${title} answer`,
-        followUps: [],
-        id: `${id}-card`,
-        keyPoints: ['point'],
-        question: `${title} question`,
-        shortAnswer: `${title} short answer`,
-        sourceRefs: [],
-        tags,
-        type: 'concept',
-      },
-    ],
-    description: `${title} description`,
-    difficulty: 'medium',
-    estimatedMinutes: 8,
-    id,
-    tags,
-    title,
-    topic: 'react',
-  }
-}
-
 describe('deck library filters', () => {
-  const reactDeck = createDeck('react-core', 'React Core', ['react', 'hooks'])
-  const nodeDeck = createDeck('node-core', 'Node Core', ['node', 'runtime'])
-
   const records: DeckLibraryRecord[] = [
     createRecord({
       counts: { allLearned: false, allSeen: false, learned: 0, notLearned: 0, partial: 1, seen: 1, total: 1, unseen: 0 },
-      deck: reactDeck,
       noteCount: 1,
       reviewDebt: 1,
       summary: {
+        cardCount: 1,
+        description: 'React fundamentals and hook tradeoffs.',
         difficulty: 'medium',
         estimatedMinutes: 8,
         id: 'react-core',
         path: '',
+        searchTerms: ['react', 'hooks', 'state'],
+        tags: ['react', 'hooks'],
         title: 'React Core',
         topic: 'react',
       },
     }),
     createRecord({
       counts: { allLearned: false, allSeen: false, learned: 0, notLearned: 0, partial: 0, seen: 0, total: 1, unseen: 1 },
-      deck: nodeDeck,
       noteCount: 0,
       reviewDebt: 0,
       summary: {
+        cardCount: 1,
+        description: 'Node runtime and backend execution details.',
         difficulty: 'hard',
         estimatedMinutes: 10,
         id: 'node-core',
         path: '',
+        searchTerms: ['node', 'runtime', 'event loop'],
+        tags: ['node', 'runtime'],
         title: 'Node Core',
         topic: 'node',
       },

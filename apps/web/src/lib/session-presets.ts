@@ -1,4 +1,4 @@
-import type { Deck, DeckManifestEntry } from '@prepdeck/schemas'
+import type { DeckManifestEntry } from '@prepdeck/schemas'
 
 import { createDailyQueueHref, createMockInterviewHref, createStudyHref } from '@/lib/study-session'
 import { getTopicLabel } from '@/lib/topic-labels'
@@ -14,7 +14,6 @@ type DeckCountsLike = {
 
 type DeckRecordLike = {
   counts: DeckCountsLike
-  deck: Deck
   summary: DeckManifestEntry
 }
 
@@ -34,7 +33,7 @@ export function getSessionPresets(records: DeckRecordLike[]): SessionPreset[] {
   const continueRecord = getContinueRecord(records)
   if (continueRecord) {
     presets.push(createContinuePreset(continueRecord))
-    usedDeckIds.add(continueRecord.deck.id)
+    usedDeckIds.add(continueRecord.summary.id)
   }
 
   presets.push(createDailyPreset())
@@ -43,13 +42,13 @@ export function getSessionPresets(records: DeckRecordLike[]): SessionPreset[] {
   const interviewRecord = getInterviewRecord(records, usedDeckIds)
   if (interviewRecord) {
     presets.push(createInterviewPreset(interviewRecord))
-    usedDeckIds.add(interviewRecord.deck.id)
+    usedDeckIds.add(interviewRecord.summary.id)
   }
 
   const weakRecord = getWeakRecord(records, usedDeckIds)
   if (weakRecord) {
     presets.push(createWeakPreset(weakRecord))
-    usedDeckIds.add(weakRecord.deck.id)
+    usedDeckIds.add(weakRecord.summary.id)
   } else {
     const warmupRecord = getWarmupRecord(records, usedDeckIds)
     if (warmupRecord) {
@@ -89,24 +88,24 @@ function createContinuePreset(record: DeckRecordLike): SessionPreset {
 
   return {
     detail: isContinue
-      ? `Pick up ${record.deck.title} exactly where you left it.`
+      ? `Pick up ${record.summary.title} exactly where you left it.`
       : `Start a short deck and get momentum without overthinking where to begin.`,
-    href: createStudyHref(record.deck.id, { mode: isContinue ? 'continue' : 'start' }),
+    href: createStudyHref(record.summary.id, { mode: isContinue ? 'continue' : 'start' }),
     id: 'continue',
     label: isContinue ? 'Continue latest' : 'Start warm-up',
     meta: [getTopicLabel(record.summary.topic), 'Flashcards', `~${record.summary.estimatedMinutes} min`],
-    title: record.deck.title,
+    title: record.summary.title,
   }
 }
 
 function createInterviewPreset(record: DeckRecordLike): SessionPreset {
   return {
-    detail: `Run a timed rep on ${record.deck.title} and pressure-test the phrasing before you reveal the answer.`,
-    href: createStudyHref(record.deck.id, { format: 'interview', mode: 'start' }),
+    detail: `Run a timed rep on ${record.summary.title} and pressure-test the phrasing before you reveal the answer.`,
+    href: createStudyHref(record.summary.id, { format: 'interview', mode: 'start' }),
     id: 'interview',
     label: 'Run interview rep',
     meta: [getTopicLabel(record.summary.topic), 'Interview mode', getInterviewDurationLabel(record)],
-    title: record.deck.title,
+    title: record.summary.title,
   }
 }
 
@@ -115,22 +114,22 @@ function createWeakPreset(record: DeckRecordLike): SessionPreset {
 
   return {
     detail: `${weakCount} card${weakCount === 1 ? '' : 's'} still need work here. Clear the weak queue before it grows.`,
-    href: createStudyHref(record.deck.id, { mode: 'start', scope: 'weak' }),
+    href: createStudyHref(record.summary.id, { mode: 'start', scope: 'weak' }),
     id: 'weak',
     label: 'Fix weak cards',
     meta: [getTopicLabel(record.summary.topic), 'Weak cards', `~${estimateWeakMinutes(record)} min`],
-    title: record.deck.title,
+    title: record.summary.title,
   }
 }
 
 function createWarmupPreset(record: DeckRecordLike): SessionPreset {
   return {
     detail: `Use a lower-friction deck to warm up the recall loop before you jump into harder topics.`,
-    href: createStudyHref(record.deck.id, { mode: 'start' }),
+    href: createStudyHref(record.summary.id, { mode: 'start' }),
     id: 'warmup',
     label: 'Take a quick warm-up',
     meta: [getTopicLabel(record.summary.topic), 'Warm-up', `~${record.summary.estimatedMinutes} min`],
-    title: record.deck.title,
+    title: record.summary.title,
   }
 }
 
@@ -139,7 +138,7 @@ function estimateWeakMinutes(record: DeckRecordLike): number {
 }
 
 function getInterviewDurationLabel(record: DeckRecordLike): string {
-  return `${record.deck.cards.length} prompts`
+  return `${record.summary.cardCount} prompts`
 }
 
 function getContinueRecord(records: DeckRecordLike[]): DeckRecordLike | null {
@@ -152,7 +151,7 @@ function getContinueRecord(records: DeckRecordLike[]): DeckRecordLike | null {
 
 function getInterviewRecord(records: DeckRecordLike[], usedDeckIds: Set<string>): DeckRecordLike | null {
   return [...records]
-    .filter((record) => !usedDeckIds.has(record.deck.id))
+    .filter((record) => !usedDeckIds.has(record.summary.id))
     .sort((a, b) => {
       const urgencyDelta = getUrgencyScore(b) - getUrgencyScore(a)
       if (urgencyDelta !== 0) {
@@ -172,7 +171,7 @@ function getWeakRecord(records: DeckRecordLike[], usedDeckIds: Set<string>): Dec
   const uniqueWeakRecord = [...records]
     .filter(
       (record) =>
-        !usedDeckIds.has(record.deck.id) &&
+        !usedDeckIds.has(record.summary.id) &&
         record.counts.partial + record.counts.notLearned > 0,
     )
     .sort((a, b) => {
@@ -204,7 +203,7 @@ function getWeakRecord(records: DeckRecordLike[], usedDeckIds: Set<string>): Dec
 
 function getWarmupRecord(records: DeckRecordLike[], usedDeckIds: Set<string>): DeckRecordLike | null {
   return [...records]
-    .filter((record) => !usedDeckIds.has(record.deck.id))
+    .filter((record) => !usedDeckIds.has(record.summary.id))
     .sort((a, b) => {
       const unseenDelta = Number(b.counts.unseen > 0) - Number(a.counts.unseen > 0)
       if (unseenDelta !== 0) {

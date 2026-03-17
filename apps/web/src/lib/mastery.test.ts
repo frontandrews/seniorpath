@@ -1,24 +1,20 @@
-import { getDeckById, getDeckManifest } from '@prepdeck/content'
+import { getDeckManifest } from '@prepdeck/content'
 
-import { createEmptyProgressStore, getDeckCounts, setCardNote, setCardStatus } from '@/lib/progress'
+import {
+  createEmptyProgressStore,
+  getDeckCountsFromSummary,
+  setCardNote,
+  setCardStatus,
+} from '@/lib/progress'
 import { getMasteryPercent, getMasterySnapshot } from '@/lib/mastery'
 
 function createDeckRecords(store = createEmptyProgressStore()) {
   const manifest = getDeckManifest()
 
-  return manifest.decks.map((summary) => {
-    const deck = getDeckById(summary.id)
-
-    if (!deck) {
-      throw new Error(`Missing deck for ${summary.id}`)
-    }
-
-    return {
-      counts: getDeckCounts(store, deck),
-      deck,
-      summary,
-    }
-  })
+  return manifest.decks.map((summary) => ({
+    counts: getDeckCountsFromSummary(store, summary),
+    summary,
+  }))
 }
 
 describe('mastery helpers', () => {

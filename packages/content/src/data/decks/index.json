@@ -5,65 +5,97 @@
       "id": "react-rendering-core",
       "topic": "react",
       "title": "React Rendering Core",
+      "description": "Core React rendering and state questions that commonly appear in interviews.",
       "difficulty": "medium",
       "path": "./decks/react/react-rendering-core.json",
-      "estimatedMinutes": 8
+      "estimatedMinutes": 8,
+      "cardCount": 2,
+      "tags": ["react", "rendering", "state"],
+      "searchTerms": ["react", "rendering", "state", "context", "performance"]
     },
     {
       "id": "javascript-runtime-core",
       "topic": "javascript",
       "title": "JavaScript Runtime Core",
+      "description": "JavaScript runtime and language-level tradeoffs that come up in senior interviews.",
       "difficulty": "medium",
       "path": "./decks/javascript/javascript-runtime-core.json",
-      "estimatedMinutes": 8
+      "estimatedMinutes": 8,
+      "cardCount": 2,
+      "tags": ["javascript", "runtime", "async"],
+      "searchTerms": ["javascript", "runtime", "event loop", "closures", "async"]
     },
     {
       "id": "node-runtime-core",
       "topic": "node",
       "title": "Node Runtime Core",
+      "description": "Node.js execution model, backend tradeoffs, and server-side interview prompts.",
       "difficulty": "medium",
       "path": "./decks/node/node-runtime-core.json",
-      "estimatedMinutes": 8
+      "estimatedMinutes": 8,
+      "cardCount": 2,
+      "tags": ["node", "runtime", "backend"],
+      "searchTerms": ["node", "event loop", "single thread", "streams", "backend"]
     },
     {
       "id": "system-design-core-tradeoffs",
       "topic": "system-design",
       "title": "System Design Core Tradeoffs",
+      "description": "Tradeoff-driven system design prompts around scale, queues, consistency, and architecture choices.",
       "difficulty": "medium",
       "path": "./decks/system-design/system-design-core-tradeoffs.json",
-      "estimatedMinutes": 10
+      "estimatedMinutes": 10,
+      "cardCount": 2,
+      "tags": ["system-design", "tradeoffs", "architecture"],
+      "searchTerms": ["system design", "queues", "consistency", "scaling", "architecture"]
     },
     {
       "id": "leadership-ownership-core",
       "topic": "leadership",
       "title": "Leadership and Ownership Core",
+      "description": "Behavioral prompts about ownership, leadership, tradeoffs, and team impact.",
       "difficulty": "medium",
       "path": "./decks/leadership/leadership-ownership-core.json",
-      "estimatedMinutes": 8
+      "estimatedMinutes": 8,
+      "cardCount": 2,
+      "tags": ["leadership", "ownership", "behavioral"],
+      "searchTerms": ["leadership", "ownership", "behavioral", "stakeholders", "project"]
     },
     {
       "id": "coding-arrays-hashmaps-basics",
       "topic": "coding-interview",
       "title": "Arrays and Hashmaps Basics",
+      "description": "Friendly coding challenge fundamentals that build confidence before medium-level patterns.",
       "difficulty": "easy",
       "path": "./decks/coding-interview/coding-arrays-hashmaps-basics.json",
-      "estimatedMinutes": 8
+      "estimatedMinutes": 8,
+      "cardCount": 2,
+      "tags": ["coding", "arrays", "hashmaps"],
+      "searchTerms": ["arrays", "hashmaps", "coding challenge", "time complexity"]
     },
     {
       "id": "coding-two-pointers-sliding-window",
       "topic": "coding-interview",
       "title": "Two Pointers and Sliding Window",
+      "description": "Common medium-difficulty coding interview patterns for scanning and shrinking ranges.",
       "difficulty": "medium",
       "path": "./decks/coding-interview/coding-two-pointers-sliding-window.json",
-      "estimatedMinutes": 10
+      "estimatedMinutes": 10,
+      "cardCount": 2,
+      "tags": ["coding", "two-pointers", "sliding-window"],
+      "searchTerms": ["two pointers", "sliding window", "coding challenge", "arrays"]
     },
     {
       "id": "coding-stacks-queues-binary-search",
       "topic": "coding-interview",
       "title": "Stacks, Queues, and Binary Search",
+      "description": "Interview patterns for ordered search, stack discipline, and queue-based problem solving.",
       "difficulty": "medium",
       "path": "./decks/coding-interview/coding-stacks-queues-binary-search.json",
-      "estimatedMinutes": 10
+      "estimatedMinutes": 10,
+      "cardCount": 2,
+      "tags": ["coding", "stacks", "queues", "binary-search"],
+      "searchTerms": ["stacks", "queues", "binary search", "coding challenge", "search"]
     }
   ]
 }

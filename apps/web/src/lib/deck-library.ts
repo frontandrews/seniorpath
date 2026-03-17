@@ -1,4 +1,4 @@
-import type { Deck, DeckManifestEntry } from '@prepdeck/schemas'
+import type { DeckManifestEntry } from '@prepdeck/schemas'
 
 import { getTopicLabel } from '@/lib/topic-labels'
 
@@ -15,7 +15,6 @@ type DeckCountsLike = {
 
 export type DeckLibraryRecord = {
   counts: DeckCountsLike
-  deck: Deck
   noteCount: number
   reviewDebt: number
   summary: DeckManifestEntry
@@ -82,10 +81,10 @@ function buildSearchText(record: DeckLibraryRecord): string {
   return normalize(
     [
       record.summary.title,
-      record.deck.description,
+      record.summary.description,
       getTopicLabel(record.summary.topic),
-      ...record.deck.tags,
-      ...record.deck.cards.flatMap((card) => [card.question, ...card.tags]),
+      ...record.summary.tags,
+      ...record.summary.searchTerms,
     ].join(' '),
   )
 }

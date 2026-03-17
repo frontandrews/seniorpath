@@ -1,5 +1,5 @@
 import type { Deck } from '@prepdeck/schemas'
-import { getDeckById } from '@prepdeck/content'
+import { getDeckById } from '@prepdeck/content/decks'
 import { m } from 'motion/react'
 import { Navigate, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 

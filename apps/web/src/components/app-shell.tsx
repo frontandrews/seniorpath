@@ -1,4 +1,4 @@
-import { getDeckById } from '@prepdeck/content'
+import { getDeckSummaryById } from '@prepdeck/content/manifest'
 import type { PropsWithChildren } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
@@ -112,7 +112,7 @@ function getShellConfig(pathname: string): ShellConfig {
   }
 
   if (segments[0] === 'study' && segments[1]) {
-    const deck = getDeckById(segments[1])
+    const deck = getDeckSummaryById(segments[1])
 
     return {
       backLabel: 'Back to deck',
@@ -124,7 +124,7 @@ function getShellConfig(pathname: string): ShellConfig {
   }
 
   if (segments[0] === 'decks' && segments[1] && segments[2] === 'review') {
-    const deck = getDeckById(segments[1])
+    const deck = getDeckSummaryById(segments[1])
 
     return {
       backLabel: 'Back to deck',
@@ -136,7 +136,7 @@ function getShellConfig(pathname: string): ShellConfig {
   }
 
   if (segments[0] === 'decks' && segments[1]) {
-    const deck = getDeckById(segments[1])
+    const deck = getDeckSummaryById(segments[1])
 
     return {
       backLabel: 'Back to library',

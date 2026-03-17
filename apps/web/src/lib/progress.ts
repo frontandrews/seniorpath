@@ -1,5 +1,6 @@
 import type {
   Deck,
+  DeckManifestEntry,
   ProgressStatus,
   ProgressStore,
   ProgressV1Store,
@@ -229,6 +230,29 @@ export function getDeckCounts(store: ProgressStore, deck: Deck): DeckCounts {
     partial,
     seen,
     total,
+    unseen,
+  }
+}
+
+export function getDeckCountsFromSummary(
+  store: ProgressStore,
+  summary: Pick<DeckManifestEntry, 'cardCount' | 'id'>,
+): DeckCounts {
+  const storedStatuses = Object.values(store.decks[summary.id]?.cards ?? {})
+  const learned = storedStatuses.filter((status) => status === 'learned').length
+  const partial = storedStatuses.filter((status) => status === 'partial').length
+  const notLearned = storedStatuses.filter((status) => status === 'not_learned').length
+  const seen = Math.min(summary.cardCount, learned + partial + notLearned)
+  const unseen = Math.max(0, summary.cardCount - seen)
+
+  return {
+    allLearned: summary.cardCount > 0 && learned === summary.cardCount,
+    allSeen: summary.cardCount > 0 && seen === summary.cardCount,
+    learned,
+    notLearned,
+    partial,
+    seen,
+    total: summary.cardCount,
     unseen,
   }
 }
