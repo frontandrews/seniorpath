@@ -58,15 +58,27 @@ export const progressStatusSchema = z.enum([
   'not_learned',
 ])
 
-export const deckProgressSchema = z.object({
+export const progressV1DeckSchema = z.object({
   lastCardId: z.string().nullable(),
   lastStudiedAt: z.string().nullable(),
   cards: z.record(z.string(), progressStatusSchema),
 })
 
-export const progressStoreSchema = z.object({
+export const progressV1StoreSchema = z.object({
   version: z.literal(1),
-  decks: z.record(z.string(), deckProgressSchema),
+  decks: z.record(z.string(), progressV1DeckSchema),
+})
+
+export const deckUserDataSchema = z.object({
+  lastCardId: z.string().nullable(),
+  lastStudiedAt: z.string().nullable(),
+  cards: z.record(z.string(), progressStatusSchema),
+  notes: z.record(z.string(), z.string().min(1)).default({}),
+})
+
+export const userDataStoreSchema = z.object({
+  version: z.literal(1),
+  decks: z.record(z.string(), deckUserDataSchema),
 })
 
 export type Flashcard = z.infer<typeof flashcardSchema>
@@ -74,5 +86,9 @@ export type Deck = z.infer<typeof deckSchema>
 export type DeckManifest = z.infer<typeof deckManifestSchema>
 export type DeckManifestEntry = z.infer<typeof deckManifestEntrySchema>
 export type ProgressStatus = z.infer<typeof progressStatusSchema>
-export type DeckProgress = z.infer<typeof deckProgressSchema>
-export type ProgressStore = z.infer<typeof progressStoreSchema>
+export type ProgressV1Deck = z.infer<typeof progressV1DeckSchema>
+export type ProgressV1Store = z.infer<typeof progressV1StoreSchema>
+export type DeckUserData = z.infer<typeof deckUserDataSchema>
+export type UserDataStore = z.infer<typeof userDataStoreSchema>
+export type DeckProgress = DeckUserData
+export type ProgressStore = UserDataStore

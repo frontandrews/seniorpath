@@ -1,8 +1,11 @@
 import { getDeckById } from '@prepdeck/content'
 
 import {
+  PREVIOUS_STORAGE_KEY,
   combineDeckCounts,
+  clearCardNote,
   createEmptyProgressStore,
+  getCardNote,
   getCardStatus,
   getDeckCounts,
   getFirstUnseenCardIndex,
@@ -11,6 +14,7 @@ import {
   rememberDeckPosition,
   resetAllProgress,
   resetDeck,
+  setCardNote,
   setCardStatus,
   setLearnedToUnseen,
   writeProgressStore,
@@ -99,11 +103,49 @@ describe('progress store', () => {
     let store = createEmptyProgressStore()
 
     store = setCardStatus(store, deck.id, deck.cards[0].id, 'not_learned')
+    store = setCardNote(store, deck.id, deck.cards[0].id, 'Need a cleaner event loop answer')
     store = rememberDeckPosition(store, deck.id, deck.cards[1].id)
 
     writeProgressStore(store, window.localStorage)
 
     expect(readProgressStore(window.localStorage)).toEqual(store)
+  })
+
+  it('creates, trims, and clears notes per card', () => {
+    const deck = getReactDeck()
+    let store = createEmptyProgressStore()
+
+    store = setCardNote(store, deck.id, deck.cards[0].id, '  Talk about derived state  ')
+    expect(getCardNote(store, deck.id, deck.cards[0].id)).toBe('Talk about derived state')
+
+    store = clearCardNote(store, deck.id, deck.cards[0].id)
+    expect(getCardNote(store, deck.id, deck.cards[0].id)).toBe('')
+  })
+
+  it('migrates previously saved progress into the current user-data store', () => {
+    const deck = getReactDeck()
+
+    window.localStorage.setItem(
+      PREVIOUS_STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        decks: {
+          [deck.id]: {
+            lastCardId: deck.cards[0].id,
+            lastStudiedAt: '2026-03-17T10:00:00.000Z',
+            cards: {
+              [deck.cards[0].id]: 'learned',
+            },
+          },
+        },
+      }),
+    )
+
+    const migratedStore = readProgressStore(window.localStorage)
+
+    expect(getCardStatus(migratedStore, deck.id, deck.cards[0].id)).toBe('learned')
+    expect(getCardNote(migratedStore, deck.id, deck.cards[0].id)).toBe('')
+    expect(window.localStorage.getItem(PREVIOUS_STORAGE_KEY)).toBeNull()
   })
 
   it('returns the most recently studied deck id', () => {
@@ -114,11 +156,13 @@ describe('progress store', () => {
           lastCardId: 'javascript-event-loop-phases',
           lastStudiedAt: '2026-03-17T11:00:00.000Z',
           cards: {},
+          notes: {},
         },
         'react-rendering-core': {
           lastCardId: 'react-context-performance',
           lastStudiedAt: '2026-03-17T12:00:00.000Z',
           cards: {},
+          notes: {},
         },
       },
     }
@@ -131,6 +175,7 @@ describe('progress store', () => {
     let store = createEmptyProgressStore()
 
     store = setCardStatus(store, deck.id, deck.cards[0].id, 'learned')
+    store = setCardNote(store, deck.id, deck.cards[0].id, 'Remember the exact phrasing')
 
     const resetDeckStore = resetDeck(store, deck.id)
     expect(resetDeckStore.decks[deck.id]).toBeUndefined()

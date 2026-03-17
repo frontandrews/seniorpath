@@ -1,7 +1,15 @@
-import type { Deck, ProgressStatus, ProgressStore } from '@prepdeck/schemas'
-import { progressStoreSchema } from '@prepdeck/schemas'
+import type {
+  Deck,
+  ProgressStatus,
+  ProgressStore,
+  ProgressV1Store,
+} from '@prepdeck/schemas'
+import { progressV1StoreSchema, userDataStoreSchema } from '@prepdeck/schemas'
 
-export const STORAGE_KEY = 'prepdeck.progress.v1'
+import { getBrowserStorageAdapter, type StorageAdapter } from '@/lib/storage-adapter'
+
+export const PREVIOUS_STORAGE_KEY = 'prepdeck.progress.v1'
+export const STORAGE_KEY = 'prepdeck.user-data.v1'
 
 export type DeckCounts = {
   allLearned: boolean
@@ -51,7 +59,7 @@ export function createEmptyProgressStore(): ProgressStore {
 }
 
 export function readProgressStore(
-  storage: Pick<Storage, 'getItem'> | null = globalThis.localStorage ?? null,
+  storage: StorageAdapter | null = getBrowserStorageAdapter(),
 ): ProgressStore {
   if (!storage) {
     return createEmptyProgressStore()
@@ -60,19 +68,19 @@ export function readProgressStore(
   const raw = storage.getItem(STORAGE_KEY)
 
   if (!raw) {
-    return createEmptyProgressStore()
+    return readPreviousProgressStore(storage)
   }
 
   try {
-    return progressStoreSchema.parse(JSON.parse(raw))
+    return userDataStoreSchema.parse(JSON.parse(raw))
   } catch {
-    return createEmptyProgressStore()
+    return readPreviousProgressStore(storage)
   }
 }
 
 export function writeProgressStore(
   store: ProgressStore,
-  storage: Pick<Storage, 'setItem'> | null = globalThis.localStorage ?? null,
+  storage: StorageAdapter | null = getBrowserStorageAdapter(),
 ): void {
   if (!storage) {
     return
@@ -87,6 +95,14 @@ export function getCardStatus(
   cardId: string,
 ): ProgressStatus {
   return store.decks[deckId]?.cards[cardId] ?? 'unseen'
+}
+
+export function getCardNote(
+  store: ProgressStore,
+  deckId: string,
+  cardId: string,
+): string {
+  return store.decks[deckId]?.notes[cardId] ?? ''
 }
 
 export function rememberDeckPosition(
@@ -104,6 +120,7 @@ export function rememberDeckPosition(
         lastCardId: cardId,
         lastStudiedAt: new Date().toISOString(),
         cards: existing?.cards ?? {},
+        notes: existing?.notes ?? {},
       },
     },
   }
@@ -128,9 +145,48 @@ export function setCardStatus(
           ...(existing?.cards ?? {}),
           [cardId]: status,
         },
+        notes: existing?.notes ?? {},
       },
     },
   }
+}
+
+export function setCardNote(
+  store: ProgressStore,
+  deckId: string,
+  cardId: string,
+  note: string,
+): ProgressStore {
+  const existing = store.decks[deckId]
+  const trimmedNote = note.trim()
+  const nextNotes = { ...(existing?.notes ?? {}) }
+
+  if (trimmedNote) {
+    nextNotes[cardId] = trimmedNote
+  } else {
+    delete nextNotes[cardId]
+  }
+
+  return {
+    ...store,
+    decks: {
+      ...store.decks,
+      [deckId]: {
+        lastCardId: cardId,
+        lastStudiedAt: new Date().toISOString(),
+        cards: existing?.cards ?? {},
+        notes: nextNotes,
+      },
+    },
+  }
+}
+
+export function clearCardNote(
+  store: ProgressStore,
+  deckId: string,
+  cardId: string,
+): ProgressStore {
+  return setCardNote(store, deckId, cardId, '')
 }
 
 export function resetDeck(store: ProgressStore, deckId: string): ProgressStore {
@@ -204,4 +260,41 @@ export function setLearnedToUnseen(
   }
 
   return setCardStatus(store, deckId, cardId, 'unseen')
+}
+
+function migrateProgressV1Store(progressV1Store: ProgressV1Store): ProgressStore {
+  return {
+    version: 1,
+    decks: Object.fromEntries(
+      Object.entries(progressV1Store.decks).map(([deckId, deckProgress]) => [
+        deckId,
+        {
+          lastCardId: deckProgress.lastCardId,
+          lastStudiedAt: deckProgress.lastStudiedAt,
+          cards: deckProgress.cards,
+          notes: {},
+        },
+      ]),
+    ),
+  }
+}
+
+function readPreviousProgressStore(storage: StorageAdapter): ProgressStore {
+  const progressV1Raw = storage.getItem(PREVIOUS_STORAGE_KEY)
+
+  if (!progressV1Raw) {
+    return createEmptyProgressStore()
+  }
+
+  try {
+    const progressV1Store = progressV1StoreSchema.parse(JSON.parse(progressV1Raw))
+    const migratedStore = migrateProgressV1Store(progressV1Store)
+
+    storage.setItem(STORAGE_KEY, JSON.stringify(migratedStore))
+    storage.removeItem(PREVIOUS_STORAGE_KEY)
+
+    return migratedStore
+  } catch {
+    return createEmptyProgressStore()
+  }
 }
