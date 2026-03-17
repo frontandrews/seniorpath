@@ -1,0 +1,9 @@
+{
+  "name": "@prepdeck/theme",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./retroui.css": "./src/retroui.css"
+  }
+}

@@ -10,19 +10,19 @@ export function PremiumPage() {
   return (
     <div className="space-y-6">
       <section>
-        <Panel className="overflow-hidden bg-[linear-gradient(145deg,rgba(43,67,108,0.98),rgba(18,29,50,0.96))] p-6">
+        <Panel className="overflow-hidden p-6">
           <div className="flex flex-wrap gap-2">
             <Badge tone="accent">Premium</Badge>
-            <Badge>Ad-free</Badge>
-            <Badge tone="success">No account required</Badge>
+            <Badge>Learn free</Badge>
+            <Badge>Practice deeper</Badge>
           </div>
           <h1 className="mt-4 text-3xl font-black tracking-tight text-[var(--retro-ink)] sm:text-4xl">
-            Premium removes ads and funds deeper practice features.
+            Learn for free. Practice for free. Go premium when you want deeper reps.
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-white/80 sm:text-base">
-            The free plan stays fully usable. Premium keeps the interface cleaner,
-            removes sponsor placements, and helps fund automatic backup, sync, and
-            deeper practice modes later on.
+            Free content stays open. Free practice stays useful. Premium removes ads
+            and unlocks the more advanced interview loops for people who want to go
+            further without adding a backend or forcing sign-in.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Button
@@ -42,10 +42,10 @@ export function PremiumPage() {
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <PlanCard
           items={[
-            'Full deck library',
-            'Study and review loops',
+            'All learning guides',
+            'Starter practice decks',
+            'Basic study and review loops',
             'Local notes per card',
-            'Weak-card sessions',
             'Sponsor-supported surfaces',
           ]}
           title="Free"
@@ -55,9 +55,9 @@ export function PremiumPage() {
           items={[
             'Everything in free',
             'No ad slots',
-            'Cleaner product flow',
+            'Interview mode and mock runs',
+            'Weak-card loops and deeper practice presets',
             'Priority access to automatic backup and sync later',
-            'Supports long-term development',
           ]}
           title="Premium"
           tone="accent"
@@ -75,8 +75,8 @@ export function PremiumPage() {
         </h2>
         <p className="mt-3 text-sm leading-6 text-white/80">
           {membership.tier === 'premium'
-            ? 'Ad slots are hidden while this device stays in premium preview mode.'
-            : 'Checkout is not connected in this open build yet. For now, you can preview the premium state locally on this device.'}
+            ? 'Ads are hidden while this device stays in premium preview mode.'
+            : 'This open build keeps checkout out of the way for now. You can still preview the premium state locally on this device.'}
         </p>
       </Panel>
     </div>

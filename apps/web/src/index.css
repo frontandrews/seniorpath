@@ -1,5 +1,6 @@
 @import "@fontsource/archivo-black";
 @import "@fontsource/space-grotesk";
+@import "@prepdeck/theme/retroui.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -7,124 +8,31 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  color: #0e172a;
-  --radius: 1rem;
-  --background: #edf3ff;
-  --foreground: #10203a;
-  --card: #ffffff;
-  --card-foreground: #10203a;
-  --popover: #ffffff;
-  --popover-foreground: #10203a;
-  --primary: #5b86db;
-  --primary-hover: #4b74c5;
-  --primary-foreground: #f8fbff;
-  --secondary: #d6e3fb;
-  --secondary-hover: #c7d8f6;
-  --secondary-foreground: #163050;
-  --muted: #dfe9fb;
-  --muted-foreground: #536683;
-  --accent: #c8dafd;
-  --accent-foreground: #173254;
-  --destructive: #b45774;
-  --destructive-foreground: #fff7fb;
-  --border: #35537d;
-  --input: #8da4c8;
-  --ring: #84a8ee;
-  --chart-1: #5b86db;
-  --chart-2: #7b96d0;
-  --chart-3: #7aa7c3;
-  --chart-4: #506b90;
-  --chart-5: #8aa2c7;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #10203a;
-  --sidebar-primary: #5b86db;
-  --sidebar-primary-foreground: #f8fbff;
-  --sidebar-accent: #dfe9fb;
-  --sidebar-accent-foreground: #173254;
-  --sidebar-border: #35537d;
-  --sidebar-ring: #84a8ee;
-
-  --retro-bg: #e6eefc;
-  --retro-bg-strong: #d7e5fb;
-  --retro-surface: #ffffff;
-  --retro-surface-muted: #e9f0ff;
-  --retro-surface-strong: #d4e2fb;
-  --retro-accent: #5b86db;
-  --retro-accent-strong: #4b74c5;
-  --retro-accent-soft: #d0def8;
-  --retro-warning: #7a91b5;
-  --retro-danger: #b45774;
-  --retro-success: #5f8aa4;
-  --retro-ink: #10203a;
-  --retro-ink-muted: rgba(16, 32, 58, 0.76);
-  --retro-ink-soft: rgba(16, 32, 58, 0.58);
-  --retro-line: #5f7698;
-  --retro-line-strong: #35537d;
-  --retro-shadow: #8ca3c8;
-  --retro-shadow-soft: #b7caea;
-}
-
-.dark {
-  color: #f4f8ff;
-  --background: #0a1323;
-  --foreground: #f4f8ff;
-  --card: #12203a;
-  --card-foreground: #f4f8ff;
-  --popover: #12203a;
-  --popover-foreground: #f4f8ff;
-  --primary: #5b86db;
-  --primary-hover: #77a0ef;
-  --primary-foreground: #f4f8ff;
-  --secondary: #1d3153;
-  --secondary-hover: #27406a;
-  --secondary-foreground: #f4f8ff;
-  --muted: #172744;
-  --muted-foreground: #adc0dd;
-  --accent: #21385f;
-  --accent-foreground: #f4f8ff;
-  --destructive: #8f5f73;
-  --destructive-foreground: #fff4f7;
-  --border: #d7e2ff;
-  --input: #50627f;
-  --ring: #84a8ee;
-  --chart-1: #5b86db;
-  --chart-2: #7b96d0;
-  --chart-3: #7aa7c3;
-  --chart-4: #50627f;
-  --chart-5: #9fb7da;
-  --sidebar: #101b2f;
-  --sidebar-foreground: #f4f8ff;
-  --sidebar-primary: #5b86db;
-  --sidebar-primary-foreground: #f4f8ff;
-  --sidebar-accent: #1d3153;
-  --sidebar-accent-foreground: #f4f8ff;
-  --sidebar-border: #d7e2ff;
-  --sidebar-ring: #84a8ee;
-
-  --retro-bg: #09111f;
-  --retro-bg-strong: #101b2f;
-  --retro-surface: #152238;
-  --retro-surface-muted: #1d2d49;
-  --retro-surface-strong: #294064;
-  --retro-accent: #5b86db;
-  --retro-accent-strong: #77a0ef;
-  --retro-accent-soft: #21385f;
-  --retro-warning: #60718f;
-  --retro-danger: #8f5f73;
-  --retro-success: #537e92;
-  --retro-ink: #f4f8ff;
-  --retro-ink-muted: rgba(244, 248, 255, 0.76);
-  --retro-ink-soft: rgba(244, 248, 255, 0.58);
-  --retro-line: #50627f;
-  --retro-line-strong: #d7e2ff;
-  --retro-shadow: #020611;
-  --retro-shadow-soft: #08101d;
+  color: var(--foreground);
+  --retro-bg: var(--background);
+  --retro-bg-strong: var(--muted);
+  --retro-surface: var(--card);
+  --retro-surface-muted: var(--accent);
+  --retro-surface-strong: var(--accent);
+  --retro-accent: var(--primary);
+  --retro-accent-strong: var(--primary-hover);
+  --retro-accent-soft: var(--accent);
+  --retro-warning: color-mix(in srgb, var(--primary) 72%, black);
+  --retro-danger: var(--destructive);
+  --retro-success: #3f8f63;
+  --retro-ink: var(--foreground);
+  --retro-ink-muted: color-mix(in srgb, var(--foreground) 76%, transparent);
+  --retro-ink-soft: color-mix(in srgb, var(--foreground) 58%, transparent);
+  --retro-line: var(--border);
+  --retro-line-strong: var(--border);
+  --retro-shadow: var(--border);
+  --retro-shadow-soft: var(--border);
 }
 
 @theme inline {
-  --font-head: "Archivo Black", sans-serif;
-  --font-sans: "Space Grotesk", sans-serif;
-  --font-body: "Space Grotesk", sans-serif;
+  --font-head: var(--font-head);
+  --font-sans: var(--font-sans);
+  --font-body: var(--font-body);
 
   --shadow-xs: 1px 1px 0 0 var(--color-border);
   --shadow-sm: 2px 2px 0 0 var(--color-border);
@@ -190,46 +98,9 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: transparent;
-  color: var(--retro-ink);
-  isolation: isolate;
   overflow-x: hidden;
-  position: relative;
-  background-image:
-    linear-gradient(rgba(215, 226, 255, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(215, 226, 255, 0.04) 1px, transparent 1px);
-  background-size: 24px 24px, 24px 24px;
-}
-
-body::before,
-body::after {
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: fixed;
-}
-
-body::before {
-  background:
-    radial-gradient(circle at 18% 18%, color-mix(in srgb, var(--retro-accent) 26%, transparent), transparent 24%),
-    radial-gradient(circle at 82% 24%, color-mix(in srgb, var(--retro-success) 20%, transparent), transparent 22%),
-    radial-gradient(circle at 50% 88%, color-mix(in srgb, var(--retro-line) 18%, transparent), transparent 28%);
-  filter: blur(12px);
-  opacity: 0.9;
-  transform-origin: center;
-  z-index: -2;
-  animation: retroFloat 18s ease-in-out infinite alternate;
-}
-
-body::after {
-  background:
-    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 100% 6px, 48px 100%;
-  mix-blend-mode: screen;
-  opacity: 0.14;
-  z-index: -1;
-  animation: scanlineDrift 14s linear infinite;
+  background: var(--background);
+  color: var(--foreground);
 }
 
 #root {
@@ -242,32 +113,8 @@ a {
 }
 
 ::selection {
-  background: var(--retro-accent);
-  color: white;
-}
-
-@keyframes retroFloat {
-  0% {
-    transform: translate3d(-1.5%, -1.5%, 0) scale(1);
-  }
-
-  50% {
-    transform: translate3d(1%, 1.25%, 0) scale(1.03);
-  }
-
-  100% {
-    transform: translate3d(2%, -1%, 0) scale(1.02);
-  }
-}
-
-@keyframes scanlineDrift {
-  from {
-    transform: translateY(0);
-  }
-
-  to {
-    transform: translateY(12px);
-  }
+  background: var(--accent);
+  color: var(--accent-foreground);
 }
 
 @layer base {
@@ -283,12 +130,5 @@ a {
   input,
   textarea {
     @apply font-sans;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body::before,
-  body::after {
-    animation: none;
   }
 }

@@ -16,6 +16,9 @@ importers:
       '@prepdeck/content':
         specifier: workspace:*
         version: link:../../packages/content
+      '@prepdeck/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
       astro-icon:
         specifier: ^1.1.5
         version: 1.1.5
@@ -50,6 +53,9 @@ importers:
       '@prepdeck/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
+      '@prepdeck/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -174,6 +180,8 @@ importers:
       zod:
         specifier: ^4.1.12
         version: 4.3.6
+
+  packages/theme: {}
 
 packages:
 

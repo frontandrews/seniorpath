@@ -61,9 +61,9 @@ function getShellConfig(pathname: string): ShellConfig {
     return {
       backLabel: null,
       backTo: null,
-      eyebrow: 'Deck library',
+      eyebrow: 'Path to Senior',
       mode: 'home',
-      title: 'Career practice that stays usable on a phone.',
+      title: 'Learn first. Practice when you want to prove it.',
     }
   }
 
@@ -156,7 +156,7 @@ function getShellConfig(pathname: string): ShellConfig {
   return {
     backLabel: 'Back home',
     backTo: '/',
-    eyebrow: 'Prepdeck',
+    eyebrow: 'Path to Senior',
     mode: 'compact',
     title: 'Deck library',
   }

@@ -60,13 +60,12 @@ describe('app routes', () => {
 
     renderApp(['/'])
 
-    expect(screen.getByRole('heading', { name: 'Programming' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Path to Senior' })).toBeInTheDocument()
     expect(screen.getAllByText('React Rendering Core').length).toBeGreaterThan(0)
     expect(screen.getByText('1 / 2 learned')).toBeInTheDocument()
-    expect(screen.getByText('Ad-supported free plan')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Session presets' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Progress hub' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Open progress hub' }).length).toBeGreaterThan(0)
+    expect(screen.getByRole('heading', { name: 'Practice presets' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Progress' })).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Progress' }).length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: 'Continue latest' })).toBeInTheDocument()
     expect(screen.getAllByRole('link', { name: 'Start daily queue' }).length).toBeGreaterThan(0)
     expect(screen.getByRole('link', { name: 'Start mock interview' })).toBeInTheDocument()
@@ -143,12 +142,12 @@ describe('app routes', () => {
 
     expect(screen.getByText('Current streak')).toBeInTheDocument()
     expect(screen.getByText('This week')).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Progress hub' })).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Open progress hub' }).length).toBeGreaterThan(0)
+    expect(screen.getByRole('heading', { name: 'Progress' })).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Progress' }).length).toBeGreaterThan(0)
     expect(screen.queryByText('Latest completed reps')).not.toBeInTheDocument()
   })
 
-  it('filters the home deck list by selected focus area', async () => {
+  it('filters the home deck list by selected track chip', async () => {
     const user = userEvent.setup()
 
     renderApp(['/'])
@@ -158,7 +157,7 @@ describe('app routes', () => {
     const deckLibrary = screen.getByRole('region', { name: 'Deck library' })
 
     expect(within(deckLibrary).getByText('Showing 1 deck in AI Engineering.')).toBeInTheDocument()
-    expect(within(deckLibrary).getByText('AI Engineering Core')).toBeInTheDocument()
+    expect(within(deckLibrary).getAllByText('AI Engineering Core').length).toBeGreaterThan(0)
     expect(within(deckLibrary).queryByText('React Rendering Core')).not.toBeInTheDocument()
   })
 
@@ -197,16 +196,15 @@ describe('app routes', () => {
     renderApp(['/decks/react-rendering-core'])
 
     expect(screen.getByRole('heading', { name: 'React Rendering Core' })).toBeInTheDocument()
-    expect(screen.getByText('Learned')).toBeInTheDocument()
-    expect(screen.getByText('Partial')).toBeInTheDocument()
-    expect(screen.getByText('Not learned')).toBeInTheDocument()
+    expect(screen.getByText('1 mastered')).toBeInTheDocument()
+    expect(screen.getByText('1 need review')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Start deck' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Interview mode' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Study weak cards' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Review progress' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reset deck' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Longer learning tied to this deck' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Learn more' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Learn guide' })).toHaveAttribute(
       'href',
       '/blog/react-derived-state-without-extra-bugs',
@@ -223,7 +221,7 @@ describe('app routes', () => {
     expect(screen.getAllByRole('link', { name: 'Premium' }).length).toBeGreaterThan(0)
     expect(
       screen.queryByRole('heading', {
-        name: 'Career practice that stays usable on a phone.',
+        name: 'Learn first. Practice when you want to prove it.',
       }),
     ).not.toBeInTheDocument()
   })
@@ -327,9 +325,9 @@ describe('app routes', () => {
 
     renderApp(['/'])
 
-    expect(screen.getByRole('heading', { name: 'Progress hub' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Progress' })).toBeInTheDocument()
     expect(screen.getByText('Current streak')).toBeInTheDocument()
-    expect(screen.getAllByRole('link', { name: 'Open progress hub' }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('link', { name: 'Progress' }).length).toBeGreaterThan(0)
   })
 
   it('renders the dedicated progress page with momentum, mastery, and local tools', () => {
@@ -678,7 +676,7 @@ describe('app routes', () => {
 
     expect(
       screen.getByRole('heading', {
-        name: 'Premium removes ads and funds deeper practice features.',
+        name: 'Learn for free. Practice for free. Go premium when you want deeper reps.',
       }),
     ).toBeInTheDocument()
     expect(screen.getByText('Premium checkout is not live yet.')).toBeInTheDocument()
@@ -687,7 +685,7 @@ describe('app routes', () => {
     expect(screen.getByRole('button', { name: 'Preview premium locally' })).toBeInTheDocument()
   })
 
-  it('applies saved goal targets to the home and progress summaries', () => {
+  it('applies saved goal targets to the progress page summaries', () => {
     seedPreferences({
       dailyGoalTarget: 2,
       hapticsEnabled: true,
@@ -697,9 +695,11 @@ describe('app routes', () => {
       weeklyGoalTarget: 7,
     })
 
-    renderApp(['/'])
+    renderApp(['/progress'])
 
-    expect(screen.getByText('0/2 today')).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Goal tracker' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '0 / 2' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '0 / 7' })).toBeInTheDocument()
   })
 
   it('hides ad slots when premium is active on the device', () => {
@@ -708,7 +708,7 @@ describe('app routes', () => {
     renderApp(['/'])
 
     expect(screen.queryByText('Ad-supported free plan')).not.toBeInTheDocument()
-    expect(screen.getByText('Premium active')).toBeInTheDocument()
+    expect(screen.getAllByRole('link', { name: 'Premium' }).length).toBeGreaterThan(0)
   })
 
   it('shows local backup controls on the progress page', () => {

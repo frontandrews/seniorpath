@@ -11,9 +11,8 @@ export function Panel({ className, inset = false, ...props }: PanelProps) {
   return (
     <Card
       className={cn(
-        'block rounded-[1.6rem] border-[var(--retro-line-strong)] bg-[var(--retro-surface)] shadow-lg',
-        inset &&
-          'bg-[var(--retro-surface-muted)] shadow-[inset_0_0_0_2px_var(--retro-line),var(--shadow-lg)]',
+        'block border-[var(--retro-line-strong)] bg-[var(--retro-surface)]',
+        inset && 'bg-[var(--retro-surface-muted)]',
         className,
       )}
       {...props}
