@@ -7,7 +7,9 @@ import { CardNoteEditor } from '@/components/card-note-editor'
 import { FollowUpDrill } from '@/components/follow-up-drill'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { buttonVariants } from '@/components/ui/button-styles'
 import { Panel } from '@/components/ui/panel'
+import { getArticleHref } from '@/lib/article-links'
 import { ProgressMeter } from '@/components/ui/progress-meter'
 import { cardRevealVariants, springTransition } from '@/lib/motion'
 import {
@@ -17,6 +19,7 @@ import {
   type StudyFormat,
 } from '@/lib/study-session'
 import { getTopicLabel } from '@/lib/topic-labels'
+import { cn } from '@/lib/utils'
 import { useProgress } from '@/state/progress-context'
 
 type StudySessionPlayerProps = {
@@ -131,6 +134,9 @@ export function StudySessionPlayer({
   const isInterviewMode = format === 'interview'
   const isRevealLocked = isInterviewMode && interviewSecondsLeft > 0 && !isAnswerVisible
   const answerLabel = isInterviewMode ? 'Strong answer' : 'Answer'
+  const articleHref = currentCard.learnMoreSlug
+    ? getArticleHref(currentCard.learnMoreSlug)
+    : null
 
   return (
     <section className="space-y-5">
@@ -238,7 +244,7 @@ export function StudySessionPlayer({
                       prompts={currentCard.followUps}
                     />
                   ) : null}
-                  {currentCard.learnMore || currentCard.exampleCode ? (
+                  {currentCard.learnMore || currentCard.exampleCode || articleHref ? (
                     <div className="rounded-[1rem] border border-[var(--retro-line)] bg-[var(--retro-bg-strong)]">
                       <button
                         aria-expanded={isLearnMoreOpen}
@@ -273,6 +279,21 @@ export function StudySessionPlayer({
                               <pre className="mt-3 overflow-x-auto rounded-[1rem] border border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.03)] p-4 text-xs leading-6 text-white/90">
                                 <code>{currentCard.exampleCode}</code>
                               </pre>
+                            </div>
+                          ) : null}
+                          {articleHref ? (
+                            <div className={currentCard.learnMore || currentCard.exampleCode ? 'mt-4' : ''}>
+                              <a
+                                className={cn(
+                                  buttonVariants({ size: 'sm', variant: 'secondary' }),
+                                  'w-full sm:w-auto',
+                                )}
+                                href={articleHref}
+                                rel="noreferrer"
+                                target="_blank"
+                              >
+                                Read full article
+                              </a>
                             </div>
                           ) : null}
                         </div>

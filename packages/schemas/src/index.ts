@@ -18,6 +18,7 @@ export const flashcardSchema = z.object({
   expectedAnswer: z.string().min(1),
   keyPoints: z.array(z.string().min(1)).min(1),
   learnMore: z.string().min(1).optional(),
+  learnMoreSlug: z.string().min(1).optional(),
   exampleCode: z.string().min(1).optional(),
   exampleLanguage: z.string().min(1).optional(),
   commonTraps: z.array(z.string().min(1)).default([]),

@@ -228,6 +228,10 @@ describe('app routes', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Code example')).toBeInTheDocument()
     expect(screen.getByText(/const visibleUsers = users\.filter/i)).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Read full article' })).toHaveAttribute(
+      'href',
+      '/blog/react-derived-state-without-extra-bugs',
+    )
   })
 
   it('runs interview mode with a timer gate and interview-specific rating labels', async () => {
