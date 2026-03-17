@@ -85,31 +85,15 @@ pre {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.75rem;
   padding: 0.7rem 0.85rem;
-}
-
-.site-brand {
-  display: flex;
-  align-items: center;
-  min-height: 2.5rem;
-}
-
-.site-brand__eyebrow {
-  display: inline-flex;
-  align-items: center;
-  min-height: 2.3rem;
-  font-size: 0.8rem;
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--site-line-strong);
 }
 
 .site-nav {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.55rem;
 }
 
@@ -199,6 +183,7 @@ pre {
 .meta-list {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 0.65rem;
 }
 
@@ -364,6 +349,7 @@ pre {
   display: grid;
   gap: 1rem;
   margin-bottom: 1rem;
+  justify-items: center;
 }
 
 .tree-controls--compact {
@@ -615,8 +601,9 @@ pre {
 .page-toolbar__intro {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.2rem;
+  text-align: center;
 }
 
 .page-toolbar__copy {
