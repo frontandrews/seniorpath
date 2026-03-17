@@ -1,24 +1,33 @@
-import type { ProgressStore } from '@prepdeck/schemas'
-import { userDataStoreSchema } from '@prepdeck/schemas'
+import type { ProgressStore, SessionHistoryStore } from '@prepdeck/schemas'
+import { sessionHistoryStoreSchema, userDataStoreSchema } from '@prepdeck/schemas'
+
+import { normalizeSessionHistoryStore } from '@/lib/session-history'
 
 export const USER_DATA_BACKUP_APP = 'prepdeck'
-export const USER_DATA_BACKUP_VERSION = 1
+export const USER_DATA_BACKUP_VERSION = 2
+
+export type LocalDataSnapshot = {
+  progressStore: ProgressStore
+  sessionHistoryStore: SessionHistoryStore
+}
 
 export type UserDataBackup = {
   app: typeof USER_DATA_BACKUP_APP
   exportedAt: string
+  sessionHistory: SessionHistoryStore
   userData: ProgressStore
   version: typeof USER_DATA_BACKUP_VERSION
 }
 
 export function createUserDataBackup(
-  store: ProgressStore,
+  snapshot: LocalDataSnapshot,
   exportedAt: string = new Date().toISOString(),
 ): UserDataBackup {
   return {
     app: USER_DATA_BACKUP_APP,
     exportedAt,
-    userData: store,
+    sessionHistory: snapshot.sessionHistoryStore,
+    userData: snapshot.progressStore,
     version: USER_DATA_BACKUP_VERSION,
   }
 }
@@ -32,18 +41,37 @@ export function getUserDataBackupFilename(date: Date = new Date()): string {
 }
 
 export function serializeUserDataBackup(
-  store: ProgressStore,
+  snapshot: LocalDataSnapshot,
   exportedAt?: string,
 ): string {
-  return JSON.stringify(createUserDataBackup(store, exportedAt), null, 2)
+  return JSON.stringify(createUserDataBackup(snapshot, exportedAt), null, 2)
 }
 
-export function parseUserDataBackup(raw: string): ProgressStore {
-  const parsed = JSON.parse(raw) as Partial<UserDataBackup>
-
-  if (parsed.app !== USER_DATA_BACKUP_APP || parsed.version !== USER_DATA_BACKUP_VERSION) {
-    throw new Error('This file is not a Prepdeck backup.')
+export function parseUserDataBackup(raw: string): LocalDataSnapshot {
+  const parsed = JSON.parse(raw) as {
+    app?: string
+    sessionHistory?: unknown
+    userData?: unknown
+    version?: number
   }
 
-  return userDataStoreSchema.parse(parsed.userData)
+  if (parsed.app === USER_DATA_BACKUP_APP && parsed.version === USER_DATA_BACKUP_VERSION) {
+    return {
+      progressStore: userDataStoreSchema.parse(parsed.userData),
+      sessionHistoryStore: normalizeSessionHistoryStore(
+        sessionHistoryStoreSchema.parse(parsed.sessionHistory),
+      ),
+    }
+  }
+
+  if (parsed.app === USER_DATA_BACKUP_APP && parsed.version === 1) {
+    return {
+      progressStore: userDataStoreSchema.parse(parsed.userData),
+      sessionHistoryStore: sessionHistoryStoreSchema.parse({
+        version: 1,
+      }),
+    }
+  }
+
+  throw new Error('This file is not a Prepdeck backup.')
 }

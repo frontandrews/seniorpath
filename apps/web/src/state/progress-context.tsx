@@ -1,4 +1,8 @@
-import type { ProgressStatus, ProgressStore } from '@prepdeck/schemas'
+import type {
+  ProgressStatus,
+  ProgressStore,
+  SessionHistoryStore,
+} from '@prepdeck/schemas'
 import {
   type PropsWithChildren,
   createContext,
@@ -21,28 +25,50 @@ import {
   setLearnedToUnseen as setLearnedToUnseenInStore,
   writeProgressStore,
 } from '@/lib/progress'
+import {
+  normalizeSessionHistoryStore,
+  readSessionHistoryStore,
+  recordCompletedSession as recordCompletedSessionInStore,
+  resetSessionHistory as resetSessionHistoryInStore,
+  type SessionHistoryInput,
+  writeSessionHistoryStore,
+} from '@/lib/session-history'
+
+type LocalDataSnapshot = {
+  progressStore: ProgressStore
+  sessionHistoryStore: SessionHistoryStore
+}
 
 type ProgressContextValue = {
   clearCardNote: (deckId: string, cardId: string) => void
   getCardNote: (deckId: string, cardId: string) => string
   progressStore: ProgressStore
+  recordCompletedSession: (session: SessionHistoryInput) => void
   rememberDeckPosition: (deckId: string, cardId: string | null) => void
-  replaceProgressStore: (store: ProgressStore) => void
+  replaceLocalData: (snapshot: LocalDataSnapshot) => void
   resetAllProgress: () => void
   resetDeckProgress: (deckId: string) => void
   setCardNote: (deckId: string, cardId: string, note: string) => void
   setCardStatus: (deckId: string, cardId: string, status: ProgressStatus) => void
   setLearnedToUnseen: (deckId: string, cardId: string) => void
+  sessionHistoryStore: SessionHistoryStore
 }
 
 const ProgressContext = createContext<ProgressContextValue | null>(null)
 
 export function ProgressProvider({ children }: PropsWithChildren) {
   const [progressStore, setProgressStore] = useState<ProgressStore>(() => readProgressStore())
+  const [sessionHistoryStore, setSessionHistoryStore] = useState<SessionHistoryStore>(() =>
+    readSessionHistoryStore(),
+  )
 
   useEffect(() => {
     writeProgressStore(progressStore)
   }, [progressStore])
+
+  useEffect(() => {
+    writeSessionHistoryStore(sessionHistoryStore)
+  }, [sessionHistoryStore])
 
   const rememberDeckPosition = useCallback((deckId: string, cardId: string | null) => {
     setProgressStore((currentStore) =>
@@ -74,10 +100,12 @@ export function ProgressProvider({ children }: PropsWithChildren) {
 
   const resetAllProgress = useCallback(() => {
     setProgressStore(resetAllProgressInStore())
+    setSessionHistoryStore(resetSessionHistoryInStore())
   }, [])
 
-  const replaceProgressStore = useCallback((store: ProgressStore) => {
-    setProgressStore(store)
+  const replaceLocalData = useCallback((snapshot: LocalDataSnapshot) => {
+    setProgressStore(snapshot.progressStore)
+    setSessionHistoryStore(normalizeSessionHistoryStore(snapshot.sessionHistoryStore))
   }, [])
 
   const setLearnedToUnseen = useCallback((deckId: string, cardId: string) => {
@@ -88,30 +116,40 @@ export function ProgressProvider({ children }: PropsWithChildren) {
     setProgressStore((currentStore) => clearCardNoteInStore(currentStore, deckId, cardId))
   }, [])
 
+  const recordCompletedSession = useCallback((session: SessionHistoryInput) => {
+    setSessionHistoryStore((currentStore) =>
+      recordCompletedSessionInStore(currentStore, session),
+    )
+  }, [])
+
   const value = useMemo(
     () => ({
       clearCardNote,
       getCardNote,
       progressStore,
+      recordCompletedSession,
       rememberDeckPosition,
-      replaceProgressStore,
+      replaceLocalData,
       resetAllProgress,
       resetDeckProgress,
       setCardNote,
       setCardStatus,
       setLearnedToUnseen,
+      sessionHistoryStore,
     }),
     [
       clearCardNote,
       getCardNote,
       progressStore,
+      recordCompletedSession,
       rememberDeckPosition,
-      replaceProgressStore,
+      replaceLocalData,
       resetAllProgress,
       resetDeckProgress,
       setCardNote,
       setCardStatus,
       setLearnedToUnseen,
+      sessionHistoryStore,
     ],
   )
 

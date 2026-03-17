@@ -1,5 +1,4 @@
 import type { ChangeEvent } from 'react'
-import type { ProgressStore } from '@prepdeck/schemas'
 import { useRef, useState } from 'react'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -8,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
 import {
   getUserDataBackupFilename,
+  type LocalDataSnapshot,
   parseUserDataBackup,
   serializeUserDataBackup,
 } from '@/lib/user-data-backup'
@@ -23,16 +23,21 @@ type FeedbackState = {
 }
 
 export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
-  const { progressStore, replaceProgressStore } = useProgress()
+  const { progressStore, replaceLocalData, sessionHistoryStore } = useProgress()
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const [feedback, setFeedback] = useState<FeedbackState | null>(null)
   const [pendingImport, setPendingImport] = useState<{
     fileName: string
-    store: ProgressStore
+    snapshot: LocalDataSnapshot
   } | null>(null)
 
   const handleExport = () => {
-    const blob = new Blob([serializeUserDataBackup(progressStore)], {
+    const blob = new Blob([
+      serializeUserDataBackup({
+        progressStore,
+        sessionHistoryStore,
+      }),
+    ], {
       type: 'application/json',
     })
     const url = window.URL.createObjectURL(blob)
@@ -63,10 +68,10 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
     }
 
     try {
-      const store = parseUserDataBackup(await file.text())
+      const snapshot = parseUserDataBackup(await file.text())
       setPendingImport({
         fileName: file.name,
-        store,
+        snapshot,
       })
       setFeedback(null)
     } catch {
@@ -83,7 +88,7 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
       return
     }
 
-    replaceProgressStore(pendingImport.store)
+    replaceLocalData(pendingImport.snapshot)
     setPendingImport(null)
     setFeedback({
       text: 'Backup restored on this device.',
@@ -137,8 +142,9 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
             What gets saved
           </p>
           <p className="mt-3 text-sm leading-6 text-white/80">
-            Card status, weak-card progress, last studied position, and every personal
-            note. Premium preview state stays local and is not included in the backup.
+            Card status, weak-card progress, last studied position, personal notes, and
+            session momentum. Premium preview state stays local and is not included in
+            the backup.
           </p>
         </Panel>
 
@@ -160,7 +166,7 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
         confirmLabel="Restore backup"
         description={
           pendingImport
-            ? `${pendingImport.fileName} will replace the current local statuses and notes on this device.`
+            ? `${pendingImport.fileName} will replace the current local progress, notes, and session history on this device.`
             : ''
         }
         isOpen={Boolean(pendingImport)}

@@ -62,6 +62,17 @@ export const progressStatusSchema = z.enum([
   'not_learned',
 ])
 
+export const sessionHistoryKindSchema = z.enum([
+  'deck',
+  'daily_queue',
+  'mock_interview',
+])
+
+export const sessionHistoryFormatSchema = z.enum([
+  'flashcards',
+  'interview',
+])
+
 export const progressV1DeckSchema = z.object({
   lastCardId: z.string().nullable(),
   lastStudiedAt: z.string().nullable(),
@@ -85,14 +96,38 @@ export const userDataStoreSchema = z.object({
   decks: z.record(z.string(), deckUserDataSchema),
 })
 
+export const sessionHistoryEntrySchema = z.object({
+  id: z.string().min(1),
+  completedAt: z.string().min(1),
+  kind: sessionHistoryKindSchema,
+  format: sessionHistoryFormatSchema,
+  sessionLabel: z.string().min(1),
+  scopeLabel: z.string().min(1),
+  deckId: z.string().nullable(),
+  deckTitle: z.string().nullable(),
+  cardCount: z.number().int().positive(),
+  learnedCount: z.number().int().nonnegative(),
+  partialCount: z.number().int().nonnegative(),
+  notLearnedCount: z.number().int().nonnegative(),
+})
+
+export const sessionHistoryStoreSchema = z.object({
+  version: z.literal(1),
+  sessions: z.array(sessionHistoryEntrySchema).default([]),
+})
+
 export type Flashcard = z.infer<typeof flashcardSchema>
 export type Deck = z.infer<typeof deckSchema>
 export type DeckManifest = z.infer<typeof deckManifestSchema>
 export type DeckManifestEntry = z.infer<typeof deckManifestEntrySchema>
 export type ProgressStatus = z.infer<typeof progressStatusSchema>
+export type SessionHistoryKind = z.infer<typeof sessionHistoryKindSchema>
+export type SessionHistoryFormat = z.infer<typeof sessionHistoryFormatSchema>
 export type ProgressV1Deck = z.infer<typeof progressV1DeckSchema>
 export type ProgressV1Store = z.infer<typeof progressV1StoreSchema>
 export type DeckUserData = z.infer<typeof deckUserDataSchema>
 export type UserDataStore = z.infer<typeof userDataStoreSchema>
+export type SessionHistoryEntry = z.infer<typeof sessionHistoryEntrySchema>
+export type SessionHistoryStore = z.infer<typeof sessionHistoryStoreSchema>
 export type DeckProgress = DeckUserData
 export type ProgressStore = UserDataStore
