@@ -57,6 +57,31 @@ describe('app routes', () => {
     expect(within(deckLibrary).queryByText('React Rendering Core')).not.toBeInTheDocument()
   })
 
+  it('filters the deck library by search and advanced status chips', async () => {
+    const user = userEvent.setup()
+    const deck = getReactDeck()
+    let store = createEmptyProgressStore()
+    store = setCardStatus(store, deck.id, deck.cards[1].id, 'partial')
+    store = setCardNote(store, deck.id, deck.cards[1].id, 'Talk about broad rerenders')
+    seedProgress(store)
+
+    renderApp(['/'])
+
+    const searchField = screen.getByLabelText('Search decks')
+    await user.type(searchField, 'node')
+
+    const deckLibrary = screen.getByRole('region', { name: 'Deck library' })
+    expect(within(deckLibrary).getByText('Node Runtime Core')).toBeInTheDocument()
+    expect(within(deckLibrary).queryByText('React Rendering Core')).not.toBeInTheDocument()
+
+    await user.clear(searchField)
+    await user.click(screen.getByRole('button', { name: 'Has notes' }))
+
+    expect(within(deckLibrary).getByText('React Rendering Core')).toBeInTheDocument()
+    expect(within(deckLibrary).getByText('1 note')).toBeInTheDocument()
+    expect(within(deckLibrary).queryByText('Node Runtime Core')).not.toBeInTheDocument()
+  })
+
   it('renders deck detail counts and actions', () => {
     const deck = getReactDeck()
     let store = createEmptyProgressStore()

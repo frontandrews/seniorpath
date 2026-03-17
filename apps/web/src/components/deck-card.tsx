@@ -9,6 +9,8 @@ import { getTopicLabel } from '@/lib/topic-labels'
 type DeckCardProps = {
   detailHref: string
   learnedCount: number
+  noteCount?: number
+  reviewDebt?: number
   summary: DeckManifestEntry
   totalCards: number
 }
@@ -16,6 +18,8 @@ type DeckCardProps = {
 export function DeckCard({
   detailHref,
   learnedCount,
+  noteCount = 0,
+  reviewDebt = 0,
   summary,
   totalCards,
 }: DeckCardProps) {
@@ -31,6 +35,12 @@ export function DeckCard({
         <Badge tone="success">
           {learnedCount} / {totalCards} learned
         </Badge>
+        {reviewDebt > 0 ? (
+          <Badge tone="warning">
+            {reviewDebt} {reviewDebt === 1 ? 'needs' : 'need'} review
+          </Badge>
+        ) : null}
+        {noteCount > 0 ? <Badge tone="accent">{noteCount} note{noteCount === 1 ? '' : 's'}</Badge> : null}
       </div>
       <div className="space-y-2">
         <div className="flex items-center justify-between text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--retro-ink-soft)]">

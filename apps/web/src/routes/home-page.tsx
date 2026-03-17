@@ -1,4 +1,4 @@
-import type { Deck, DeckManifestEntry } from '@prepdeck/schemas'
+import type { DeckManifestEntry } from '@prepdeck/schemas'
 import { getDeckById, getDecksByTopic } from '@prepdeck/content'
 import { useMemo, useState } from 'react'
 
@@ -11,6 +11,11 @@ import { Button } from '@/components/ui/button'
 import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
 import { ProgressMeter } from '@/components/ui/progress-meter'
+import {
+  filterDeckLibraryRecords,
+  type DeckLibraryFilters,
+  type DeckLibraryRecord,
+} from '@/lib/deck-library'
 import { getMasteryPercent, getMasterySnapshot } from '@/lib/mastery'
 import {
   combineDeckCounts,
@@ -22,15 +27,13 @@ import { getSessionPresets, type SessionPreset } from '@/lib/session-presets'
 import { getTopicLabel } from '@/lib/topic-labels'
 import { useProgress } from '@/state/progress-context'
 
-type DeckRecord = {
-  counts: DeckCounts
-  deck: Deck
-  summary: DeckManifestEntry
-}
-
 export function HomePage() {
   const { progressStore, resetAllProgress } = useProgress()
   const [isResetAllOpen, setIsResetAllOpen] = useState(false)
+  const [libraryDifficulty, setLibraryDifficulty] =
+    useState<DeckLibraryFilters['difficulty']>('all')
+  const [libraryQuery, setLibraryQuery] = useState('')
+  const [libraryStatus, setLibraryStatus] = useState<DeckLibraryFilters['status']>('all')
   const [selectedTopic, setSelectedTopic] = useState<'all' | string>('all')
   const decksByTopic = getDecksByTopic()
   const topicEntries = Object.entries(decksByTopic)
@@ -46,14 +49,18 @@ export function HomePage() {
               return null
             }
 
+            const counts = getDeckCounts(progressStore, deck)
+
             return {
-              counts: getDeckCounts(progressStore, deck),
+              counts,
               deck,
+              noteCount: Object.keys(progressStore.decks[summary.id]?.notes ?? {}).length,
+              reviewDebt: counts.partial + counts.notLearned,
               summary,
             }
           }),
         )
-        .filter((record): record is DeckRecord => Boolean(record)),
+        .filter((record): record is DeckLibraryRecord => record !== null),
     [progressStore, topicEntries],
   )
 
@@ -68,7 +75,12 @@ export function HomePage() {
     deckRecords,
     starterRecord?.deck.id ?? null,
   )
-  const visibleDeckRecords = getVisibleDeckRecords(deckRecords, selectedTopic)
+  const visibleDeckRecords = filterDeckLibraryRecords(deckRecords, {
+    difficulty: libraryDifficulty,
+    query: libraryQuery,
+    selectedTopic,
+    status: libraryStatus,
+  })
   const sessionPresets = getSessionPresets(deckRecords)
   const masterySnapshot = getMasterySnapshot(deckRecords, progressStore)
   const topicCards = topicEntries.map(([topic, summaries]) => {
@@ -304,17 +316,111 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {visibleDeckRecords.map((record) => (
-            <DeckCard
-              detailHref={`/decks/${record.summary.id}`}
-              key={record.summary.id}
-              learnedCount={record.counts.learned}
-              summary={record.summary}
-              totalCards={record.counts.total}
-            />
-          ))}
-        </div>
+        <Panel className="mb-4 p-4">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+            <div>
+              <label
+                className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]"
+                htmlFor="deck-library-search"
+              >
+                Search decks
+              </label>
+              <input
+                className="mt-3 min-h-12 w-full rounded-[0.95rem] border-2 border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.04)] px-4 text-sm text-[var(--retro-ink)] outline-none transition placeholder:text-white/40 focus:border-[var(--retro-line-strong)]"
+                id="deck-library-search"
+                onChange={(event) => setLibraryQuery(event.target.value)}
+                placeholder="React, queues, ownership, context..."
+                type="text"
+                value={libraryQuery}
+              />
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+                  Difficulty
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {(['all', 'easy', 'medium', 'hard'] as const).map((difficulty) => (
+                    <Button
+                      key={difficulty}
+                      onClick={() => setLibraryDifficulty(difficulty)}
+                      size="sm"
+                      type="button"
+                      variant={libraryDifficulty === difficulty ? 'primary' : 'ghost'}
+                    >
+                      {difficulty === 'all' ? 'All' : difficulty}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+                  Status
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {[
+                    ['all', 'All'],
+                    ['needs_review', 'Needs review'],
+                    ['has_notes', 'Has notes'],
+                    ['started', 'Started'],
+                  ].map(([status, label]) => (
+                    <Button
+                      key={status}
+                      onClick={() => setLibraryStatus(status as DeckLibraryFilters['status'])}
+                      size="sm"
+                      type="button"
+                      variant={libraryStatus === status ? 'primary' : 'ghost'}
+                    >
+                      {label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </Panel>
+
+        {visibleDeckRecords.length > 0 ? (
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {visibleDeckRecords.map((record) => (
+              <DeckCard
+                detailHref={`/decks/${record.summary.id}`}
+                key={record.summary.id}
+                learnedCount={record.counts.learned}
+                noteCount={record.noteCount}
+                reviewDebt={record.reviewDebt}
+                summary={record.summary}
+                totalCards={record.counts.total}
+              />
+            ))}
+          </div>
+        ) : (
+          <Panel className="p-5">
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+              No match
+            </p>
+            <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">
+              No decks match the current library filters.
+            </h3>
+            <p className="mt-3 text-sm leading-6 text-white/80">
+              Clear the search or filter chips to reopen the full deck library.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <Button
+                onClick={() => {
+                  setLibraryDifficulty('all')
+                  setLibraryQuery('')
+                  setLibraryStatus('all')
+                  setSelectedTopic('all')
+                }}
+                type="button"
+                variant="secondary"
+              >
+                Clear library filters
+              </Button>
+            </div>
+          </Panel>
+        )}
       </section>
 
       <section className="mt-6">
@@ -467,29 +573,7 @@ function SummaryStat({ label, value }: { label: string; value: string }) {
   )
 }
 
-function getVisibleDeckRecords(records: DeckRecord[], selectedTopic: string) {
-  const nextRecords =
-    selectedTopic === 'all'
-      ? records
-      : records.filter((record) => record.summary.topic === selectedTopic)
-
-  return [...nextRecords].sort((a, b) => {
-    const aUrgency = a.counts.notLearned * 3 + a.counts.partial * 2 + (a.counts.unseen > 0 ? 1 : 0)
-    const bUrgency = b.counts.notLearned * 3 + b.counts.partial * 2 + (b.counts.unseen > 0 ? 1 : 0)
-
-    if (aUrgency !== bUrgency) {
-      return bUrgency - aUrgency
-    }
-
-    if (a.summary.estimatedMinutes !== b.summary.estimatedMinutes) {
-      return a.summary.estimatedMinutes - b.summary.estimatedMinutes
-    }
-
-    return a.summary.title.localeCompare(b.summary.title)
-  })
-}
-
-function getWeakestDeckRecord(records: DeckRecord[]) {
+function getWeakestDeckRecord(records: DeckLibraryRecord[]) {
   return [...records]
     .filter((record) => record.counts.partial + record.counts.notLearned > 0)
     .sort((a, b) => {
@@ -504,7 +588,7 @@ function getWeakestDeckRecord(records: DeckRecord[]) {
     })[0] ?? null
 }
 
-function getStarterDeckRecord(records: DeckRecord[], excludeDeckId?: string | null) {
+function getStarterDeckRecord(records: DeckLibraryRecord[], excludeDeckId?: string | null) {
   return [...records]
     .filter((record) => record.counts.seen === 0 && record.deck.id !== excludeDeckId)
     .sort((a, b) => {
@@ -522,7 +606,10 @@ function getStarterDeckRecord(records: DeckRecord[], excludeDeckId?: string | nu
     })[0] ?? null
 }
 
-function getPrimaryAction(latestRecord: DeckRecord | null, starterRecord: DeckRecord | null) {
+function getPrimaryAction(
+  latestRecord: DeckLibraryRecord | null,
+  starterRecord: DeckLibraryRecord | null,
+) {
   if (latestRecord && !latestRecord.counts.allSeen) {
     return {
       detail: `Resume ${latestRecord.deck.title} without losing your last position or note.`,
@@ -562,7 +649,10 @@ function getPrimaryAction(latestRecord: DeckRecord | null, starterRecord: DeckRe
   }
 }
 
-function getSecondaryAction(weakestRecord: DeckRecord | null, starterRecord: DeckRecord | null) {
+function getSecondaryAction(
+  weakestRecord: DeckLibraryRecord | null,
+  starterRecord: DeckLibraryRecord | null,
+) {
   if (weakestRecord) {
     return {
       detail: `${weakestRecord.counts.partial + weakestRecord.counts.notLearned} cards still need work in ${weakestRecord.deck.title}.`,
