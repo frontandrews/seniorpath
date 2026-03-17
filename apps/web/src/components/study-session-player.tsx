@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { buttonVariants } from '@/components/ui/button-styles'
 import { Panel } from '@/components/ui/panel'
 import { getArticleHref } from '@/lib/article-links'
+import { triggerHapticFeedback } from '@/lib/haptics'
 import { ProgressMeter } from '@/components/ui/progress-meter'
 import { useScreenWakeLock } from '@/hooks/use-screen-wake-lock'
 import { cardRevealVariants, springTransition } from '@/lib/motion'
@@ -102,6 +103,17 @@ export function StudySessionPlayer({
   }
 
   const handleRateCard = (status: Exclude<ProgressStatus, 'unseen'>) => {
+    triggerHapticFeedback(
+      status === 'learned'
+        ? 'rate_learned'
+        : status === 'partial'
+          ? 'rate_partial'
+          : 'rate_not_learned',
+      {
+        enabled: preferences.hapticsEnabled,
+      },
+    )
+
     const nextSessionRatings = {
       ...sessionRatings,
       [status]: sessionRatings[status] + 1,
@@ -122,6 +134,9 @@ export function StudySessionPlayer({
         partialCount: nextSessionRatings.partial,
         scopeLabel,
         sessionLabel,
+      })
+      triggerHapticFeedback('session_complete', {
+        enabled: preferences.hapticsEnabled,
       })
       onComplete()
       return
@@ -156,6 +171,9 @@ export function StudySessionPlayer({
       return
     }
 
+    triggerHapticFeedback('reveal', {
+      enabled: preferences.hapticsEnabled,
+    })
     setIsAnswerVisible(true)
   }
 

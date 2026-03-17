@@ -6,6 +6,7 @@ export type InterviewTimerPreset = 'deep' | 'short' | 'standard'
 
 export type PreferencesState = {
   dailyGoalTarget: number
+  hapticsEnabled: boolean
   interviewTimerPreset: InterviewTimerPreset
   keepScreenAwake: boolean
   version: 1
@@ -14,6 +15,7 @@ export type PreferencesState = {
 
 const DEFAULT_PREFERENCES_STATE: PreferencesState = {
   dailyGoalTarget: 1,
+  hapticsEnabled: true,
   interviewTimerPreset: 'standard',
   keepScreenAwake: true,
   version: 1,
@@ -68,6 +70,7 @@ export function normalizePreferencesState(value: unknown): PreferencesState {
     parsed.version === 1 &&
     isValidGoalTarget(parsed.dailyGoalTarget) &&
     isValidGoalTarget(parsed.weeklyGoalTarget) &&
+    isValidHapticsEnabled(parsed.hapticsEnabled) &&
     isValidInterviewTimerPreset(parsed.interviewTimerPreset) &&
     isValidKeepScreenAwake(parsed.keepScreenAwake)
   ) {
@@ -89,5 +92,9 @@ function isValidInterviewTimerPreset(value: unknown): value is InterviewTimerPre
 }
 
 function isValidKeepScreenAwake(value: unknown): value is boolean | undefined {
+  return typeof value === 'boolean' || typeof value === 'undefined'
+}
+
+function isValidHapticsEnabled(value: unknown): value is boolean | undefined {
   return typeof value === 'boolean' || typeof value === 'undefined'
 }

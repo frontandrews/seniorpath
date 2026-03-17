@@ -45,6 +45,7 @@ describe('user data backup helpers', () => {
       {
         preferencesState: {
           dailyGoalTarget: 2,
+          hapticsEnabled: true,
           interviewTimerPreset: 'deep',
           keepScreenAwake: false,
           version: 1,
@@ -60,6 +61,7 @@ describe('user data backup helpers', () => {
     expect(restored).toEqual({
       preferencesState: {
         dailyGoalTarget: 2,
+        hapticsEnabled: true,
         interviewTimerPreset: 'deep',
         keepScreenAwake: false,
         version: 1,

@@ -224,6 +224,7 @@ describe('app routes', () => {
     await user.click(screen.getByRole('button', { name: '2 sessions' }))
     await user.click(screen.getByRole('button', { name: '7 sessions' }))
     await user.click(screen.getByRole('button', { name: 'Use Deep' }))
+    await user.click(screen.getByRole('button', { name: 'Haptics off' }))
     await user.click(screen.getByRole('button', { name: 'Let it sleep' }))
 
     const primaryNav = screen.getByRole('navigation', { name: 'Primary' })
@@ -675,6 +676,7 @@ describe('app routes', () => {
   it('applies saved goal targets to the home and progress summaries', () => {
     seedPreferences({
       dailyGoalTarget: 2,
+      hapticsEnabled: true,
       interviewTimerPreset: 'standard',
       keepScreenAwake: true,
       version: 1,

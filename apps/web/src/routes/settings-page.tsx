@@ -32,6 +32,7 @@ export function SettingsPage() {
     preferences,
     resetPreferences,
     setDailyGoalTarget,
+    setHapticsEnabled,
     setInterviewTimerPreset,
     setKeepScreenAwake,
     setWeeklyGoalTarget,
@@ -127,6 +128,28 @@ export function SettingsPage() {
               </div>
             </Panel>
           ))}
+        </div>
+      </SettingCard>
+
+      <SettingCard
+        description="Use light vibration when cards flip, ratings land, and sessions complete on supported devices."
+        title="Haptics"
+      >
+        <div className="flex flex-wrap gap-3">
+          <Button
+            onClick={() => setHapticsEnabled(true)}
+            type="button"
+            variant={preferences.hapticsEnabled ? 'primary' : 'ghost'}
+          >
+            Haptics on
+          </Button>
+          <Button
+            onClick={() => setHapticsEnabled(false)}
+            type="button"
+            variant={!preferences.hapticsEnabled ? 'secondary' : 'ghost'}
+          >
+            Haptics off
+          </Button>
         </div>
       </SettingCard>
 

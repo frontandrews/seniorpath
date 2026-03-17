@@ -21,6 +21,7 @@ type PreferencesContextValue = {
   replacePreferences: (state: PreferencesState) => void
   resetPreferences: () => void
   setDailyGoalTarget: (target: number) => void
+  setHapticsEnabled: (enabled: boolean) => void
   setInterviewTimerPreset: (preset: InterviewTimerPreset) => void
   setKeepScreenAwake: (enabled: boolean) => void
   setWeeklyGoalTarget: (target: number) => void
@@ -46,6 +47,13 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
     setPreferences((current) => ({
       ...current,
       weeklyGoalTarget: target,
+    }))
+  }, [])
+
+  const setHapticsEnabled = useCallback((enabled: boolean) => {
+    setPreferences((current) => ({
+      ...current,
+      hapticsEnabled: enabled,
     }))
   }, [])
 
@@ -77,6 +85,7 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
       replacePreferences,
       resetPreferences,
       setDailyGoalTarget,
+      setHapticsEnabled,
       setInterviewTimerPreset,
       setKeepScreenAwake,
       setWeeklyGoalTarget,
@@ -86,6 +95,7 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
       replacePreferences,
       resetPreferences,
       setDailyGoalTarget,
+      setHapticsEnabled,
       setInterviewTimerPreset,
       setKeepScreenAwake,
       setWeeklyGoalTarget,

@@ -13,6 +13,7 @@ describe('preferences', () => {
   it('persists valid local preferences', () => {
     const state = {
       dailyGoalTarget: 2,
+      hapticsEnabled: false,
       interviewTimerPreset: 'deep' as const,
       keepScreenAwake: false,
       version: 1 as const,
@@ -29,6 +30,7 @@ describe('preferences', () => {
       'prepdeck.preferences.v1',
       JSON.stringify({
         dailyGoalTarget: 0,
+        hapticsEnabled: 'yes',
         interviewTimerPreset: 'fast',
         keepScreenAwake: 'yes',
         version: 1,
@@ -44,6 +46,7 @@ describe('preferences', () => {
       'prepdeck.preferences.v1',
       JSON.stringify({
         dailyGoalTarget: 2,
+        hapticsEnabled: true,
         interviewTimerPreset: 'standard',
         version: 1,
         weeklyGoalTarget: 7,
@@ -52,6 +55,7 @@ describe('preferences', () => {
 
     expect(readPreferencesState()).toEqual({
       dailyGoalTarget: 2,
+      hapticsEnabled: true,
       interviewTimerPreset: 'standard',
       keepScreenAwake: true,
       version: 1,
