@@ -7,6 +7,7 @@ import { sortGuides } from '../../lib/guide-tree'
 
 const posts = sortGuides(await getCollection('blog'))
 const categories = [...new Set(posts.map((post) => post.data.category))]
+const topics = [...new Set(posts.map((post) => post.data.topic).filter(Boolean))]
 ---
 
 <BaseLayout
@@ -32,15 +33,77 @@ const categories = [...new Set(posts.map((post) => post.data.category))]
   </section>
 
   <section class="section">
-    <div class="meta-list">
-      {categories.map((category) => (
-        <span class="badge">{category}</span>
-      ))}
+    <div class="panel guide-directory-controls">
+      <div class="guide-directory-controls__header">
+        <div>
+          <p class="section-eyebrow">Guide directory</p>
+          <h2 class="section-heading section-heading--compact">Search and filter</h2>
+        </div>
+        <p class="guide-directory-controls__count" data-guide-count>
+          Showing {posts.length} guides
+        </p>
+      </div>
+
+      <div class="guide-directory-controls__grid">
+        <label class="guide-directory-search">
+          <span class="section-eyebrow">Search</span>
+          <input
+            class="guide-directory-search__input"
+            data-guide-search
+            name="search"
+            placeholder="React, RAG, standups, scope..."
+            type="search"
+          />
+        </label>
+
+        <div>
+          <p class="section-eyebrow">Category</p>
+          <div class="meta-list" data-guide-filter-group="category">
+            <button class="guide-filter-chip guide-filter-chip--active" data-filter-value="all" type="button">
+              All
+            </button>
+            {categories.map((category) => (
+              <button class="guide-filter-chip" data-filter-value={category} type="button">
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p class="section-eyebrow">Topic</p>
+          <div class="meta-list" data-guide-filter-group="topic">
+            <button class="guide-filter-chip guide-filter-chip--active" data-filter-value="all" type="button">
+              All
+            </button>
+            {topics.map((topic) => (
+              <button class="guide-filter-chip" data-filter-value={topic} type="button">
+                {topic}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p class="section-eyebrow">Practice link</p>
+          <div class="meta-list" data-guide-filter-group="practice">
+            <button class="guide-filter-chip guide-filter-chip--active" data-filter-value="all" type="button">
+              All
+            </button>
+            <button class="guide-filter-chip" data-filter-value="with-practice" type="button">
+              Has practice deck
+            </button>
+            <button class="guide-filter-chip" data-filter-value="reading-only" type="button">
+              Reading only
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
   {categories.map((category) => (
-    <section class="section">
+    <section class="section" data-guide-section={category}>
       <h2 class="section-heading">{category}</h2>
       <p class="section-copy">
         Short guides you can read quickly, then turn into deliberate practice.
@@ -49,9 +112,109 @@ const categories = [...new Set(posts.map((post) => post.data.category))]
         {posts
           .filter((post) => post.data.category === category)
           .map((post) => (
-            <ArticleCard post={post} />
+            <div
+              data-guide-card
+              data-guide-category={post.data.category}
+              data-guide-has-practice={post.data.relatedDeckIds.length > 0 ? 'true' : 'false'}
+              data-guide-search={`${post.data.title} ${post.data.summary} ${post.data.category} ${post.data.topic ?? ''} ${post.data.tags.join(' ')} ${post.data.path.join(' ')}`.toLowerCase()}
+              data-guide-topic={post.data.topic ?? ''}
+            >
+              <ArticleCard post={post} />
+            </div>
           ))}
       </div>
     </section>
   ))}
+
+  <section class="section guide-directory-empty" data-guide-empty hidden>
+    <div class="panel">
+      <p class="section-eyebrow">No match</p>
+      <h2 class="section-heading section-heading--compact">No guides match the current filters.</h2>
+      <p class="section-copy">
+        Clear one filter or widen the search to reopen the full directory.
+      </p>
+    </div>
+  </section>
 </BaseLayout>
+
+<script is:inline>
+  const searchInput = document.querySelector('[data-guide-search]')
+  const guideCards = [...document.querySelectorAll('[data-guide-card]')]
+  const guideSections = [...document.querySelectorAll('[data-guide-section]')]
+  const countLabel = document.querySelector('[data-guide-count]')
+  const emptyState = document.querySelector('[data-guide-empty]')
+  const filters = {
+    category: 'all',
+    topic: 'all',
+    practice: 'all',
+  }
+
+  const applyFilters = () => {
+    let visibleCards = 0
+
+    guideCards.forEach((card) => {
+      const category = card.getAttribute('data-guide-category') ?? ''
+      const topic = card.getAttribute('data-guide-topic') ?? ''
+      const hasPractice = card.getAttribute('data-guide-has-practice') === 'true'
+      const searchText = card.getAttribute('data-guide-search') ?? ''
+      const query = (searchInput instanceof HTMLInputElement ? searchInput.value : '').trim().toLowerCase()
+
+      const matchesCategory = filters.category === 'all' || category === filters.category
+      const matchesTopic = filters.topic === 'all' || topic === filters.topic
+      const matchesPractice =
+        filters.practice === 'all' ||
+        (filters.practice === 'with-practice' && hasPractice) ||
+        (filters.practice === 'reading-only' && !hasPractice)
+      const matchesQuery = !query || searchText.includes(query)
+      const isVisible = matchesCategory && matchesTopic && matchesPractice && matchesQuery
+
+      card.toggleAttribute('hidden', !isVisible)
+
+      if (isVisible) {
+        visibleCards += 1
+      }
+    })
+
+    guideSections.forEach((section) => {
+      const visibleChildren = section.querySelectorAll('[data-guide-card]:not([hidden])').length
+      section.toggleAttribute('hidden', visibleChildren === 0)
+    })
+
+    if (countLabel) {
+      countLabel.textContent = `Showing ${visibleCards} guide${visibleCards === 1 ? '' : 's'}`
+    }
+
+    if (emptyState) {
+      emptyState.toggleAttribute('hidden', visibleCards !== 0)
+    }
+  }
+
+  document.querySelectorAll('[data-guide-filter-group]').forEach((group) => {
+    group.addEventListener('click', (event) => {
+      const target = event.target
+
+      if (!(target instanceof HTMLButtonElement)) {
+        return
+      }
+
+      const filterGroup = group.getAttribute('data-guide-filter-group')
+      const filterValue = target.getAttribute('data-filter-value')
+
+      if (!filterGroup || !filterValue) {
+        return
+      }
+
+      filters[filterGroup] = filterValue
+
+      group.querySelectorAll('.guide-filter-chip').forEach((button) => {
+        button.classList.toggle('guide-filter-chip--active', button === target)
+      })
+
+      applyFilters()
+    })
+  })
+
+  if (searchInput instanceof HTMLInputElement) {
+    searchInput.addEventListener('input', applyFilters)
+  }
+</script>
