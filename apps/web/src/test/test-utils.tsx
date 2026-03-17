@@ -1,4 +1,4 @@
-import type { ProgressStore } from '@prepdeck/schemas'
+import type { ProgressStore, SessionHistoryStore } from '@prepdeck/schemas'
 import { LazyMotion, MotionConfig, domMax } from 'motion/react'
 import type { PropsWithChildren } from 'react'
 import { render } from '@testing-library/react'
@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom'
 
 import { MEMBERSHIP_STORAGE_KEY, type MembershipTier } from '@/lib/monetization'
 import { STORAGE_KEY } from '@/lib/progress'
+import { SESSION_HISTORY_STORAGE_KEY } from '@/lib/session-history'
 import { AppRoutes } from '@/routes/app-routes'
 import { MonetizationProvider } from '@/state/monetization-context'
 import { ProgressProvider } from '@/state/progress-context'
@@ -29,6 +30,10 @@ function Providers({
 
 export function seedProgress(store: ProgressStore) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(store))
+}
+
+export function seedSessionHistory(store: SessionHistoryStore) {
+  window.localStorage.setItem(SESSION_HISTORY_STORAGE_KEY, JSON.stringify(store))
 }
 
 export function seedMembership(tier: MembershipTier) {

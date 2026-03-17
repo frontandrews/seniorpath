@@ -8,7 +8,16 @@ import {
   setCardNote,
   setCardStatus,
 } from '@/lib/progress'
-import { renderApp, seedMembership, seedProgress } from '@/test/test-utils'
+import {
+  createEmptySessionHistoryStore,
+  recordCompletedSession,
+} from '@/lib/session-history'
+import {
+  renderApp,
+  seedMembership,
+  seedProgress,
+  seedSessionHistory,
+} from '@/test/test-utils'
 
 function getReactDeck() {
   const deck = getDeckById('react-rendering-core')
@@ -34,6 +43,7 @@ describe('app routes', () => {
     expect(screen.getByText('1 / 2 learned')).toBeInTheDocument()
     expect(screen.getByText('Ad-supported free plan')).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Session presets' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Momentum' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: 'Download a portfolio-ready progress card.' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Download share card' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Continue latest' })).toBeInTheDocument()
@@ -45,6 +55,35 @@ describe('app routes', () => {
     expect(screen.getAllByText('Strongest topic').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Weakest topic').length).toBeGreaterThan(0)
     expect(screen.getByText('No weak topic yet')).toBeInTheDocument()
+  })
+
+  it('renders local momentum and recent session activity on the home page', () => {
+    let sessionHistory = createEmptySessionHistoryStore()
+    sessionHistory = recordCompletedSession(
+      sessionHistory,
+      {
+        cardCount: 7,
+        deckId: null,
+        deckTitle: null,
+        format: 'flashcards',
+        kind: 'daily_queue',
+        learnedCount: 4,
+        notLearnedCount: 1,
+        partialCount: 2,
+        scopeLabel: 'Daily queue',
+        sessionLabel: 'Daily smart queue',
+      },
+      '2026-03-17T12:00:00.000Z',
+    )
+    seedSessionHistory(sessionHistory)
+
+    renderApp(['/'])
+
+    expect(screen.getByText('Current streak')).toBeInTheDocument()
+    expect(screen.getByText('This week')).toBeInTheDocument()
+    expect(screen.getByText('Latest completed reps')).toBeInTheDocument()
+    expect(screen.getAllByText('Daily smart queue').length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/4 learned/i).length).toBeGreaterThan(0)
   })
 
   it('filters the home deck list by selected topic', async () => {
@@ -140,6 +179,31 @@ describe('app routes', () => {
         name: 'Everything in this deck is marked learned.',
       }),
     ).toBeInTheDocument()
+  })
+
+  it('records a completed session and surfaces it on the home page after the run', async () => {
+    const user = userEvent.setup()
+    const studyRender = renderApp(['/study/react-rendering-core?mode=start'])
+
+    await user.click(screen.getByRole('button', { name: 'Show answer' }))
+    await user.click(screen.getByRole('button', { name: 'Learned' }))
+    await user.click(screen.getByRole('button', { name: 'Show answer' }))
+    await user.click(screen.getByRole('button', { name: 'Learned' }))
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Everything in this deck is marked learned.',
+      }),
+    ).toBeInTheDocument()
+
+    studyRender.unmount()
+
+    renderApp(['/'])
+
+    expect(screen.getByRole('heading', { name: 'Momentum' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Latest completed reps' })).toBeInTheDocument()
+    expect(screen.getAllByText('React Rendering Core').length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/2 learned/i).length).toBeGreaterThan(0)
   })
 
   it('keeps learn-more content collapsed until the user opens it', async () => {

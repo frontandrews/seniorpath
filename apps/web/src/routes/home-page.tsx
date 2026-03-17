@@ -1,4 +1,4 @@
-import type { DeckManifestEntry } from '@prepdeck/schemas'
+import type { DeckManifestEntry, SessionHistoryEntry } from '@prepdeck/schemas'
 import { getDecksByTopic } from '@prepdeck/content/manifest'
 import { m } from 'motion/react'
 import { useMemo, useState } from 'react'
@@ -26,12 +26,17 @@ import {
   getMostRecentlyStudiedDeckId,
   type DeckCounts,
 } from '@/lib/progress'
+import {
+  getSessionFormatLabel,
+  getSessionHistorySnapshot,
+  getSessionKindLabel,
+} from '@/lib/session-history'
 import { getSessionPresets, type SessionPreset } from '@/lib/session-presets'
 import { getTopicLabel } from '@/lib/topic-labels'
 import { useProgress } from '@/state/progress-context'
 
 export function HomePage() {
-  const { progressStore, resetAllProgress } = useProgress()
+  const { progressStore, resetAllProgress, sessionHistoryStore } = useProgress()
   const [isResetAllOpen, setIsResetAllOpen] = useState(false)
   const [libraryDifficulty, setLibraryDifficulty] =
     useState<DeckLibraryFilters['difficulty']>('all')
@@ -79,6 +84,7 @@ export function HomePage() {
   })
   const sessionPresets = getSessionPresets(deckRecords)
   const masterySnapshot = getMasterySnapshot(deckRecords, progressStore)
+  const sessionHistorySnapshot = getSessionHistorySnapshot(sessionHistoryStore)
   const topicCards = topicEntries.map(([topic, summaries]) => {
     const topicDecks = deckRecords.filter((record) => record.summary.topic === topic)
 
@@ -179,6 +185,92 @@ export function HomePage() {
           eyebrow={secondaryAction.eyebrow}
           title={secondaryAction.title}
         />
+      </section>
+
+      <section aria-labelledby="momentum-heading" className="mb-6">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <div>
+            <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="momentum-heading">
+              Momentum
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-white/75">
+              Local session history that shows whether the habit is alive, how often you
+              are actually practicing, and what the latest reps looked like.
+            </p>
+          </div>
+        </div>
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+          <div className="grid gap-4 sm:grid-cols-3">
+            <MomentumStatCard
+              detail={
+                sessionHistorySnapshot.currentStreak > 0
+                  ? `${sessionHistorySnapshot.currentStreak} consecutive ${pluralize('day', sessionHistorySnapshot.currentStreak)} with at least one completed session.`
+                  : 'No live streak yet. One short session starts the chain again.'
+              }
+              label="Current streak"
+              value={
+                sessionHistorySnapshot.currentStreak > 0
+                  ? `${sessionHistorySnapshot.currentStreak} ${sessionHistorySnapshot.currentStreak === 1 ? 'day' : 'days'}`
+                  : 'Start one'
+              }
+            />
+            <MomentumStatCard
+              detail={`${sessionHistorySnapshot.sessionsThisWeek} ${pluralize('session', sessionHistorySnapshot.sessionsThisWeek)} completed in the last 7 days.`}
+              label="This week"
+              value={`${sessionHistorySnapshot.sessionsThisWeek}`}
+            />
+            <MomentumStatCard
+              detail={`${sessionHistorySnapshot.totalSessions} total ${pluralize('session', sessionHistorySnapshot.totalSessions)} stored on this device.`}
+              label="Total sessions"
+              value={`${sessionHistorySnapshot.totalSessions}`}
+            />
+          </div>
+
+          <m.div
+            className="[transform-style:preserve-3d]"
+            initial="initial"
+            variants={cardRevealVariants}
+            viewport={{ amount: 0.2, once: true }}
+            whileInView="animate"
+            {...hoverLiftMotionProps}
+          >
+            <Panel className="h-full p-5">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+                    Recent activity
+                  </p>
+                  <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">
+                    {sessionHistorySnapshot.recentSessions.length > 0
+                      ? 'Latest completed reps'
+                      : 'Your session recap will land here.'}
+                  </h3>
+                </div>
+                {sessionHistorySnapshot.lastCompletedAt ? (
+                  <Badge tone="accent">
+                    Last rep {formatSessionRelativeTime(sessionHistorySnapshot.lastCompletedAt)}
+                  </Badge>
+                ) : null}
+              </div>
+
+              {sessionHistorySnapshot.recentSessions.length > 0 ? (
+                <div className="mt-5 space-y-3">
+                  {sessionHistorySnapshot.recentSessions.map((session) => (
+                    <RecentSessionCard key={session.id} session={session} />
+                  ))}
+                </div>
+              ) : (
+                <Panel className="mt-5 bg-[var(--retro-surface-muted)] p-4" inset>
+                  <p className="text-sm leading-6 text-white/80">
+                    Finish any deck, daily queue, or mock interview and Prepdeck will keep a
+                    local recap here so the home screen feels like a living study app, not
+                    just a deck browser.
+                  </p>
+                </Panel>
+              )}
+            </Panel>
+          </m.div>
+        </div>
       </section>
 
       <section aria-labelledby="session-presets-heading" className="mb-6">
@@ -429,7 +521,7 @@ export function HomePage() {
 
       <ConfirmDialog
         confirmLabel="Reset all"
-        description="This clears every saved status and personal note across all decks."
+        description="This clears every saved status, personal note, and session recap across all decks."
         isOpen={isResetAllOpen}
         onCancel={() => setIsResetAllOpen(false)}
         onConfirm={() => {
@@ -538,6 +630,68 @@ function MasterySignalCard({
         <p className="mt-3 text-sm leading-6 text-white/80">{detail}</p>
       </Panel>
     </m.div>
+  )
+}
+
+function MomentumStatCard({
+  detail,
+  label,
+  value,
+}: {
+  detail: string
+  label: string
+  value: string
+}) {
+  return (
+    <m.div
+      className="[transform-style:preserve-3d]"
+      initial="initial"
+      variants={cardRevealVariants}
+      viewport={{ amount: 0.2, once: true }}
+      whileInView="animate"
+      {...hoverLiftMotionProps}
+    >
+      <Panel className="h-full p-5">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+          {label}
+        </p>
+        <p className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{value}</p>
+        <p className="mt-3 text-sm leading-6 text-white/80">{detail}</p>
+      </Panel>
+    </m.div>
+  )
+}
+
+function RecentSessionCard({ session }: { session: SessionHistoryEntry }) {
+  const reviewDebt = session.partialCount + session.notLearnedCount
+
+  return (
+    <Panel className="bg-[var(--retro-surface-muted)] p-4" inset>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="flex flex-wrap gap-2">
+            <Badge tone="accent">{getSessionKindLabel(session.kind)}</Badge>
+            <Badge>{getSessionFormatLabel(session.format)}</Badge>
+            {session.deckTitle ? <Badge>{session.deckTitle}</Badge> : null}
+          </div>
+          <h4 className="mt-3 text-lg font-black text-[var(--retro-ink)]">
+            {session.sessionLabel}
+          </h4>
+          <p className="mt-1 text-sm leading-6 text-white/75">
+            {session.scopeLabel} · {session.cardCount} {pluralize('card', session.cardCount)} ·{' '}
+            {formatSessionRelativeTime(session.completedAt)}
+          </p>
+        </div>
+        <Badge>{session.learnedCount} learned</Badge>
+      </div>
+      <p className="mt-3 text-sm leading-6 text-white/80">
+        {session.learnedCount} learned · {session.partialCount} partial ·{' '}
+        {session.notLearnedCount} needs work
+        {reviewDebt > 0
+          ? '. Keep this lane in the queue before the weak pile grows.'
+          : '. Clean rep.'}
+      </p>
+    </Panel>
   )
 }
 
@@ -733,4 +887,30 @@ function getDifficultyRank(difficulty: DeckManifestEntry['difficulty']) {
 
 function pluralize(word: string, count: number) {
   return count === 1 ? word : `${word}s`
+}
+
+function formatSessionRelativeTime(value: string, now: Date = new Date()) {
+  const date = new Date(value)
+  const today = new Date(now)
+  today.setHours(0, 0, 0, 0)
+  const targetDay = new Date(date)
+  targetDay.setHours(0, 0, 0, 0)
+  const dayDelta = Math.round((today.getTime() - targetDay.getTime()) / 86_400_000)
+  const timeLabel = new Intl.DateTimeFormat('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  }).format(date)
+
+  if (dayDelta === 0) {
+    return `today at ${timeLabel}`
+  }
+
+  if (dayDelta === 1) {
+    return `yesterday at ${timeLabel}`
+  }
+
+  return new Intl.DateTimeFormat('en-US', {
+    day: 'numeric',
+    month: 'short',
+  }).format(date)
 }

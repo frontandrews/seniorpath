@@ -1,4 +1,4 @@
-import type { ProgressStatus } from '@prepdeck/schemas'
+import type { ProgressStatus, SessionHistoryKind } from '@prepdeck/schemas'
 import { m } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -25,6 +25,7 @@ type StudySessionPlayerProps = {
   format: StudyFormat
   initialIndex: number
   onComplete: () => void
+  sessionKind: SessionHistoryKind
   sessionLabel: string
   showEntrySource?: boolean
   scopeLabel: string
@@ -36,6 +37,7 @@ export function StudySessionPlayer({
   format,
   initialIndex,
   onComplete,
+  sessionKind,
   sessionLabel,
   showEntrySource = false,
   scopeLabel,
@@ -43,6 +45,7 @@ export function StudySessionPlayer({
   const {
     clearCardNote,
     getCardNote,
+    recordCompletedSession,
     rememberDeckPosition,
     setCardNote,
     setCardStatus,
@@ -50,10 +53,16 @@ export function StudySessionPlayer({
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isAnswerVisible, setIsAnswerVisible] = useState(false)
   const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
+  const [sessionRatings, setSessionRatings] = useState({
+    learned: 0,
+    not_learned: 0,
+    partial: 0,
+  })
   const currentEntry = entries[currentIndex]
   const currentCard = currentEntry?.card
   const currentCardId = currentCard?.id ?? null
   const currentDeckId = currentEntry?.deckId ?? null
+  const singleDeckEntry = getSingleDeckEntry(entries)
   const currentNote = currentEntry ? getCardNote(currentEntry.deckId, currentCard.id) : ''
   const [interviewSecondsLeft, setInterviewSecondsLeft] = useState(() =>
     currentCard ? getInterviewDurationSeconds(currentCard) : 0,
@@ -83,10 +92,28 @@ export function StudySessionPlayer({
     return null
   }
 
-  const handleRateCard = (status: ProgressStatus) => {
+  const handleRateCard = (status: Exclude<ProgressStatus, 'unseen'>) => {
+    const nextSessionRatings = {
+      ...sessionRatings,
+      [status]: sessionRatings[status] + 1,
+    }
+
+    setSessionRatings(nextSessionRatings)
     setCardStatus(currentEntry.deckId, currentCard.id, status)
 
     if (currentIndex >= entries.length - 1) {
+      recordCompletedSession({
+        cardCount: entries.length,
+        deckId: singleDeckEntry?.deckId ?? null,
+        deckTitle: singleDeckEntry?.deckTitle ?? null,
+        format,
+        kind: sessionKind,
+        learnedCount: nextSessionRatings.learned,
+        notLearnedCount: nextSessionRatings.not_learned,
+        partialCount: nextSessionRatings.partial,
+        scopeLabel,
+        sessionLabel,
+      })
       onComplete()
       return
     }
@@ -348,4 +375,16 @@ function formatDuration(totalSeconds: number) {
   const seconds = totalSeconds % 60
 
   return `${minutes}:${String(seconds).padStart(2, '0')}`
+}
+
+function getSingleDeckEntry(entries: StudyCardEntry[]) {
+  const firstEntry = entries[0]
+
+  if (!firstEntry) {
+    return null
+  }
+
+  const isSingleDeckSession = entries.every((entry) => entry.deckId === firstEntry.deckId)
+
+  return isSingleDeckSession ? firstEntry : null
 }

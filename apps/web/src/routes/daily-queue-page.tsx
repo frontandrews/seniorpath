@@ -33,6 +33,7 @@ export function DailyQueuePage() {
       format="flashcards"
       initialIndex={0}
       onComplete={() => navigate(createDailyQueueHref('success'))}
+      sessionKind="daily_queue"
       scopeLabel="Daily queue"
       sessionLabel="Daily smart queue"
       showEntrySource

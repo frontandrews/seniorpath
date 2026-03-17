@@ -33,6 +33,7 @@ export function MockInterviewPage() {
       format="interview"
       initialIndex={0}
       onComplete={() => navigate(createMockInterviewHref('success'))}
+      sessionKind="mock_interview"
       scopeLabel="Mixed topics"
       sessionLabel="Mixed mock interview"
       showEntrySource

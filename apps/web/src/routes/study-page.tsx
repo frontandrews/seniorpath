@@ -57,6 +57,7 @@ export function StudyPage() {
       initialIndex={initialIndex}
       key={`${deck.id}:${mode}:${scope}:${format}`}
       onComplete={() => navigate(createStudyHref(deck.id, { format, scope, state: 'success' }))}
+      sessionKind="deck"
       scopeLabel={getStudyScopeLabel(scope)}
       sessionLabel={deck.title}
     />
