@@ -206,8 +206,8 @@ describe('app routes', () => {
     expect(screen.getByRole('button', { name: 'Study weak cards' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Review progress' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reset deck' })).toBeInTheDocument()
-    expect(screen.getByRole('heading', { name: 'Full guides tied to this deck' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Read guide' })).toHaveAttribute(
+    expect(screen.getByRole('heading', { name: 'Longer learning tied to this deck' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Learn guide' })).toHaveAttribute(
       'href',
       '/blog/react-derived-state-without-extra-bugs',
     )
@@ -390,7 +390,7 @@ describe('app routes', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Code example')).toBeInTheDocument()
     expect(screen.getByText(/const visibleUsers = users\.filter/i)).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Read full article' })).toHaveAttribute(
+    expect(screen.getByRole('link', { name: 'Learn with full article' })).toHaveAttribute(
       'href',
       '/blog/react-derived-state-without-extra-bugs',
     )

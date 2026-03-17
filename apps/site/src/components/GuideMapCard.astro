@@ -16,9 +16,9 @@ const primaryDeckId = item.relatedDeckIds[0] ?? null
   <h3>{item.title}</h3>
 
   <div class="meta-list">
-    <a class="button-link button-link--primary" href={`/blog/${item.id}`}>Read</a>
+    <a class="button-link button-link--primary" href={`/blog/${item.id}`}>Learn</a>
     {primaryDeckId ? (
-      <a class="button-link" href={getAppHref(`/decks/${primaryDeckId}`)}>Test</a>
+      <a class="button-link" href={getAppHref(`/decks/${primaryDeckId}`)}>Practice</a>
     ) : null}
   </div>
 

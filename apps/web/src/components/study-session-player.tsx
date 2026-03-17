@@ -369,7 +369,7 @@ export function StudySessionPlayer({
                                 rel="noreferrer"
                                 target="_blank"
                               >
-                                Read full article
+                                Learn with full article
                               </a>
                             </div>
                           ) : null}

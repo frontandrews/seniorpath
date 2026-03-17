@@ -46,7 +46,7 @@ export function AppHeader({
               Prepdeck
             </Link>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-[var(--retro-ink-muted)]">
-              Read, drill, and retain the material that matters for technical growth.
+              Learn, practice, and retain the material that matters for technical growth.
             </p>
           </div>
           <div className="flex flex-col items-stretch gap-3 sm:items-end">

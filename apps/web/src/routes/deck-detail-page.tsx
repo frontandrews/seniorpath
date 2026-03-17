@@ -118,10 +118,10 @@ export function DeckDetailPage() {
             <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
               <div>
                 <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-                  Deep-dive reading
+                  Learn more
                 </p>
                 <h3 className="mt-2 text-xl font-black text-[var(--retro-ink)]">
-                  Full guides tied to this deck
+                  Longer learning tied to this deck
                 </h3>
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-white/75">
                   Use the cards for reps. Open the full guide when you want the longer
@@ -149,7 +149,7 @@ export function DeckDetailPage() {
                       rel="noreferrer"
                       target="_blank"
                     >
-                      Read guide
+                      Learn guide
                     </a>
                   </div>
                 </Panel>

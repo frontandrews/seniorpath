@@ -13,9 +13,9 @@ const { post } = Astro.props
   <p class="section-eyebrow">{post.data.path.join(' / ')}</p>
   <h3>{post.data.title}</h3>
   <div class="meta-list">
-    <a class="button-link button-link--primary" href={`/blog/${post.id}`}>Read</a>
+    <a class="button-link button-link--primary" href={`/blog/${post.id}`}>Learn</a>
     {post.data.relatedDeckIds.length > 0 ? (
-      <a class="button-link" href={getAppHref(`/decks/${post.data.relatedDeckIds[0]}`)}>Test</a>
+      <a class="button-link" href={getAppHref(`/decks/${post.data.relatedDeckIds[0]}`)}>Practice</a>
     ) : null}
   </div>
 </article>

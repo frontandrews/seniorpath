@@ -10,14 +10,14 @@ const guideTree = buildGuideTree(posts)
 ---
 
 <BaseLayout
-  description="A tree-style index of guides for programming, AI engineering, communication, and leadership."
-  title="Guide map"
+  description="The Path to Senior: a structured learning journey for mid-level developers leveling up through deeper concepts and interview practice."
+  title="Path to Senior"
 >
   <section class="section section--compact">
     <div class="panel page-toolbar">
       <div class="page-toolbar__intro">
-        <h1 class="section-heading section-heading--compact">Guides</h1>
-        <p class="page-toolbar__copy">Read first. Test when you want to validate it.</p>
+        <h1 class="section-heading section-heading--compact">Path to Senior</h1>
+        <p class="page-toolbar__copy">Learn the intuition first. Practice when you want to prove you really got it.</p>
       </div>
     </div>
 
@@ -60,7 +60,11 @@ const guideTree = buildGuideTree(posts)
       const progress = node.querySelector('[data-guide-progress]')
 
       if (progress) {
-        progress.textContent = `${completed}/${ids.length}`
+        progress.textContent = completed === 0
+          ? 'Not started'
+          : completed === ids.length
+            ? 'Completed'
+            : 'Learning'
         progress.classList.toggle('badge--complete', completed === ids.length && ids.length > 0)
       }
     })

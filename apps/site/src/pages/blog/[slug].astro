@@ -112,7 +112,7 @@ const articlePath = post.data.path[0] === post.data.category
       <div class="meta-list article-header-actions">
         {primaryDeck ? (
           <a class="button-link button-link--primary" href={getAppHref(`/decks/${primaryDeck.id}`)}>
-            Test knowledge
+            Practice
           </a>
         ) : null}
         <button class="button-link" data-guide-complete-toggle data-guide-id={post.id} type="button">
@@ -170,8 +170,8 @@ const articlePath = post.data.path[0] === post.data.category
       <section class="article-section">
         <div class="section-header">
           <div>
-            <p class="section-eyebrow">Open in Prepdeck</p>
-            <h2 class="section-heading section-heading--compact">Keep practicing inside the app</h2>
+            <p class="section-eyebrow">Practice in the app</p>
+            <h2 class="section-heading section-heading--compact">Turn this idea into reps</h2>
           </div>
         </div>
         <div class="panel-grid">
@@ -187,7 +187,7 @@ const articlePath = post.data.path[0] === post.data.category
                 <p class="article-excerpt">{deck.description}</p>
               </div>
               <a class="button-link button-link--primary" href={getAppHref(`/decks/${deck.id}`)}>
-                Open deck
+                Practice
               </a>
             </div>
           ))}
