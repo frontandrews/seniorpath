@@ -1,0 +1,60 @@
+---
+import { getAppHref } from '../lib/app-links'
+import type { GuideMapItem } from '../lib/guide-map'
+
+type Props = {
+  item: GuideMapItem
+}
+
+const { item } = Astro.props
+const primaryDeckId = item.relatedDeckIds[0] ?? null
+---
+
+<article class="panel guide-map-card">
+  <div class="meta-list">
+    <span class="badge badge--accent">{item.category}</span>
+    {item.topic ? <span class="badge">{item.topic}</span> : null}
+    {item.tags.slice(0, 2).map((tag) => (
+      <span class="badge">{tag}</span>
+    ))}
+  </div>
+
+  <div class="meta-list guide-map-card__path">
+    {item.path.map((segment) => (
+      <span class="badge">{segment}</span>
+    ))}
+  </div>
+
+  <div>
+    <h3>{item.title}</h3>
+    <p class="article-excerpt">{item.summary}</p>
+  </div>
+
+  <div class="meta-list">
+    <a class="button-link button-link--primary" href={`/blog/${item.id}`}>Open guide</a>
+    {primaryDeckId ? (
+      <a class="button-link" href={getAppHref(`/decks/${primaryDeckId}`)}>Open practice</a>
+    ) : null}
+  </div>
+
+  {item.connections.length > 0 ? (
+    <div class="guide-map-card__connections">
+      <p class="section-eyebrow">Connected guides</p>
+      <div class="guide-map-card__connection-list">
+        {item.connections.map((connection) => (
+          <a class="guide-connection" href={`/blog/${connection.id}`}>
+            <span class={`badge ${connection.relation === 'connects_to' ? 'badge--accent' : ''}`}>
+              {connection.relation === 'connects_to' ? 'Links to' : 'Linked from'}
+            </span>
+            <span>{connection.title}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  ) : (
+    <div class="guide-map-card__connections">
+      <p class="section-eyebrow">Connected guides</p>
+      <p class="article-excerpt">No direct guide links yet.</p>
+    </div>
+  )}
+</article>

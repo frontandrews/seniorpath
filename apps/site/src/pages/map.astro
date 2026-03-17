@@ -1,0 +1,67 @@
+---
+import { getCollection } from 'astro:content'
+
+import GuideMapCard from '../components/GuideMapCard.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getAppHref } from '../lib/app-links'
+import { buildGuideMap } from '../lib/guide-map'
+
+const posts = await getCollection('blog')
+const sections = buildGuideMap(posts)
+const explicitLinks = posts.reduce((total, post) => total + post.data.relationships.length, 0)
+---
+
+<BaseLayout
+  description="A connection map for browsing how Prepdeck guides relate to each other."
+  title="Connection map"
+>
+  <section class="hero">
+    <div class="hero__grid">
+      <div>
+        <div class="hero__badges">
+          <span class="badge badge--accent">Connection map</span>
+          <span class="badge">{posts.length} guides</span>
+          <span class="badge">{explicitLinks} explicit links</span>
+        </div>
+        <h1>See how the guides connect.</h1>
+        <p>
+          Use the tree when you want a clean hierarchy. Use the map when you want to see
+          how one topic leads into another across categories.
+        </p>
+        <div class="meta-list">
+          <a class="button-link button-link--primary" href="/">Open tree</a>
+          <a class="button-link" href={getAppHref('/')}>Open practice</a>
+        </div>
+      </div>
+
+      <div class="panel">
+        <p class="section-eyebrow">How to read it</p>
+        <ul class="article-prose compact-list">
+          <li>Each section starts from one root area.</li>
+          <li>Each card keeps its primary path visible.</li>
+          <li>Connected guides show explicit links in both directions.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  {sections.map((section) => (
+    <section class="section">
+      <div class="section-header">
+        <div>
+          <p class="section-eyebrow">Map section</p>
+          <h2 class="section-heading">{section.label}</h2>
+          <p class="section-copy">
+            Guides whose primary path starts in {section.label}.
+          </p>
+        </div>
+      </div>
+
+      <div class="panel-grid panel-grid--map">
+        {section.items.map((item) => (
+          <GuideMapCard item={item} />
+        ))}
+      </div>
+    </section>
+  ))}
+</BaseLayout>
