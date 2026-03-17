@@ -29,6 +29,7 @@ type Props = {
 const { post } = Astro.props
 const { Content } = await render(post)
 const allPosts = sortGuides(await getCollection('blog'))
+const parentPathKey = post.data.path.slice(0, -1).join('>')
 const relatedDecks = post.data.relatedDeckIds
   .map((deckId) => getDeckSummaryById(deckId))
   .filter((deck): deck is NonNullable<typeof deck> => Boolean(deck))
@@ -55,6 +56,15 @@ const relatedPosts = allPosts
     return Boolean(sharesTopic || sharesTag)
   })
   .slice(0, 2)
+const siblingPosts = allPosts
+  .filter((entry) => {
+    if (entry.id === post.id) {
+      return false
+    }
+
+    return entry.data.path.slice(0, -1).join('>') === parentPathKey
+  })
+  .slice(0, 3)
 const currentIndex = allPosts.findIndex((entry) => entry.id === post.id)
 const previousPost = currentIndex >= 0 ? allPosts[currentIndex + 1] ?? null : null
 const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
@@ -85,6 +95,10 @@ const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
       ) : null}
       <h1 class="article-title">{post.data.title}</h1>
       <p class="article-excerpt">{post.data.description}</p>
+      <div class="meta-list">
+        <a class="button-link" href="/">Open tree</a>
+        <a class="button-link" href="/map">Open map</a>
+      </div>
       <div class="meta-list">
         <span class="badge">
           {post.data.pubDate.toLocaleDateString('en-US', {
@@ -153,6 +167,22 @@ const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
         </div>
         <div class="panel-grid panel-grid--articles">
           {connectedPosts.map((entry) => (
+            <ArticleCard post={entry} />
+          ))}
+        </div>
+      </section>
+    ) : null}
+
+    {siblingPosts.length > 0 ? (
+      <section class="article-section">
+        <div class="section-header">
+          <div>
+            <p class="section-eyebrow">Same branch</p>
+            <h2 class="section-heading section-heading--compact">Guides in the same path</h2>
+          </div>
+        </div>
+        <div class="panel-grid panel-grid--articles">
+          {siblingPosts.map((entry) => (
             <ArticleCard post={entry} />
           ))}
         </div>
