@@ -58,6 +58,8 @@ export function StudySessionPlayer({
   const [currentIndex, setCurrentIndex] = useState(initialIndex)
   const [isAnswerVisible, setIsAnswerVisible] = useState(false)
   const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
+  const [gesturePreview, setGesturePreview] = useState<GestureAction | null>(null)
+  const [gestureStart, setGestureStart] = useState<GesturePoint | null>(null)
   const [sessionRatings, setSessionRatings] = useState({
     learned: 0,
     not_learned: 0,
@@ -146,6 +148,51 @@ export function StudySessionPlayer({
   const articleHref = currentCard.learnMoreSlug
     ? getArticleHref(currentCard.learnMoreSlug)
     : null
+
+  const handleRevealAnswer = () => {
+    if (isRevealLocked) {
+      return
+    }
+
+    setIsAnswerVisible(true)
+  }
+
+  const handleGesturePreview = (clientX: number, clientY: number) => {
+    if (!gestureStart) {
+      return
+    }
+
+    const nextAction = getGestureAction({
+      dx: clientX - gestureStart.x,
+      dy: clientY - gestureStart.y,
+      isAnswerVisible,
+      isRevealLocked,
+    })
+
+    setGesturePreview(nextAction)
+  }
+
+  const handleGestureCommit = (clientX: number, clientY: number) => {
+    if (!gestureStart) {
+      return
+    }
+
+    const action = getGestureAction({
+      dx: clientX - gestureStart.x,
+      dy: clientY - gestureStart.y,
+      isAnswerVisible,
+      isRevealLocked,
+    })
+
+    if (action === 'reveal') {
+      handleRevealAnswer()
+    } else if (action) {
+      handleRateCard(action)
+    }
+
+    setGesturePreview(null)
+    setGestureStart(null)
+  }
 
   return (
     <section className="space-y-5">
@@ -351,15 +398,107 @@ export function StudySessionPlayer({
         whileInView="animate"
       >
         <Panel className="sticky bottom-4 bg-[var(--retro-bg-strong)] p-4 backdrop-blur-sm">
+          <div
+            className={cn(
+              'mb-3 rounded-[1rem] border border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.03)] px-4 py-3 text-sm text-[var(--retro-ink)] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)] touch-none select-none',
+              gesturePreview === 'learned' &&
+                'border-[var(--retro-success)] bg-[color:rgba(83,126,146,0.22)]',
+              gesturePreview === 'partial' &&
+                'border-[var(--retro-warning)] bg-[color:rgba(96,113,143,0.2)]',
+              gesturePreview === 'not_learned' &&
+                'border-[var(--retro-danger)] bg-[color:rgba(143,95,115,0.24)]',
+              gesturePreview === 'reveal' &&
+                'border-[var(--retro-line-strong)] bg-[color:rgba(74,125,216,0.18)]',
+            )}
+            data-testid="gesture-strip"
+            onPointerCancel={() => {
+              setGesturePreview(null)
+              setGestureStart(null)
+            }}
+            onPointerDown={(event) => {
+              setGestureStart({
+                x: event.clientX,
+                y: event.clientY,
+              })
+            }}
+            onPointerLeave={() => {
+              setGesturePreview(null)
+            }}
+            onPointerMove={(event) => {
+              handleGesturePreview(event.clientX, event.clientY)
+            }}
+            onPointerUp={(event) => {
+              handleGestureCommit(event.clientX, event.clientY)
+            }}
+            role="presentation"
+          >
+            {isAnswerVisible ? (
+              <div className="grid grid-cols-3 gap-3 text-center">
+                <GestureHint
+                  action="not_learned"
+                  description="Needs work"
+                  isActive={gesturePreview === 'not_learned'}
+                  label="Left"
+                />
+                <GestureHint
+                  action="partial"
+                  description="Partial"
+                  isActive={gesturePreview === 'partial'}
+                  label="Up"
+                />
+                <GestureHint
+                  action="learned"
+                  description={isInterviewMode ? 'Strong' : 'Learned'}
+                  isActive={gesturePreview === 'learned'}
+                  label="Right"
+                />
+              </div>
+            ) : (
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-[0.68rem] font-bold uppercase tracking-[0.2em] text-[var(--retro-line)]">
+                    Quick gesture
+                  </p>
+                  <p className="mt-1 text-sm leading-6 text-white/80">
+                    {isRevealLocked
+                      ? 'Swipe up once the timer ends, or end early to unlock the answer.'
+                      : 'Swipe up anywhere in this strip to reveal the answer faster.'}
+                  </p>
+                </div>
+                <Badge tone={gesturePreview === 'reveal' ? 'accent' : 'default'}>
+                  Up to reveal
+                </Badge>
+              </div>
+            )}
+          </div>
+
           {isAnswerVisible ? (
-            <div className="grid gap-3 sm:grid-cols-3">
-              <Button onClick={() => handleRateCard('learned')} type="button" variant="success">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <Button
+                className="min-h-14 px-2 text-[0.68rem] sm:px-4 sm:text-sm"
+                onClick={() => handleRateCard('learned')}
+                size="sm"
+                type="button"
+                variant="success"
+              >
                 {isInterviewMode ? 'Strong' : 'Learned'}
               </Button>
-              <Button onClick={() => handleRateCard('partial')} type="button" variant="warning">
+              <Button
+                className="min-h-14 px-2 text-[0.68rem] sm:px-4 sm:text-sm"
+                onClick={() => handleRateCard('partial')}
+                size="sm"
+                type="button"
+                variant="warning"
+              >
                 {isInterviewMode ? 'Decent' : 'Partial'}
               </Button>
-              <Button onClick={() => handleRateCard('not_learned')} type="button" variant="danger">
+              <Button
+                className="min-h-14 px-2 text-[0.68rem] sm:px-4 sm:text-sm"
+                onClick={() => handleRateCard('not_learned')}
+                size="sm"
+                type="button"
+                variant="danger"
+              >
                 {isInterviewMode ? 'Needs work' : 'Not learned'}
               </Button>
             </div>
@@ -368,7 +507,7 @@ export function StudySessionPlayer({
               <Button
                 className="w-full"
                 disabled={isRevealLocked}
-                onClick={() => setIsAnswerVisible(true)}
+                onClick={handleRevealAnswer}
                 type="button"
                 variant="primary"
               >
@@ -387,7 +526,7 @@ export function StudySessionPlayer({
           ) : (
             <Button
               className="w-full"
-              onClick={() => setIsAnswerVisible(true)}
+              onClick={handleRevealAnswer}
               type="button"
               variant="primary"
             >
@@ -398,6 +537,94 @@ export function StudySessionPlayer({
       </m.div>
     </section>
   )
+}
+
+type GestureAction = Exclude<ProgressStatus, 'unseen'> | 'reveal'
+
+type GesturePoint = {
+  x: number
+  y: number
+}
+
+function GestureHint({
+  action,
+  description,
+  isActive,
+  label,
+}: {
+  action: GestureAction
+  description: string
+  isActive: boolean
+  label: string
+}) {
+  return (
+    <div
+      className={cn(
+        'rounded-[0.9rem] border border-transparent px-2 py-1.5 transition',
+        isActive && getGestureToneClass(action),
+      )}
+    >
+      <p className="text-[0.65rem] font-bold uppercase tracking-[0.2em] text-[var(--retro-line)]">
+        {label}
+      </p>
+      <p className="mt-1 text-[0.78rem] font-black text-[var(--retro-ink)]">{description}</p>
+    </div>
+  )
+}
+
+function getGestureAction({
+  dx,
+  dy,
+  isAnswerVisible,
+  isRevealLocked,
+}: {
+  dx: number
+  dy: number
+  isAnswerVisible: boolean
+  isRevealLocked: boolean
+}): GestureAction | null {
+  const horizontalThreshold = 64
+  const verticalThreshold = 58
+  const absX = Math.abs(dx)
+  const absY = Math.abs(dy)
+
+  if (!isAnswerVisible) {
+    if (!isRevealLocked && dy <= -verticalThreshold && absY > absX) {
+      return 'reveal'
+    }
+
+    return null
+  }
+
+  if (dx >= horizontalThreshold && absX > absY) {
+    return 'learned'
+  }
+
+  if (dx <= -horizontalThreshold && absX > absY) {
+    return 'not_learned'
+  }
+
+  if (dy <= -verticalThreshold && absY > absX) {
+    return 'partial'
+  }
+
+  return null
+}
+
+function getGestureToneClass(action: GestureAction) {
+  if (action === 'learned') {
+    return 'border-[var(--retro-success)] bg-[color:rgba(83,126,146,0.2)]'
+  }
+
+  if (action === 'partial') {
+    return 'border-[var(--retro-warning)] bg-[color:rgba(96,113,143,0.18)]'
+  }
+
+  if (action === 'not_learned') {
+    return 'border-[var(--retro-danger)] bg-[color:rgba(143,95,115,0.22)]'
+  }
+
+  return 'border-[var(--retro-line-strong)] bg-[color:rgba(74,125,216,0.16)]'
 }
 
 function formatDuration(totalSeconds: number) {

@@ -1,5 +1,5 @@
 import { getDeckById } from '@prepdeck/content'
-import { screen, within } from '@testing-library/react'
+import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 
@@ -253,6 +253,37 @@ describe('app routes', () => {
         name: 'Everything in this deck is marked learned.',
       }),
     ).toBeInTheDocument()
+  })
+
+  it('reveals the answer when the gesture strip is swiped up', () => {
+    renderApp(['/study/react-rendering-core?mode=start'])
+
+    const gestureStrip = screen.getByTestId('gesture-strip')
+
+    fireEvent.pointerDown(gestureStrip, { clientX: 120, clientY: 160 })
+    fireEvent.pointerMove(gestureStrip, { clientX: 120, clientY: 72 })
+    fireEvent.pointerUp(gestureStrip, { clientX: 120, clientY: 72 })
+
+    expect(screen.getByText('Answer')).toBeInTheDocument()
+    expect(
+      screen.getByText('Because it duplicates a source of truth and creates synchronization bugs.'),
+    ).toBeInTheDocument()
+  })
+
+  it('rates the current card from the gesture strip and advances the session', async () => {
+    const user = userEvent.setup()
+
+    renderApp(['/study/react-rendering-core?mode=start'])
+
+    await user.click(screen.getByRole('button', { name: 'Show answer' }))
+
+    const gestureStrip = screen.getByTestId('gesture-strip')
+
+    fireEvent.pointerDown(gestureStrip, { clientX: 80, clientY: 120 })
+    fireEvent.pointerMove(gestureStrip, { clientX: 176, clientY: 118 })
+    fireEvent.pointerUp(gestureStrip, { clientX: 176, clientY: 118 })
+
+    expect(await screen.findByRole('heading', { name: '2 of 2' })).toBeInTheDocument()
   })
 
   it('keeps the bottom navigation hidden during focused study routes', () => {
