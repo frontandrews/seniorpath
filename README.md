@@ -21,6 +21,7 @@ The goal is simple: open the app, get one clear next step, study on a phone-size
 - Tailwind CSS
 - Zod
 - Vitest
+- Astro
 - vite-plugin-pwa
 - Motion for interface polish
 - localStorage for local-first persistence
@@ -28,6 +29,7 @@ The goal is simple: open the app, get one clear next step, study on a phone-size
 ## What It Does
 
 - `apps/web`: local-first flashcards PWA
+- `apps/site`: Astro blog for SEO-friendly long-form explanations
 - `packages/content`: deck manifest, deck JSON, and loaders
 - `packages/schemas`: shared Zod schemas and types
 - `docs/coding-interview-foundations/`: notes for coding challenge prep
@@ -44,6 +46,7 @@ The goal is simple: open the app, get one clear next step, study on a phone-size
 6. Export and import local backups
 7. Generate a shareable progress snapshot card
 8. Preview monetization surfaces without needing a backend
+9. Publish static blog articles that back selected `learn more` paths
 
 ## Principles
 
@@ -51,19 +54,24 @@ The goal is simple: open the app, get one clear next step, study on a phone-size
 - Good mobile navigation before more surface area
 - Small, composable features over one giant rewrite
 - Keep the free product genuinely usable
+- Keep the app and the content layer separate when that separation improves product clarity
 
 ## Next Up
 
 1. Better history filters and session recap depth
-2. More polished study goals and review loops
-3. Portfolio embed once the standalone app feels fully mature
+2. Portfolio embed once the standalone app feels fully mature
+3. More article coverage across the current card library
 
 ## Run It
 
 ```bash
 pnpm install
 pnpm dev
+pnpm dev:site
 ```
+
+If you want the app to open the Astro journal during local development, copy
+`apps/web/.env.example` to `apps/web/.env.local`.
 
 ## Test It
 
@@ -71,4 +79,5 @@ pnpm dev
 pnpm test
 pnpm lint
 pnpm build
+pnpm build:site
 ```
