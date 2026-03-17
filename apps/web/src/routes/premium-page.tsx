@@ -21,8 +21,8 @@ export function PremiumPage() {
           </h1>
           <p className="mt-4 max-w-3xl text-sm leading-7 text-white/80 sm:text-base">
             The free plan stays fully usable. Premium keeps the interface cleaner,
-            removes sponsor placements, and helps fund backup, sync, and deeper
-            practice modes later on.
+            removes sponsor placements, and helps fund automatic backup, sync, and
+            deeper practice modes later on.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Button
@@ -56,7 +56,7 @@ export function PremiumPage() {
             'Everything in free',
             'No ad slots',
             'Cleaner product flow',
-            'Priority access to backup and sync later',
+            'Priority access to automatic backup and sync later',
             'Supports long-term development',
           ]}
           title="Premium"

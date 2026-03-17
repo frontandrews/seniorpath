@@ -15,7 +15,7 @@ const COPY: Record<
     title: 'Sponsored placement',
   },
   'home-primary': {
-    body: 'Prepdeck stays free on the ad-supported plan. Premium removes ads and helps fund sync, backup, and deeper practice modes later on.',
+    body: 'Prepdeck stays free on the ad-supported plan. Premium removes ads and helps fund automatic backup, sync, and deeper practice modes later on.',
     title: 'Ad-supported free plan',
   },
   review: {

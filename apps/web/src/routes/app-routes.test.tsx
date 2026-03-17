@@ -312,4 +312,13 @@ describe('app routes', () => {
     expect(screen.queryByText('Ad-supported free plan')).not.toBeInTheDocument()
     expect(screen.getByText('Premium active')).toBeInTheDocument()
   })
+
+  it('shows local backup controls on the home page', () => {
+    renderApp(['/'])
+
+    expect(screen.getByRole('heading', { name: 'Own your progress on this device.' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Export backup' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Import backup' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reset all progress' })).toBeInTheDocument()
+  })
 })

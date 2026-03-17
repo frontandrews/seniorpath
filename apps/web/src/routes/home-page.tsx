@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { AdSlot } from '@/components/ad-slot'
+import { DataControlsPanel } from '@/components/data-controls-panel'
 import { DeckCard } from '@/components/deck-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -245,11 +246,9 @@ export function HomePage() {
         </div>
       </section>
 
-      <div className="mt-6 flex justify-end">
-        <Button onClick={() => setIsResetAllOpen(true)} type="button" variant="danger">
-          Reset all progress
-        </Button>
-      </div>
+      <section className="mt-6">
+        <DataControlsPanel onResetAll={() => setIsResetAllOpen(true)} />
+      </section>
 
       <ConfirmDialog
         confirmLabel="Reset all"
