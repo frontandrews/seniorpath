@@ -7,6 +7,8 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { AdSlot } from '@/components/ad-slot'
 import { DataControlsPanel } from '@/components/data-controls-panel'
 import { DeckCard } from '@/components/deck-card'
+import { FirstRunPanel } from '@/components/first-run-panel'
+import { InstallAppPanel } from '@/components/install-app-panel'
 import { ProgressSharePanel } from '@/components/progress-share-panel'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -87,6 +89,11 @@ export function HomePage() {
   const masterySnapshot = getMasterySnapshot(deckRecords, progressStore)
   const sessionHistorySnapshot = getSessionHistorySnapshot(sessionHistoryStore)
   const goalsSnapshot = getStudyGoalsSnapshot(sessionHistorySnapshot)
+  const isFirstRun =
+    overallCounts.seen === 0 &&
+    sessionHistorySnapshot.totalSessions === 0 &&
+    masterySnapshot.savedNotes === 0
+  const starterDecks = getStarterDeckRecords(deckRecords, 3).map((record) => record.summary)
   const topicCards = topicEntries.map(([topic, summaries]) => {
     const topicDecks = deckRecords.filter((record) => record.summary.topic === topic)
 
@@ -166,6 +173,8 @@ export function HomePage() {
       </section>
 
       <section className="mb-6">
+        <InstallAppPanel />
+        {isFirstRun ? <FirstRunPanel starterDecks={starterDecks} /> : null}
         <AdSlot placement="home-primary" />
       </section>
 
@@ -895,6 +904,14 @@ function getWeakestDeckRecord(records: DeckLibraryRecord[]) {
 }
 
 function getStarterDeckRecord(records: DeckLibraryRecord[], excludeDeckId?: string | null) {
+  return getStarterDeckRecords(records, 1, excludeDeckId)[0] ?? null
+}
+
+function getStarterDeckRecords(
+  records: DeckLibraryRecord[],
+  limit: number,
+  excludeDeckId?: string | null,
+) {
   return [...records]
     .filter((record) => record.counts.seen === 0 && record.summary.id !== excludeDeckId)
     .sort((a, b) => {
@@ -909,7 +926,8 @@ function getStarterDeckRecord(records: DeckLibraryRecord[], excludeDeckId?: stri
       }
 
       return a.summary.title.localeCompare(b.summary.title)
-    })[0] ?? null
+    })
+    .slice(0, limit)
 }
 
 function getPrimaryAction(

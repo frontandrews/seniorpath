@@ -1,6 +1,7 @@
 import { getDeckById } from '@prepdeck/content'
 import { screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { vi } from 'vitest'
 
 import {
   PREVIOUS_STORAGE_KEY,
@@ -30,6 +31,25 @@ function getReactDeck() {
 }
 
 describe('app routes', () => {
+  it('shows a first-run quick-start panel when there is no local progress yet', () => {
+    renderApp(['/'])
+
+    expect(screen.getByRole('heading', { name: 'Start in under 10 minutes.' })).toBeInTheDocument()
+    expect(screen.getByText('Step 1')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Start Coding Challenges' })).toHaveAttribute(
+      'href',
+      '/study/coding-arrays-hashmaps-basics?mode=start',
+    )
+    expect(screen.getByRole('link', { name: 'Start JavaScript' })).toHaveAttribute(
+      'href',
+      '/study/javascript-runtime-core?mode=start',
+    )
+    expect(screen.getByRole('link', { name: 'Start Leadership' })).toHaveAttribute(
+      'href',
+      '/study/leadership-ownership-core?mode=start',
+    )
+  })
+
   it('renders the deck list with learned progress summaries', () => {
     const deck = getReactDeck()
     let store = createEmptyProgressStore()
@@ -56,6 +76,36 @@ describe('app routes', () => {
     expect(screen.getAllByText('Strongest topic').length).toBeGreaterThan(0)
     expect(screen.getAllByText('Weakest topic').length).toBeGreaterThan(0)
     expect(screen.getByText('No weak topic yet')).toBeInTheDocument()
+  })
+
+  it('surfaces an install panel when the browser exposes the PWA prompt', async () => {
+    const user = userEvent.setup()
+    const prompt = vi.fn().mockResolvedValue(undefined)
+    const event = new Event('beforeinstallprompt') as Event & {
+      prompt: typeof prompt
+      userChoice: Promise<{ outcome: 'accepted' | 'dismissed'; platform: string }>
+    }
+
+    Object.assign(event, {
+      prompt,
+      userChoice: Promise.resolve({
+        outcome: 'accepted' as const,
+        platform: 'web',
+      }),
+    })
+
+    renderApp(['/'])
+    window.dispatchEvent(event)
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Put it on the home screen like a real study app.',
+      }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'Install app' }))
+
+    expect(prompt).toHaveBeenCalledTimes(1)
   })
 
   it('renders local momentum and recent session activity on the home page', () => {
