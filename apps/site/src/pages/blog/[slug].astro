@@ -5,7 +5,6 @@ import { getDeckSummaryById } from '@prepdeck/content/manifest'
 import { getTopicLabel } from '@prepdeck/content'
 
 import BaseLayout from '../../layouts/BaseLayout.astro'
-import ArticleCard from '../../components/ArticleCard.astro'
 import { getAppHref } from '../../lib/app-links'
 import { sortGuides } from '../../lib/guide-tree'
 
@@ -68,58 +67,62 @@ const siblingPosts = allPosts
 const currentIndex = allPosts.findIndex((entry) => entry.id === post.id)
 const previousPost = currentIndex >= 0 ? allPosts[currentIndex + 1] ?? null : null
 const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
+const nextReads = [...new Map(
+  [nextPost, previousPost, ...connectedPosts, ...siblingPosts, ...relatedPosts]
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+    .filter((entry) => entry.id !== post.id)
+    .map((entry) => [entry.id, entry]),
+).values()].slice(0, 3)
+const primaryDeck = relatedDecks[0] ?? null
 ---
 
 <BaseLayout description={post.data.description} title={post.data.title}>
   <article class="article-shell">
     <header class="article-header">
-      <div class="meta-list">
-        <span class="badge badge--accent">{post.data.category}</span>
-        {post.data.topic ? <span class="badge">{post.data.topic}</span> : null}
-        {post.data.tags.map((tag) => (
-          <span class="badge">{tag}</span>
-        ))}
-      </div>
-      <div class="meta-list article-breadcrumbs">
-        {post.data.path.map((segment) => (
-          <span class="badge">{segment}</span>
-        ))}
-      </div>
-      {connectedPosts.length > 0 ? (
-        <div class="meta-list article-connections">
-          <span class="badge badge--accent">Connected guides</span>
-          {connectedPosts.map((entry) => (
-            <a class="badge" href={`/blog/${entry.id}`}>{entry.data.title}</a>
-          ))}
-        </div>
-      ) : null}
+      <p class="article-kicker">
+        {post.data.category}
+        {post.data.topic ? ` / ${post.data.topic}` : ''}
+      </p>
+      <p class="article-path">{post.data.path.join(' / ')}</p>
       <h1 class="article-title">{post.data.title}</h1>
       <p class="article-excerpt">{post.data.description}</p>
-      <div class="meta-list">
-        <a class="button-link" href="/">Open tree</a>
-        <a class="button-link" href="/map">Open map</a>
+      <div class="article-author-row">
+        <div class="article-author-avatar" aria-hidden="true">AR</div>
+        <div class="article-author-copy">
+          <p class="article-author-name">Andrews Ribeiro</p>
+          <p class="article-author-meta">
+            {post.data.pubDate.toLocaleDateString('en-US', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+            {post.data.updatedDate
+              ? ` · Updated ${post.data.updatedDate.toLocaleDateString('en-US', {
+                  day: 'numeric',
+                  month: 'short',
+                  year: 'numeric',
+                })}`
+              : ''}
+          </p>
+        </div>
+      </div>
+      <div class="meta-list article-header-actions">
+        {primaryDeck ? (
+          <a class="button-link button-link--primary" href={getAppHref(`/decks/${primaryDeck.id}`)}>
+            Test
+          </a>
+        ) : null}
         <button class="button-link" data-guide-complete-toggle data-guide-id={post.id} type="button">
           Mark complete
         </button>
       </div>
-      <div class="meta-list">
-        <span class="badge">
-          {post.data.pubDate.toLocaleDateString('en-US', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}
-        </span>
-        {post.data.updatedDate ? (
-          <span class="badge">
-            Updated {post.data.updatedDate.toLocaleDateString('en-US', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-            })}
-          </span>
-        ) : null}
-      </div>
+      {post.data.tags.length > 0 ? (
+        <div class="meta-list article-tags">
+          {post.data.tags.map((tag) => (
+            <span class="badge">{tag}</span>
+          ))}
+        </div>
+      ) : null}
     </header>
 
     {(post.data.takeaways.length > 0 || post.data.practiceChecklist.length > 0) ? (
@@ -160,38 +163,6 @@ const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
       <Content />
     </div>
 
-    {connectedPosts.length > 0 ? (
-      <section class="article-section">
-        <div class="section-header">
-          <div>
-            <p class="section-eyebrow">Connections</p>
-            <h2 class="section-heading section-heading--compact">Guides directly tied to this one</h2>
-          </div>
-        </div>
-        <div class="panel-grid panel-grid--articles">
-          {connectedPosts.map((entry) => (
-            <ArticleCard post={entry} />
-          ))}
-        </div>
-      </section>
-    ) : null}
-
-    {siblingPosts.length > 0 ? (
-      <section class="article-section">
-        <div class="section-header">
-          <div>
-            <p class="section-eyebrow">Same branch</p>
-            <h2 class="section-heading section-heading--compact">Guides in the same path</h2>
-          </div>
-        </div>
-        <div class="panel-grid panel-grid--articles">
-          {siblingPosts.map((entry) => (
-            <ArticleCard post={entry} />
-          ))}
-        </div>
-      </section>
-    ) : null}
-
     {relatedDecks.length > 0 ? (
       <section class="article-section">
         <div class="section-header">
@@ -221,45 +192,20 @@ const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
       </section>
     ) : null}
 
-    {relatedPosts.length > 0 ? (
+    {nextReads.length > 0 ? (
       <section class="article-section">
         <div class="section-header">
           <div>
-            <p class="section-eyebrow">Keep reading</p>
-            <h2 class="section-heading section-heading--compact">More guides around this area</h2>
-          </div>
-        </div>
-        <div class="panel-grid panel-grid--articles">
-          {relatedPosts.map((entry) => (
-            <ArticleCard post={entry} />
-          ))}
-        </div>
-      </section>
-    ) : null}
-
-    {(previousPost || nextPost) ? (
-      <section class="article-section">
-        <div class="section-header">
-          <div>
-            <p class="section-eyebrow">Keep reading</p>
-            <h2 class="section-heading section-heading--compact">Next guide</h2>
+            <h2 class="section-heading section-heading--compact">Next reads</h2>
           </div>
         </div>
         <div class="panel-grid panel-grid--summary">
-          {previousPost ? (
-            <a class="panel nav-card" href={`/blog/${previousPost.id}`}>
-              <p class="section-eyebrow">Previous</p>
-              <h3>{previousPost.data.title}</h3>
-              <p class="article-excerpt">{previousPost.data.summary}</p>
+          {nextReads.map((entry) => (
+            <a class="panel next-read-card" href={`/blog/${entry.id}`}>
+              <h3>{entry.data.title}</h3>
+              <p class="article-excerpt">{entry.data.summary}</p>
             </a>
-          ) : null}
-          {nextPost ? (
-            <a class="panel nav-card" href={`/blog/${nextPost.id}`}>
-              <p class="section-eyebrow">Next</p>
-              <h3>{nextPost.data.title}</h3>
-              <p class="article-excerpt">{nextPost.data.summary}</p>
-            </a>
-          ) : null}
+          ))}
         </div>
       </section>
     ) : null}
