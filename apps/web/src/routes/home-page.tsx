@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button'
 import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
 import { ProgressMeter } from '@/components/ui/progress-meter'
+import { getMasteryPercent, getMasterySnapshot } from '@/lib/mastery'
 import {
   combineDeckCounts,
   getDeckCounts,
@@ -69,6 +70,7 @@ export function HomePage() {
   )
   const visibleDeckRecords = getVisibleDeckRecords(deckRecords, selectedTopic)
   const sessionPresets = getSessionPresets(deckRecords)
+  const masterySnapshot = getMasterySnapshot(deckRecords, progressStore)
   const topicCards = topicEntries.map(([topic, summaries]) => {
     const topicDecks = deckRecords.filter((record) => record.summary.topic === topic)
 
@@ -186,6 +188,55 @@ export function HomePage() {
           {sessionPresets.map((preset) => (
             <SessionPresetCard key={preset.id} preset={preset} />
           ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="mastery-snapshot-heading" className="mb-6">
+        <div className="mb-4">
+          <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="mastery-snapshot-heading">
+            Mastery snapshot
+          </h2>
+          <p className="mt-1 text-sm leading-6 text-white/75">
+            Local signals that show where you are strongest, where the review debt lives, and how much groundwork is already done.
+          </p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <MasterySignalCard
+            detail={
+              masterySnapshot.strongestTopic
+                ? `${getMasteryPercent(masterySnapshot.strongestTopic)}% learned across ${masterySnapshot.strongestTopic.deckCount} deck${masterySnapshot.strongestTopic.deckCount === 1 ? '' : 's'}.`
+                : 'No topic has enough progress yet to rank as strongest.'
+            }
+            label="Strongest topic"
+            value={
+              masterySnapshot.strongestTopic
+                ? getTopicLabel(masterySnapshot.strongestTopic.topic)
+                : 'Not enough reps yet'
+            }
+          />
+          <MasterySignalCard
+            detail={
+              masterySnapshot.weakestTopic
+                ? `${masterySnapshot.weakestTopic.reviewDebt} ${pluralize('card', masterySnapshot.weakestTopic.reviewDebt)} still ${masterySnapshot.weakestTopic.reviewDebt === 1 ? 'needs' : 'need'} work here.`
+                : 'No weak topic is standing out right now.'
+            }
+            label="Weakest topic"
+            value={
+              masterySnapshot.weakestTopic
+                ? getTopicLabel(masterySnapshot.weakestTopic.topic)
+                : 'No weak topic yet'
+            }
+          />
+          <MasterySignalCard
+            detail={`${masterySnapshot.startedDecks} started ${pluralize('deck', masterySnapshot.startedDecks)} across the library.`}
+            label="Decks completed"
+            value={`${masterySnapshot.decksCompleted}`}
+          />
+          <MasterySignalCard
+            detail={`${masterySnapshot.reviewDebt} ${pluralize('card', masterySnapshot.reviewDebt)} currently ${masterySnapshot.reviewDebt === 1 ? 'sits' : 'sit'} in the review debt queue.`}
+            label="Saved notes"
+            value={`${masterySnapshot.savedNotes}`}
+          />
         </div>
       </section>
 
@@ -334,6 +385,26 @@ function SessionPresetCard({ preset }: { preset: SessionPreset }) {
           {preset.label}
         </LinkButton>
       </div>
+    </Panel>
+  )
+}
+
+function MasterySignalCard({
+  detail,
+  label,
+  value,
+}: {
+  detail: string
+  label: string
+  value: string
+}) {
+  return (
+    <Panel className="p-5">
+      <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+        {label}
+      </p>
+      <p className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{value}</p>
+      <p className="mt-3 text-sm leading-6 text-white/80">{detail}</p>
     </Panel>
   )
 }
@@ -525,4 +596,8 @@ function getDifficultyRank(difficulty: DeckManifestEntry['difficulty']) {
   if (difficulty === 'easy') return 0
   if (difficulty === 'medium') return 1
   return 2
+}
+
+function pluralize(word: string, count: number) {
+  return count === 1 ? word : `${word}s`
 }

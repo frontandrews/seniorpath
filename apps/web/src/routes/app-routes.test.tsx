@@ -37,6 +37,10 @@ describe('app routes', () => {
     expect(screen.getByRole('link', { name: 'Continue latest' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Run interview rep' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Take a quick warm-up' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: 'Mastery snapshot' })).toBeInTheDocument()
+    expect(screen.getByText('Strongest topic')).toBeInTheDocument()
+    expect(screen.getByText('Weakest topic')).toBeInTheDocument()
+    expect(screen.getByText('No weak topic yet')).toBeInTheDocument()
   })
 
   it('filters the home deck list by selected topic', async () => {
