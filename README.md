@@ -66,12 +66,16 @@ The goal is simple: open the app, get one clear next step, study on a phone-size
 
 ```bash
 pnpm install
+pnpm dev:all
 pnpm dev
 pnpm dev:site
 ```
 
 If you want the app to open the Astro journal during local development, copy
 `apps/web/.env.example` to `apps/web/.env.local`.
+
+If you want the journal to open the app correctly during local development, copy
+`apps/site/.env.example` to `apps/site/.env.local`.
 
 ## Test It
 
