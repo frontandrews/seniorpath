@@ -1,15 +1,15 @@
 :root {
   --radius: 0.5rem;
   --site-bg: #fefefe;
-  --site-surface: #cad0d9;
+  --site-surface: #4d91e9;
   --site-surface-strong: #fae583;
   --site-line: #000;
   --site-line-strong: #000;
   --site-ink: #000;
   --site-ink-soft: rgba(0, 0, 0, 0.78);
   --site-ink-muted: rgba(0, 0, 0, 0.58);
-  --site-accent: #2687e8;
-  --site-accent-soft: #fae583;
+  --site-accent: #c4cf5c;
+  --site-accent-soft: #83c2fa;
   --site-success: #3f8f63;
   color: var(--site-ink);
   font-family:
@@ -153,12 +153,13 @@ pre {
 
 .site-theme-toggle {
   cursor: pointer;
-  gap: 0.45rem;
+  min-width: 2.9rem;
+  padding-inline: 0.8rem;
 }
 
 .site-theme-toggle__icon {
-  width: 0.9rem;
-  height: 0.9rem;
+  width: 1.1rem;
+  height: 1.1rem;
   flex-shrink: 0;
 }
 
