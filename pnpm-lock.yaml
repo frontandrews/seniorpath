@@ -9,6 +9,10 @@ importers:
   .: {}
 
   apps/site:
+    dependencies:
+      '@prepdeck/content':
+        specifier: workspace:*
+        version: link:../../packages/content
     devDependencies:
       '@astrojs/check':
         specifier: ^0.9.8

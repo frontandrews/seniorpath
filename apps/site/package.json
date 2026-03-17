@@ -9,6 +9,9 @@
     "dev": "astro dev",
     "preview": "astro preview"
   },
+  "dependencies": {
+    "@prepdeck/content": "workspace:*"
+  },
   "devDependencies": {
     "@astrojs/check": "^0.9.8",
     "astro": "^6.0.5",

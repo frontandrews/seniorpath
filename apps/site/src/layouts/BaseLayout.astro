@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css'
 
+import { getAppHref } from '../lib/app-links'
+
 type Props = {
   description: string
   title: string
@@ -42,6 +44,7 @@ const pageTitle = `${title} | Prepdeck Journal`
           <nav class="site-nav">
             <a class="site-nav__link" href="/">Home</a>
             <a class="site-nav__link" href="/blog">Blog</a>
+            <a class="site-nav__link" href={getAppHref('/')}>Open app</a>
           </nav>
         </div>
       </header>

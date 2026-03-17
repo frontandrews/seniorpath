@@ -1,8 +1,11 @@
 ---
 import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
+import { getDeckSummaryById } from '@prepdeck/content/manifest'
 
 import BaseLayout from '../../layouts/BaseLayout.astro'
+import ArticleCard from '../../components/ArticleCard.astro'
+import { getAppHref } from '../../lib/app-links'
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog')
@@ -23,6 +26,21 @@ type Props = {
 
 const { post } = Astro.props
 const { Content } = await render(post)
+const relatedDecks = post.data.relatedDeckIds
+  .map((deckId) => getDeckSummaryById(deckId))
+  .filter((deck): deck is NonNullable<typeof deck> => Boolean(deck))
+const relatedPosts = (await getCollection('blog'))
+  .filter((entry) => {
+    if (entry.id === post.id) {
+      return false
+    }
+
+    const sharesTopic = entry.data.topic && entry.data.topic === post.data.topic
+    const sharesTag = entry.data.tags.some((tag) => post.data.tags.includes(tag))
+
+    return Boolean(sharesTopic || sharesTag)
+  })
+  .slice(0, 2)
 ---
 
 <BaseLayout description={post.data.description} title={post.data.title}>
@@ -59,5 +77,50 @@ const { Content } = await render(post)
     <div class="article-prose">
       <Content />
     </div>
+
+    {relatedDecks.length > 0 ? (
+      <section class="article-section">
+        <div class="section-header">
+          <div>
+            <p class="section-eyebrow">Open in Prepdeck</p>
+            <h2 class="section-heading section-heading--compact">Keep practicing inside the app</h2>
+          </div>
+        </div>
+        <div class="panel-grid">
+          {relatedDecks.map((deck) => (
+            <div class="panel article-related-card">
+              <div class="meta-list">
+                <span class="badge badge--accent">{deck.topic}</span>
+                <span class="badge">{deck.cardCount} cards</span>
+                <span class="badge">{deck.estimatedMinutes} min</span>
+              </div>
+              <div>
+                <h3>{deck.title}</h3>
+                <p class="article-excerpt">{deck.description}</p>
+              </div>
+              <a class="button-link button-link--primary" href={getAppHref(`/decks/${deck.id}`)}>
+                Open deck
+              </a>
+            </div>
+          ))}
+        </div>
+      </section>
+    ) : null}
+
+    {relatedPosts.length > 0 ? (
+      <section class="article-section">
+        <div class="section-header">
+          <div>
+            <p class="section-eyebrow">Keep reading</p>
+            <h2 class="section-heading section-heading--compact">More articles around this topic</h2>
+          </div>
+        </div>
+        <div class="panel-grid panel-grid--articles">
+          {relatedPosts.map((entry) => (
+            <ArticleCard post={entry} />
+          ))}
+        </div>
+      </section>
+    ) : null}
   </article>
 </BaseLayout>
