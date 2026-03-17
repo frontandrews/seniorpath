@@ -7,6 +7,7 @@ import { ConfirmDialog } from '@/components/confirm-dialog'
 import { AdSlot } from '@/components/ad-slot'
 import { DataControlsPanel } from '@/components/data-controls-panel'
 import { DeckCard } from '@/components/deck-card'
+import { ProgressSharePanel } from '@/components/progress-share-panel'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { LinkButton } from '@/components/ui/link-button'
@@ -416,6 +417,10 @@ export function HomePage() {
             </div>
           </Panel>
         )}
+      </section>
+
+      <section className="mt-6">
+        <ProgressSharePanel />
       </section>
 
       <section className="mt-6">
