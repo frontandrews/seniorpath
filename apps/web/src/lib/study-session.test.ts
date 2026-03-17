@@ -2,7 +2,11 @@ import { getDeckById } from '@prepdeck/content'
 
 import { createEmptyProgressStore, setCardStatus } from '@/lib/progress'
 import {
+  createStudyHref,
+  getInterviewDurationSeconds,
   getStudyCards,
+  getStudyFormat,
+  getStudyFormatLabel,
   getStudyInitialIndex,
   getStudyScope,
   getStudyScopeLabel,
@@ -24,6 +28,10 @@ describe('study session helpers', () => {
     expect(getStudyScope('random')).toBe('all')
     expect(getStudyScope('weak')).toBe('weak')
     expect(getStudyScopeLabel('weak')).toBe('Weak cards only')
+    expect(getStudyFormat(null)).toBe('flashcards')
+    expect(getStudyFormat('random')).toBe('flashcards')
+    expect(getStudyFormat('interview')).toBe('interview')
+    expect(getStudyFormatLabel('interview')).toBe('Interview mode')
   })
 
   it('filters weak study cards to partial and not learned only', () => {
@@ -46,5 +54,14 @@ describe('study session helpers', () => {
 
     expect(getStudyInitialIndex(store, deck, 'all', 'continue')).toBe(1)
     expect(getStudyInitialIndex(store, deck, 'weak', 'continue')).toBe(0)
+  })
+
+  it('builds interview study hrefs and per-card durations', () => {
+    const deck = getReactDeck()
+
+    expect(createStudyHref(deck.id, { format: 'interview', mode: 'start' })).toBe(
+      `/study/${deck.id}?mode=start&format=interview`,
+    )
+    expect(getInterviewDurationSeconds(deck.cards[0])).toBe(90)
   })
 })
