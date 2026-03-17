@@ -1,3 +1,4 @@
+import { LazyMotion, MotionConfig, domMax } from 'motion/react'
 import { BrowserRouter } from 'react-router-dom'
 
 import { AppRoutes } from '@/routes/app-routes'
@@ -8,9 +9,13 @@ function App() {
   return (
     <MonetizationProvider>
       <ProgressProvider>
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
+        <MotionConfig reducedMotion="user">
+          <LazyMotion features={domMax}>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+          </LazyMotion>
+        </MotionConfig>
       </ProgressProvider>
     </MonetizationProvider>
   )

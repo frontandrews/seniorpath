@@ -44,10 +44,44 @@ body {
   min-height: 100vh;
   background: transparent;
   color: var(--retro-ink);
+  isolation: isolate;
+  overflow-x: hidden;
+  position: relative;
   background-image:
     linear-gradient(rgba(215, 226, 255, 0.04) 1px, transparent 1px),
     linear-gradient(90deg, rgba(215, 226, 255, 0.04) 1px, transparent 1px);
   background-size: 24px 24px, 24px 24px;
+}
+
+body::before,
+body::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+}
+
+body::before {
+  background:
+    radial-gradient(circle at 18% 18%, rgba(93, 144, 235, 0.14), transparent 24%),
+    radial-gradient(circle at 82% 24%, rgba(83, 126, 146, 0.14), transparent 22%),
+    radial-gradient(circle at 50% 88%, rgba(80, 98, 127, 0.16), transparent 28%);
+  filter: blur(12px);
+  opacity: 0.9;
+  transform-origin: center;
+  z-index: -2;
+  animation: retroFloat 18s ease-in-out infinite alternate;
+}
+
+body::after {
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 100% 6px, 48px 100%;
+  mix-blend-mode: screen;
+  opacity: 0.14;
+  z-index: -1;
+  animation: scanlineDrift 14s linear infinite;
 }
 
 #root {
@@ -62,4 +96,35 @@ a {
 ::selection {
   background: var(--retro-accent);
   color: white;
+}
+
+@keyframes retroFloat {
+  0% {
+    transform: translate3d(-1.5%, -1.5%, 0) scale(1);
+  }
+
+  50% {
+    transform: translate3d(1%, 1.25%, 0) scale(1.03);
+  }
+
+  100% {
+    transform: translate3d(2%, -1%, 0) scale(1.02);
+  }
+}
+
+@keyframes scanlineDrift {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(12px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before,
+  body::after {
+    animation: none;
+  }
 }

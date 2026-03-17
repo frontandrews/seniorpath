@@ -1,5 +1,6 @@
 import type { DeckManifestEntry } from '@prepdeck/schemas'
 import { getDeckById, getDecksByTopic } from '@prepdeck/content'
+import { m } from 'motion/react'
 import { useMemo, useState } from 'react'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
@@ -16,6 +17,7 @@ import {
   type DeckLibraryFilters,
   type DeckLibraryRecord,
 } from '@/lib/deck-library'
+import { cardRevealVariants, hoverLiftMotionProps } from '@/lib/motion'
 import { getMasteryPercent, getMasterySnapshot } from '@/lib/mastery'
 import {
   combineDeckCounts,
@@ -456,42 +458,60 @@ function FocusCard({
   title: string
 }) {
   return (
-    <Panel className="p-5">
-      <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-        {eyebrow}
-      </p>
-      <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-white/80">{detail}</p>
-      <div className="mt-5">
-        <LinkButton to={actionHref} variant="primary">
-          {actionLabel}
-        </LinkButton>
-      </div>
-    </Panel>
+    <m.div
+      className="[transform-style:preserve-3d]"
+      initial="initial"
+      variants={cardRevealVariants}
+      viewport={{ amount: 0.25, once: true }}
+      whileInView="animate"
+      {...hoverLiftMotionProps}
+    >
+      <Panel className="p-5">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+          {eyebrow}
+        </p>
+        <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{title}</h3>
+        <p className="mt-3 text-sm leading-6 text-white/80">{detail}</p>
+        <div className="mt-5">
+          <LinkButton to={actionHref} variant="primary">
+            {actionLabel}
+          </LinkButton>
+        </div>
+      </Panel>
+    </m.div>
   )
 }
 
 function SessionPresetCard({ preset }: { preset: SessionPreset }) {
   return (
-    <Panel className="flex h-full flex-col justify-between gap-5 p-5">
-      <div>
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-          Session preset
-        </p>
-        <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{preset.title}</h3>
-        <div className="mt-3 flex flex-wrap gap-2 text-sm">
-          {preset.meta.map((item) => (
-            <Badge key={item}>{item}</Badge>
-          ))}
+    <m.div
+      className="h-full [transform-style:preserve-3d]"
+      initial="initial"
+      variants={cardRevealVariants}
+      viewport={{ amount: 0.2, once: true }}
+      whileInView="animate"
+      {...hoverLiftMotionProps}
+    >
+      <Panel className="flex h-full flex-col justify-between gap-5 p-5">
+        <div>
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+            Session preset
+          </p>
+          <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{preset.title}</h3>
+          <div className="mt-3 flex flex-wrap gap-2 text-sm">
+            {preset.meta.map((item) => (
+              <Badge key={item}>{item}</Badge>
+            ))}
+          </div>
+          <p className="mt-4 text-sm leading-6 text-white/80">{preset.detail}</p>
         </div>
-        <p className="mt-4 text-sm leading-6 text-white/80">{preset.detail}</p>
-      </div>
-      <div className="mt-auto">
-        <LinkButton to={preset.href} variant="secondary">
-          {preset.label}
-        </LinkButton>
-      </div>
-    </Panel>
+        <div className="mt-auto">
+          <LinkButton to={preset.href} variant="secondary">
+            {preset.label}
+          </LinkButton>
+        </div>
+      </Panel>
+    </m.div>
   )
 }
 
@@ -505,13 +525,21 @@ function MasterySignalCard({
   value: string
 }) {
   return (
-    <Panel className="p-5">
-      <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-        {label}
-      </p>
-      <p className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{value}</p>
-      <p className="mt-3 text-sm leading-6 text-white/80">{detail}</p>
-    </Panel>
+    <m.div
+      initial="initial"
+      variants={cardRevealVariants}
+      viewport={{ amount: 0.3, once: true }}
+      whileInView="animate"
+      {...hoverLiftMotionProps}
+    >
+      <Panel className="p-5">
+        <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+          {label}
+        </p>
+        <p className="mt-3 text-2xl font-black text-[var(--retro-ink)]">{value}</p>
+        <p className="mt-3 text-sm leading-6 text-white/80">{detail}</p>
+      </Panel>
+    </m.div>
   )
 }
 
@@ -529,47 +557,64 @@ function TopicPathCard({
   topic: string
 }) {
   return (
-    <Panel
-      className={
-        isActive
-          ? 'border-[var(--retro-line-strong)] bg-[var(--retro-surface-strong)] p-5'
-          : 'p-5'
-      }
+    <m.div
+      className="[transform-style:preserve-3d]"
+      initial="initial"
+      layout
+      variants={cardRevealVariants}
+      viewport={{ amount: 0.2, once: true }}
+      whileInView="animate"
+      {...hoverLiftMotionProps}
     >
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-            Topic
-          </p>
-          <h3 className="mt-2 text-xl font-black text-[var(--retro-ink)]">
-            {getTopicLabel(topic)}
-          </h3>
+      <Panel
+        className={
+          isActive
+            ? 'border-[var(--retro-line-strong)] bg-[var(--retro-surface-strong)] p-5'
+            : 'p-5'
+        }
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+              Topic
+            </p>
+            <h3 className="mt-2 text-xl font-black text-[var(--retro-ink)]">
+              {getTopicLabel(topic)}
+            </h3>
+          </div>
+          <Badge>{deckCount} decks</Badge>
         </div>
-        <Badge>{deckCount} decks</Badge>
-      </div>
-      <p className="mt-3 text-sm leading-6 text-white/80">
-        {counts.learned} learned · {counts.partial + counts.notLearned} need review
-      </p>
-      <div className="mt-4">
-        <ProgressMeter current={counts.learned} total={counts.total} />
-      </div>
-      <div className="mt-4">
-        <Button onClick={onSelect} size="sm" type="button" variant={isActive ? 'primary' : 'ghost'}>
-          {isActive ? 'Showing topic' : 'Show topic decks'}
-        </Button>
-      </div>
-    </Panel>
+        <p className="mt-3 text-sm leading-6 text-white/80">
+          {counts.learned} learned · {counts.partial + counts.notLearned} need review
+        </p>
+        <div className="mt-4">
+          <ProgressMeter current={counts.learned} total={counts.total} />
+        </div>
+        <div className="mt-4">
+          <Button onClick={onSelect} size="sm" type="button" variant={isActive ? 'primary' : 'ghost'}>
+            {isActive ? 'Showing topic' : 'Show topic decks'}
+          </Button>
+        </div>
+      </Panel>
+    </m.div>
   )
 }
 
 function SummaryStat({ label, value }: { label: string; value: string }) {
   return (
-    <Panel className="bg-[var(--retro-surface-muted)] p-3" inset>
-      <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--retro-ink-soft)]">
-        {label}
-      </p>
-      <p className="mt-1 text-lg font-black text-[var(--retro-ink)]">{value}</p>
-    </Panel>
+    <m.div
+      initial="initial"
+      variants={cardRevealVariants}
+      viewport={{ amount: 0.3, once: true }}
+      whileInView="animate"
+    >
+      <Panel className="bg-[var(--retro-surface-muted)] p-3" inset>
+        <p className="text-[0.68rem] font-semibold uppercase tracking-[0.18em] text-[var(--retro-ink-soft)]">
+          {label}
+        </p>
+        <p className="mt-1 text-lg font-black text-[var(--retro-ink)]">{value}</p>
+      </Panel>
+    </m.div>
   )
 }
 

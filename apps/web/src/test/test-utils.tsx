@@ -1,4 +1,5 @@
 import type { ProgressStore } from '@prepdeck/schemas'
+import { LazyMotion, MotionConfig, domMax } from 'motion/react'
 import type { PropsWithChildren } from 'react'
 import { render } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
@@ -16,7 +17,11 @@ function Providers({
   return (
     <MonetizationProvider>
       <ProgressProvider>
-        <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+        <MotionConfig reducedMotion="never">
+          <LazyMotion features={domMax}>
+            <MemoryRouter initialEntries={initialEntries}>{children}</MemoryRouter>
+          </LazyMotion>
+        </MotionConfig>
       </ProgressProvider>
     </MonetizationProvider>
   )
