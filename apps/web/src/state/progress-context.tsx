@@ -27,6 +27,7 @@ type ProgressContextValue = {
   getCardNote: (deckId: string, cardId: string) => string
   progressStore: ProgressStore
   rememberDeckPosition: (deckId: string, cardId: string | null) => void
+  replaceProgressStore: (store: ProgressStore) => void
   resetAllProgress: () => void
   resetDeckProgress: (deckId: string) => void
   setCardNote: (deckId: string, cardId: string, note: string) => void
@@ -75,6 +76,10 @@ export function ProgressProvider({ children }: PropsWithChildren) {
     setProgressStore(resetAllProgressInStore())
   }, [])
 
+  const replaceProgressStore = useCallback((store: ProgressStore) => {
+    setProgressStore(store)
+  }, [])
+
   const setLearnedToUnseen = useCallback((deckId: string, cardId: string) => {
     setProgressStore((currentStore) => setLearnedToUnseenInStore(currentStore, deckId, cardId))
   }, [])
@@ -89,6 +94,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
       getCardNote,
       progressStore,
       rememberDeckPosition,
+      replaceProgressStore,
       resetAllProgress,
       resetDeckProgress,
       setCardNote,
@@ -100,6 +106,7 @@ export function ProgressProvider({ children }: PropsWithChildren) {
       getCardNote,
       progressStore,
       rememberDeckPosition,
+      replaceProgressStore,
       resetAllProgress,
       resetDeckProgress,
       setCardNote,
