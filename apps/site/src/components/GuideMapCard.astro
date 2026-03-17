@@ -13,10 +13,7 @@ const primaryDeckId = item.relatedDeckIds[0] ?? null
 <article class="panel guide-map-card">
   <p class="section-eyebrow">{item.path.join(' / ')}</p>
 
-  <div>
-    <h3>{item.title}</h3>
-    <p class="article-excerpt">{item.summary}</p>
-  </div>
+  <h3>{item.title}</h3>
 
   <div class="meta-list">
     <a class="button-link button-link--primary" href={`/blog/${item.id}`}>Read</a>
@@ -27,22 +24,13 @@ const primaryDeckId = item.relatedDeckIds[0] ?? null
 
   {item.connections.length > 0 ? (
     <div class="guide-map-card__connections">
-      <p class="section-eyebrow">Connected guides</p>
       <div class="guide-map-card__connection-list">
         {item.connections.map((connection) => (
           <a class="guide-connection" href={`/blog/${connection.id}`}>
-            <span class={`badge ${connection.relation === 'connects_to' ? 'badge--accent' : ''}`}>
-              {connection.relation === 'connects_to' ? 'Links to' : 'Linked from'}
-            </span>
             <span>{connection.title}</span>
           </a>
         ))}
       </div>
     </div>
-  ) : (
-    <div class="guide-map-card__connections">
-      <p class="section-eyebrow">Connected guides</p>
-      <p class="article-excerpt">No direct guide links yet.</p>
-    </div>
-  )}
+  ) : null}
 </article>

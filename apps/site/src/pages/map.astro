@@ -15,45 +15,30 @@ const explicitLinks = posts.reduce((total, post) => total + post.data.relationsh
   description="A connection map for browsing how Prepdeck guides relate to each other."
   title="Connection map"
 >
-  <section class="hero">
-    <div class="hero__grid">
-      <div>
-        <div class="hero__badges">
-          <span class="badge badge--accent">Connection map</span>
-          <span class="badge">{posts.length} guides</span>
-          <span class="badge">{explicitLinks} explicit links</span>
-        </div>
-        <h1>See how the guides connect.</h1>
-        <p>
-          Use the tree when you want a clean hierarchy. Use the map when you want to see
-          how one topic leads into another across categories.
-        </p>
-        <div class="meta-list">
-          <a class="button-link button-link--primary" href="/">Open tree</a>
-          <a class="button-link" href={getAppHref('/')}>Open practice</a>
-        </div>
+  <section class="section section--compact">
+    <div class="panel page-toolbar">
+      <div class="page-toolbar__intro">
+        <p class="section-eyebrow">Connection map</p>
+        <h1 class="section-heading section-heading--compact">Map</h1>
       </div>
 
-      <div class="panel">
-        <p class="section-eyebrow">How to read it</p>
-        <ul class="article-prose compact-list">
-          <li>Each section starts from one root area.</li>
-          <li>Each card keeps its primary path visible.</li>
-          <li>Connected guides show explicit links in both directions.</li>
-        </ul>
+      <div class="page-toolbar__meta">
+        <span class="badge">{posts.length} guides</span>
+        <span class="badge">{explicitLinks} links</span>
+      </div>
+
+      <div class="page-toolbar__actions">
+        <a class="button-link button-link--primary" href="/">Tree</a>
+        <a class="button-link" href={getAppHref('/')}>Practice</a>
       </div>
     </div>
   </section>
 
   {sections.map((section) => (
-    <section class="section">
+    <section class="section section--compact">
       <div class="section-header">
         <div>
-          <p class="section-eyebrow">Map section</p>
-          <h2 class="section-heading">{section.label}</h2>
-          <p class="section-copy">
-            Guides whose primary path starts in {section.label}.
-          </p>
+          <h2 class="section-heading section-heading--compact">{section.label}</h2>
         </div>
       </div>
 

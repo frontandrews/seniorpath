@@ -14,53 +14,27 @@ const guideTree = buildGuideTree(posts)
   description="A tree-style index of guides for programming, AI engineering, communication, and leadership."
   title="Guide map"
 >
-  <section class="hero">
-    <div class="hero__grid">
-      <div>
-        <div class="hero__badges">
-          <span class="badge badge--accent">Guide map</span>
-          <span class="badge">{posts.length} guides</span>
-          <span class="badge">{guideTree.length} categories</span>
-        </div>
-        <h1>Browse the map. Open what matters. Practice right after.</h1>
-        <p>
-          Scan the tree, open the guide you need, then use practice when you want to
-          validate the topic instead of just reading it once.
-        </p>
-        <div class="meta-list">
-          <a class="button-link button-link--primary" href={getAppHref('/')}>Open practice</a>
-          <a class="button-link" href="/map">Connection map</a>
-          <a class="button-link" href="/blog">Flat guide list</a>
-        </div>
+  <section class="section section--compact">
+    <div class="panel page-toolbar">
+      <div class="page-toolbar__intro">
+        <p class="section-eyebrow">Guide tree</p>
+        <h1 class="section-heading section-heading--compact">Guides</h1>
       </div>
 
-      <div class="panel">
-        <p class="section-eyebrow">How to use it</p>
-        <ul class="article-prose compact-list">
-          <li>Filter one or more categories.</li>
-          <li>Open the guide that matches your current gap.</li>
-          <li>Use Test when you want to validate the topic inside the app.</li>
-        </ul>
+      <div class="page-toolbar__meta">
+        <span class="badge">{posts.length} guides</span>
+        <span class="badge">{guideTree.length} categories</span>
       </div>
-    </div>
-  </section>
 
-  <section class="section">
-    <div class="section-header">
-      <div>
-        <p class="section-eyebrow">Tree navigation</p>
-        <h2 class="section-heading">Everything available right now</h2>
-        <p class="section-copy">
-          One tree for the current learning paths, grouped by primary category and nested
-          sub-category.
-        </p>
+      <div class="page-toolbar__actions">
+        <a class="button-link button-link--primary" href={getAppHref('/')}>Practice</a>
+        <a class="button-link" href="/map">Map</a>
+        <a class="button-link" href="/blog">List</a>
       </div>
     </div>
 
-    <div class="panel tree-controls">
-      <div class="tree-controls__header">
-        <p class="section-eyebrow">Filter by category</p>
-      </div>
+    <div class="tree-controls tree-controls--compact">
+      <p class="section-eyebrow">Filter by category</p>
       <div class="meta-list">
         {guideTree.map((node) => (
           <button class="guide-filter-chip" data-tree-filter={node.label} type="button">

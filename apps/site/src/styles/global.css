@@ -369,6 +369,10 @@ pre {
   margin-bottom: 1rem;
 }
 
+.tree-controls--compact {
+  margin-bottom: 0.75rem;
+}
+
 .tree-controls__header {
   display: flex;
   flex-wrap: wrap;
@@ -478,7 +482,7 @@ pre {
 .guide-map-card {
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.7rem;
   height: 100%;
 }
 
@@ -494,15 +498,15 @@ pre {
 
 .guide-map-card__connections {
   display: grid;
-  gap: 0.7rem;
+  gap: 0.45rem;
   margin-top: auto;
-  padding-top: 0.8rem;
+  padding-top: 0.7rem;
   border-top: 2px solid var(--site-line);
 }
 
 .guide-map-card__connection-list {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.45rem;
 }
 
 .guide-connection {
@@ -553,6 +557,10 @@ pre {
   margin-top: 1.5rem;
 }
 
+.section--compact {
+  margin-top: 1rem;
+}
+
 .section-heading {
   font-size: clamp(1.7rem, 5vw, 2.4rem);
 }
@@ -597,7 +605,27 @@ pre {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.page-toolbar {
+  display: grid;
+  gap: 0.85rem;
+  margin-bottom: 0.75rem;
+  padding: 1rem 1.1rem;
+}
+
+.page-toolbar__intro,
+.page-toolbar__meta,
+.page-toolbar__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.page-toolbar__intro {
+  justify-content: space-between;
 }
 
 .section-eyebrow {
