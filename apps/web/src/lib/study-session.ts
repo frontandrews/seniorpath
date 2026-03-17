@@ -4,6 +4,12 @@ import { getCardStatus, getFirstUnseenCardIndex } from '@/lib/progress'
 
 export type StudyFormat = 'flashcards' | 'interview'
 export type StudyScope = 'all' | 'weak'
+export type StudyCardEntry = {
+  card: Flashcard
+  deckId: string
+  deckTitle: string
+  topic: string
+}
 
 const INTERVIEW_SECONDS_BY_DIFFICULTY = {
   easy: 60,
@@ -42,6 +48,18 @@ export function createStudyHref(deckId: string, options: StudyHrefOptions = {}):
   return query ? `/study/${deckId}?${query}` : `/study/${deckId}`
 }
 
+export function createMockInterviewHref(state?: 'success'): string {
+  const params = new URLSearchParams()
+
+  if (state) {
+    params.set('state', state)
+  }
+
+  const query = params.toString()
+
+  return query ? `/mock-interview?${query}` : '/mock-interview'
+}
+
 export function getInterviewDurationSeconds(card: Flashcard): number {
   return INTERVIEW_SECONDS_BY_DIFFICULTY[card.difficulty]
 }
@@ -67,6 +85,26 @@ export function getStudyCards(
   }
 
   return deck.cards
+}
+
+export function createStudyEntries(
+  deck: Deck,
+  cards: Flashcard[] = deck.cards,
+): StudyCardEntry[] {
+  return cards.map((card) => ({
+    card,
+    deckId: deck.id,
+    deckTitle: deck.title,
+    topic: deck.topic,
+  }))
+}
+
+export function getStudyEntries(
+  store: ProgressStore,
+  deck: Deck,
+  scope: StudyScope,
+): StudyCardEntry[] {
+  return createStudyEntries(deck, getStudyCards(store, deck, scope))
 }
 
 export function getStudyInitialIndex(

@@ -2,9 +2,12 @@ import { getDeckById } from '@prepdeck/content'
 
 import { createEmptyProgressStore, setCardStatus } from '@/lib/progress'
 import {
+  createMockInterviewHref,
+  createStudyEntries,
   createStudyHref,
   getInterviewDurationSeconds,
   getStudyCards,
+  getStudyEntries,
   getStudyFormat,
   getStudyFormatLabel,
   getStudyInitialIndex,
@@ -42,8 +45,10 @@ describe('study session helpers', () => {
     store = setCardStatus(store, deck.id, deck.cards[1].id, 'partial')
 
     const weakCards = getStudyCards(store, deck, 'weak')
+    const weakEntries = getStudyEntries(store, deck, 'weak')
 
     expect(weakCards.map((card) => card.id)).toEqual([deck.cards[1].id])
+    expect(weakEntries.map((entry) => entry.card.id)).toEqual([deck.cards[1].id])
   })
 
   it('uses first unseen for continue mode on full deck sessions', () => {
@@ -58,10 +63,13 @@ describe('study session helpers', () => {
 
   it('builds interview study hrefs and per-card durations', () => {
     const deck = getReactDeck()
+    const entries = createStudyEntries(deck)
 
     expect(createStudyHref(deck.id, { format: 'interview', mode: 'start' })).toBe(
       `/study/${deck.id}?mode=start&format=interview`,
     )
+    expect(createMockInterviewHref()).toBe('/mock-interview')
     expect(getInterviewDurationSeconds(deck.cards[0])).toBe(90)
+    expect(entries[0]?.deckTitle).toBe(deck.title)
   })
 })
