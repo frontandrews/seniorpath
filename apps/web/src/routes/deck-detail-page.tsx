@@ -10,6 +10,7 @@ import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
 import { ProgressMeter } from '@/components/ui/progress-meter'
 import { getDeckCounts } from '@/lib/progress'
+import { createStudyHref } from '@/lib/study-session'
 import { getTopicLabel } from '@/lib/topic-labels'
 import { useProgress } from '@/state/progress-context'
 
@@ -69,15 +70,30 @@ export function DeckDetailPage() {
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-          <Button onClick={() => navigate(`/study/${deck.id}?mode=start`)} type="button" variant="primary">
+          <Button
+            onClick={() => navigate(createStudyHref(deck.id, { mode: 'start' }))}
+            type="button"
+            variant="primary"
+          >
             Start deck
           </Button>
-          <Button onClick={() => navigate(`/study/${deck.id}?mode=continue`)} type="button" variant="secondary">
+          <Button
+            onClick={() => navigate(createStudyHref(deck.id, { format: 'interview', mode: 'start' }))}
+            type="button"
+            variant="secondary"
+          >
+            Interview mode
+          </Button>
+          <Button
+            onClick={() => navigate(createStudyHref(deck.id, { mode: 'continue' }))}
+            type="button"
+            variant="ghost"
+          >
             Continue
           </Button>
           {weakCardCount > 0 ? (
             <Button
-              onClick={() => navigate(`/study/${deck.id}?mode=start&scope=weak`)}
+              onClick={() => navigate(createStudyHref(deck.id, { mode: 'start', scope: 'weak' }))}
               type="button"
               variant="warning"
             >

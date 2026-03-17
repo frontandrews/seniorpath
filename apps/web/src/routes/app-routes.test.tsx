@@ -63,6 +63,7 @@ describe('app routes', () => {
     expect(screen.getByText('Partial')).toBeInTheDocument()
     expect(screen.getByText('Not learned')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Start deck' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Interview mode' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Study weak cards' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Review progress' })).toBeInTheDocument()
@@ -123,6 +124,30 @@ describe('app routes', () => {
     ).toBeInTheDocument()
     expect(screen.getByText('Code example')).toBeInTheDocument()
     expect(screen.getByText(/const visibleUsers = users\.filter/i)).toBeInTheDocument()
+  })
+
+  it('runs interview mode with a timer gate and interview-specific rating labels', async () => {
+    const user = userEvent.setup()
+
+    renderApp(['/study/react-rendering-core?mode=start&format=interview'])
+
+    expect(screen.getByText('Interview mode')).toBeInTheDocument()
+    expect(screen.getByText('Time left')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar', { name: '0 of 90 complete' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Reveal answer' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'End early' })).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: 'End early' }))
+    expect(screen.getByRole('button', { name: 'Reveal answer' })).toBeEnabled()
+
+    await user.click(screen.getByRole('button', { name: 'Reveal answer' }))
+
+    expect(screen.getByText('Strong answer')).toBeInTheDocument()
+    expect(screen.getByText('Common traps')).toBeInTheDocument()
+    expect(screen.getByText('Follow-up prompts')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Strong' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Decent' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Needs work' })).toBeInTheDocument()
   })
 
   it('keeps personal notes collapsed until the user opens them in study mode', async () => {

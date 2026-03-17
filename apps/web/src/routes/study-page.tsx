@@ -12,10 +12,15 @@ import { Panel } from '@/components/ui/panel'
 import { ProgressMeter } from '@/components/ui/progress-meter'
 import { getDeckCounts } from '@/lib/progress'
 import {
+  createStudyHref,
+  getInterviewDurationSeconds,
   getStudyCards,
+  getStudyFormat,
+  getStudyFormatLabel,
   getStudyInitialIndex,
   getStudyScope,
   getStudyScopeLabel,
+  type StudyFormat,
   type StudyScope,
 } from '@/lib/study-session'
 import { useProgress } from '@/state/progress-context'
@@ -27,6 +32,7 @@ export function StudyPage() {
   const deck = deckId ? getDeckById(deckId) : undefined
   const successState = searchParams.get('state') === 'success'
   const mode = searchParams.get('mode') ?? 'start'
+  const format = getStudyFormat(searchParams.get('format'))
   const scope = getStudyScope(searchParams.get('scope'))
 
   if (!deckId || !deck) {
@@ -36,30 +42,40 @@ export function StudyPage() {
   const studyCards = getStudyCards(progressStore, deck, scope)
 
   if (successState) {
-    return <StudySuccess deck={deck} scope={scope} />
+    return <StudySuccess deck={deck} format={format} scope={scope} />
   }
 
   const initialIndex = getStudyInitialIndex(progressStore, deck, scope, mode)
 
   if (initialIndex === null || studyCards.length === 0) {
-    return <Navigate replace to={`/study/${deck.id}?state=success&scope=${scope}`} />
+    return <Navigate replace to={createStudyHref(deck.id, { format, scope, state: 'success' })} />
   }
 
   return (
     <StudySession
       cards={studyCards}
       deck={deck}
+      format={format}
       initialIndex={initialIndex}
-      key={`${deck.id}:${mode}:${scope}`}
+      key={`${deck.id}:${mode}:${scope}:${format}`}
       scope={scope}
     />
   )
 }
 
-function StudySuccess({ deck, scope }: { deck: Deck; scope: StudyScope }) {
+function StudySuccess({
+  deck,
+  format,
+  scope,
+}: {
+  deck: Deck
+  format: StudyFormat
+  scope: StudyScope
+}) {
   const { progressStore } = useProgress()
   const counts = getDeckCounts(progressStore, deck)
   const hasRemainingWeakCards = counts.partial + counts.notLearned > 0
+  const restartHref = createStudyHref(deck.id, { format, mode: 'start', scope })
 
   return (
     <Panel className="bg-[var(--retro-surface)] p-6">
@@ -67,7 +83,13 @@ function StudySuccess({ deck, scope }: { deck: Deck; scope: StudyScope }) {
         Session complete
       </p>
       <h2 className="mt-3 text-3xl font-black text-[var(--retro-ink)]">
-        {scope === 'weak'
+        {format === 'interview'
+          ? scope === 'weak'
+            ? hasRemainingWeakCards
+              ? 'You finished this weak-card interview run.'
+              : 'You cleared the weak interview queue for this deck.'
+            : 'You completed this interview-style run.'
+          : scope === 'weak'
           ? hasRemainingWeakCards
             ? 'You finished this weak-card session.'
             : 'You cleared every weak card in this deck.'
@@ -76,7 +98,13 @@ function StudySuccess({ deck, scope }: { deck: Deck; scope: StudyScope }) {
             : 'You have seen every card in this deck.'}
       </h2>
       <p className="mt-3 max-w-2xl text-sm leading-6 text-white/80">
-        {scope === 'weak'
+        {format === 'interview'
+          ? scope === 'weak'
+            ? hasRemainingWeakCards
+              ? 'The weak queue still has open cards. Run another interview-style pass or inspect them in review mode.'
+              : 'Nice. There are no weak cards left in this deck right now.'
+            : 'Use review to inspect the weaker answers or run the deck again when you want another timed pass.'
+          : scope === 'weak'
           ? hasRemainingWeakCards
             ? 'Some cards still need work. Run the weak-card session again or inspect them in review mode.'
             : 'Nice. The weak-card queue for this deck is empty right now.'
@@ -89,12 +117,12 @@ function StudySuccess({ deck, scope }: { deck: Deck; scope: StudyScope }) {
           Review this deck
         </LinkButton>
         {scope === 'weak' ? (
-          <LinkButton to={`/study/${deck.id}?mode=start&scope=weak`} variant="secondary">
-            Run weak cards again
+          <LinkButton to={restartHref} variant="secondary">
+            {format === 'interview' ? 'Run weak interview mode again' : 'Run weak cards again'}
           </LinkButton>
         ) : (
-          <LinkButton to={`/study/${deck.id}?mode=start`} variant="secondary">
-            Restart deck
+          <LinkButton to={restartHref} variant="secondary">
+            {format === 'interview' ? 'Run interview mode again' : 'Restart deck'}
           </LinkButton>
         )}
         <LinkButton to={`/decks/${deck.id}`} variant="ghost">
@@ -108,11 +136,13 @@ function StudySuccess({ deck, scope }: { deck: Deck; scope: StudyScope }) {
 function StudySession({
   cards,
   deck,
+  format,
   initialIndex,
   scope,
 }: {
   cards: Deck['cards']
   deck: Deck
+  format: StudyFormat
   initialIndex: number
   scope: StudyScope
 }) {
@@ -129,6 +159,13 @@ function StudySession({
   const [isLearnMoreOpen, setIsLearnMoreOpen] = useState(false)
   const currentCard = cards[currentIndex]
   const currentNote = getCardNote(deck.id, currentCard.id)
+  const [interviewSecondsLeft, setInterviewSecondsLeft] = useState(() =>
+    getInterviewDurationSeconds(currentCard),
+  )
+
+  useEffect(() => {
+    setInterviewSecondsLeft(getInterviewDurationSeconds(currentCard))
+  }, [currentCard])
 
   useEffect(() => {
     if (!currentCard) {
@@ -138,6 +175,18 @@ function StudySession({
     rememberDeckPosition(deck.id, currentCard.id)
   }, [currentCard, deck.id, rememberDeckPosition])
 
+  useEffect(() => {
+    if (format !== 'interview' || isAnswerVisible || interviewSecondsLeft <= 0) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setInterviewSecondsLeft((currentValue) => Math.max(0, currentValue - 1))
+    }, 1000)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [format, interviewSecondsLeft, isAnswerVisible])
+
   if (!currentCard) {
     return <Navigate replace to={`/decks/${deck.id}`} />
   }
@@ -146,7 +195,7 @@ function StudySession({
     setCardStatus(deck.id, currentCard.id, status)
 
     if (currentIndex >= cards.length - 1) {
-      navigate(`/study/${deck.id}?state=success&scope=${scope}`)
+      navigate(createStudyHref(deck.id, { format, scope, state: 'success' }))
       return
     }
 
@@ -156,6 +205,12 @@ function StudySession({
     setIsLearnMoreOpen(false)
     rememberDeckPosition(deck.id, nextCard?.id ?? null)
   }
+
+  const interviewDurationSeconds = getInterviewDurationSeconds(currentCard)
+  const elapsedInterviewSeconds = interviewDurationSeconds - interviewSecondsLeft
+  const isInterviewMode = format === 'interview'
+  const isRevealLocked = isInterviewMode && interviewSecondsLeft > 0 && !isAnswerVisible
+  const answerLabel = isInterviewMode ? 'Strong answer' : 'Answer'
 
   return (
     <section className="space-y-5">
@@ -167,7 +222,9 @@ function StudySession({
             </p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge tone="accent">{getStudyScopeLabel(scope)}</Badge>
+              <Badge>{getStudyFormatLabel(format)}</Badge>
               <Badge>{currentCard.difficulty}</Badge>
+              {isInterviewMode ? <Badge tone="warning">{formatDuration(interviewDurationSeconds)}</Badge> : null}
             </div>
             <h2 className="mt-2 text-2xl font-black text-[var(--retro-ink)]">
               {currentIndex + 1} of {cards.length}
@@ -198,9 +255,12 @@ function StudySession({
         <Panel className="mt-5 bg-[var(--retro-surface-muted)] p-4" inset>
           {isAnswerVisible ? (
             <div className="space-y-4">
-              <p className="text-base leading-7 text-[var(--retro-ink)]">
-                {currentCard.shortAnswer}
-              </p>
+              <div>
+                <p className="text-sm font-black text-[var(--retro-ink)]">{answerLabel}</p>
+                <p className="mt-2 text-base leading-7 text-[var(--retro-ink)]">
+                  {isInterviewMode ? currentCard.expectedAnswer : currentCard.shortAnswer}
+                </p>
+              </div>
               <div>
                 <p className="text-sm font-black text-[var(--retro-ink)]">Key points</p>
                 <ul className="mt-3 space-y-2 text-sm leading-6 text-white/80">
@@ -209,6 +269,26 @@ function StudySession({
                   ))}
                 </ul>
               </div>
+              {isInterviewMode && currentCard.commonTraps.length > 0 ? (
+                <div>
+                  <p className="text-sm font-black text-[var(--retro-ink)]">Common traps</p>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-white/80">
+                    {currentCard.commonTraps.map((trap) => (
+                      <li key={trap}>- {trap}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {isInterviewMode && currentCard.followUps.length > 0 ? (
+                <div>
+                  <p className="text-sm font-black text-[var(--retro-ink)]">Follow-up prompts</p>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-white/80">
+                    {currentCard.followUps.map((followUp) => (
+                      <li key={followUp}>- {followUp}</li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
               {currentCard.learnMore || currentCard.exampleCode ? (
                 <div className="rounded-[1rem] border border-[var(--retro-line)] bg-[var(--retro-bg-strong)]">
                   <button
@@ -258,10 +338,24 @@ function StudySession({
               />
             </div>
           ) : (
-            <p className="text-sm leading-7 text-white/80">
-              Flip the card when you have your answer in mind, then rate how solid the
-              answer actually felt.
-            </p>
+            <div className="space-y-4">
+              <p className="text-sm leading-7 text-white/80">
+                {isInterviewMode
+                  ? 'Answer it out loud or in your head first. The reference answer unlocks when the timer ends or when you end the timer early.'
+                  : 'Flip the card when you have your answer in mind, then rate how solid the answer actually felt.'}
+              </p>
+              {isInterviewMode ? (
+                <Panel className="bg-[var(--retro-bg-strong)] p-4" inset>
+                  <div className="flex items-center justify-between gap-4 text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--retro-ink-soft)]">
+                    <span>Time left</span>
+                    <span>{formatDuration(interviewSecondsLeft)}</span>
+                  </div>
+                  <div className="mt-3">
+                    <ProgressMeter current={elapsedInterviewSeconds} total={interviewDurationSeconds} />
+                  </div>
+                </Panel>
+              ) : null}
+            </div>
           )}
         </Panel>
       </Panel>
@@ -270,14 +364,35 @@ function StudySession({
         {isAnswerVisible ? (
           <div className="grid gap-3 sm:grid-cols-3">
             <Button onClick={() => handleRateCard('learned')} type="button" variant="success">
-              Learned
+              {isInterviewMode ? 'Strong' : 'Learned'}
             </Button>
             <Button onClick={() => handleRateCard('partial')} type="button" variant="warning">
-              Partial
+              {isInterviewMode ? 'Decent' : 'Partial'}
             </Button>
             <Button onClick={() => handleRateCard('not_learned')} type="button" variant="danger">
-              Not learned
+              {isInterviewMode ? 'Needs work' : 'Not learned'}
             </Button>
+          </div>
+        ) : isInterviewMode ? (
+          <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+            <Button
+              className="w-full"
+              disabled={isRevealLocked}
+              onClick={() => setIsAnswerVisible(true)}
+              type="button"
+              variant="primary"
+            >
+              Reveal answer
+            </Button>
+            {isRevealLocked ? (
+              <Button
+                onClick={() => setInterviewSecondsLeft(0)}
+                type="button"
+                variant="secondary"
+              >
+                End early
+              </Button>
+            ) : null}
           </div>
         ) : (
           <Button className="w-full" onClick={() => setIsAnswerVisible(true)} type="button" variant="primary">
@@ -287,4 +402,11 @@ function StudySession({
       </Panel>
     </section>
   )
+}
+
+function formatDuration(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60)
+  const seconds = totalSeconds % 60
+
+  return `${minutes}:${String(seconds).padStart(2, '0')}`
 }
