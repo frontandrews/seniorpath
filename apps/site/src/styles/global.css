@@ -321,6 +321,20 @@ pre {
   display: none;
 }
 
+.tree-controls {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.tree-controls__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
 .guide-tree {
   display: grid;
   gap: 1rem;

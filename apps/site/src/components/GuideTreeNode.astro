@@ -11,6 +11,7 @@ type Props = {
 const { node } = Astro.props
 const hasChildren = node.children.length > 0
 const shouldStartOpen = node.depth === 0
+const anchorId = `guide-node-${node.key.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')}`
 
 function getPrimaryDeckHref(post: CollectionEntry<'blog'>) {
   const deckId = post.data.relatedDeckIds[0]
@@ -20,9 +21,9 @@ function getPrimaryDeckHref(post: CollectionEntry<'blog'>) {
 
 <li class={`guide-tree__item guide-tree__item--depth-${node.depth}`}>
   {hasChildren ? (
-    <details class="guide-tree__details" open={shouldStartOpen}>
+    <details class="guide-tree__details" data-guide-tree-details open={shouldStartOpen}>
       <summary class="guide-tree__summary">
-        <div class="guide-tree__label-row">
+        <div class="guide-tree__label-row" id={anchorId}>
           <p class="guide-tree__label">{node.label}</p>
           <span class="badge">{node.guideCount} guide{node.guideCount === 1 ? '' : 's'}</span>
           <span class="badge">{node.children.length} branch{node.children.length === 1 ? '' : 'es'}</span>
@@ -62,7 +63,7 @@ function getPrimaryDeckHref(post: CollectionEntry<'blog'>) {
     </details>
   ) : (
     <div class="guide-tree__branch">
-      <div class="guide-tree__label-row">
+      <div class="guide-tree__label-row" id={anchorId}>
         <p class="guide-tree__label">{node.label}</p>
         <span class="badge">{node.guideCount} guide{node.guideCount === 1 ? '' : 's'}</span>
       </div>
