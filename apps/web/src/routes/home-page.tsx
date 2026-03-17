@@ -3,6 +3,7 @@ import { getDeckById, getDecksByTopic } from '@prepdeck/content'
 import { useMemo, useState } from 'react'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
+import { AdSlot } from '@/components/ad-slot'
 import { DeckCard } from '@/components/deck-card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -141,6 +142,10 @@ export function HomePage() {
             </Panel>
           </div>
         </Panel>
+      </section>
+
+      <section className="mb-6">
+        <AdSlot placement="home-primary" />
       </section>
 
       <section

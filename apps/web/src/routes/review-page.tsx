@@ -3,6 +3,7 @@ import { getDeckById } from '@prepdeck/content'
 import { useMemo, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 
+import { AdSlot } from '@/components/ad-slot'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { ReviewCard } from '@/components/review-card'
 import { StatusTabs } from '@/components/status-tabs'
@@ -102,6 +103,10 @@ export function ReviewPage() {
             }}
             onSelect={setActiveStatus}
           />
+        </div>
+
+        <div className="mt-6">
+          <AdSlot placement="review" />
         </div>
       </Panel>
 

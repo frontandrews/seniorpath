@@ -8,7 +8,7 @@ import {
   setCardNote,
   setCardStatus,
 } from '@/lib/progress'
-import { renderApp, seedProgress } from '@/test/test-utils'
+import { renderApp, seedMembership, seedProgress } from '@/test/test-utils'
 
 function getReactDeck() {
   const deck = getDeckById('react-rendering-core')
@@ -32,6 +32,7 @@ describe('app routes', () => {
     expect(screen.getByRole('heading', { name: 'React' })).toBeInTheDocument()
     expect(screen.getAllByText('React Rendering Core').length).toBeGreaterThan(0)
     expect(screen.getByText('1 / 2 learned')).toBeInTheDocument()
+    expect(screen.getByText('Ad-supported free plan')).toBeInTheDocument()
   })
 
   it('filters the home deck list by selected topic', async () => {
@@ -72,7 +73,8 @@ describe('app routes', () => {
     renderApp(['/decks/react-rendering-core'])
 
     expect(screen.getByRole('link', { name: 'Back to library' })).toBeInTheDocument()
-    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Premium' })).toBeInTheDocument()
     expect(
       screen.queryByRole('heading', {
         name: 'Technical interview prep that feels manageable.',
@@ -285,5 +287,29 @@ describe('app routes', () => {
     renderApp(['/'])
 
     expect(screen.getByText('1 / 2 learned')).toBeInTheDocument()
+  })
+
+  it('renders the premium page with the monetization promise', () => {
+    renderApp(['/premium'])
+
+    expect(
+      screen.getByRole('heading', {
+        name: 'Premium removes ads and funds deeper practice features.',
+      }),
+    ).toBeInTheDocument()
+    expect(screen.getByText('Premium checkout is not live yet.')).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Back home' })).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Home' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: 'Premium' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Preview premium locally' })).toBeInTheDocument()
+  })
+
+  it('hides ad slots when premium is active on the device', () => {
+    seedMembership('premium')
+
+    renderApp(['/'])
+
+    expect(screen.queryByText('Ad-supported free plan')).not.toBeInTheDocument()
+    expect(screen.getByText('Premium active')).toBeInTheDocument()
   })
 })

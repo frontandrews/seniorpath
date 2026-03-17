@@ -2,6 +2,7 @@ import { getDeckById, getDeckManifest } from '@prepdeck/content'
 import { useState } from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
+import { AdSlot } from '@/components/ad-slot'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -61,6 +62,10 @@ export function DeckDetailPage() {
             <span>{counts.seen} of {counts.total} seen</span>
           </div>
           <ProgressMeter current={counts.seen} total={counts.total} />
+        </div>
+
+        <div className="mt-6">
+          <AdSlot placement="deck-detail" />
         </div>
 
         <div className="mt-6 flex flex-col gap-3 sm:flex-row">
