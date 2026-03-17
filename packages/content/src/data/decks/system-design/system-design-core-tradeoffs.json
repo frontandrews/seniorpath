@@ -1,0 +1,56 @@
+{
+  "id": "system-design-core-tradeoffs",
+  "title": "System Design Core Tradeoffs",
+  "topic": "system-design",
+  "description": "High-frequency system-design tradeoffs with concise interview-ready framing.",
+  "difficulty": "medium",
+  "estimatedMinutes": 10,
+  "tags": ["system-design", "tradeoffs", "architecture"],
+  "cards": [
+    {
+      "id": "system-design-sql-vs-nosql",
+      "type": "tradeoff",
+      "difficulty": "medium",
+      "question": "How do you choose between SQL and NoSQL?",
+      "shortAnswer": "Choose based on access patterns and domain guarantees, not on trend.",
+      "expectedAnswer": "I choose based on access patterns and the guarantees the domain needs. If the problem requires integrity, transactions, and strong relationships, SQL is usually the natural fit. If the schema changes often and the system is more document-oriented or distribution-heavy, NoSQL can be a better fit. The key is not choosing by trend but by the shape of the workload and the risk of the domain.",
+      "keyPoints": [
+        "access patterns first",
+        "domain guarantees matter",
+        "integrity and transactions favor SQL",
+        "schema flexibility and document shape may favor NoSQL"
+      ],
+      "commonTraps": [
+        "saying NoSQL scales and SQL does not",
+        "answering without talking about domain guarantees"
+      ],
+      "followUps": [
+        "When would you denormalize in a SQL system?",
+        "What is the operational cost of sharding?"
+      ],
+      "tags": ["system-design", "databases", "sql", "nosql"]
+    },
+    {
+      "id": "system-design-monolith-vs-microservices",
+      "type": "tradeoff",
+      "difficulty": "medium",
+      "question": "How do you think about monolith vs microservices?",
+      "shortAnswer": "I default to a monolith until there is real pressure from scale, domain boundaries, or team autonomy.",
+      "expectedAnswer": "I usually start with a monolith because it keeps delivery, debugging, and operations simpler. Microservices become attractive when there is real pressure from domain boundaries, independent scaling needs, or team autonomy. The main mistake is distributing complexity too early before the system has earned it.",
+      "keyPoints": [
+        "monolith is simpler early",
+        "microservices need real pressure to justify complexity",
+        "operational cost matters"
+      ],
+      "commonTraps": [
+        "treating microservices as a maturity badge",
+        "ignoring deployment and observability cost"
+      ],
+      "followUps": [
+        "What is the first pain signal that a monolith is not enough?",
+        "How would you split a monolith safely?"
+      ],
+      "tags": ["system-design", "microservices", "monolith"]
+    }
+  ]
+}

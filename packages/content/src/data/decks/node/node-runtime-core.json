@@ -1,0 +1,55 @@
+{
+  "id": "node-runtime-core",
+  "title": "Node Runtime Core",
+  "topic": "node",
+  "description": "Node runtime and architecture questions focused on event loop, workers, and I/O.",
+  "difficulty": "medium",
+  "estimatedMinutes": 8,
+  "tags": ["node", "runtime", "event-loop"],
+  "cards": [
+    {
+      "id": "node-single-threaded-meaning",
+      "type": "concept",
+      "difficulty": "medium",
+      "question": "Is Node.js single-threaded?",
+      "shortAnswer": "The JavaScript execution model is centered on a single-threaded event loop, but Node itself is not limited to one thread overall.",
+      "expectedAnswer": "Node.js runs JavaScript primarily on a single-threaded event loop, but the runtime is not limited to one thread overall. It uses libuv, can offload some work to a thread pool, and can use worker threads for CPU-bound tasks. So the right answer is that the main JS execution path is single-threaded, but the runtime can still use multiple threads.",
+      "keyPoints": [
+        "main JS execution is single-threaded",
+        "runtime can use thread pool or workers",
+        "distinguish JS execution from the whole runtime"
+      ],
+      "commonTraps": [
+        "answering simply yes or no without nuance",
+        "assuming async automatically means multi-threaded execution"
+      ],
+      "followUps": [
+        "When would you use worker threads?",
+        "What kind of work blocks the event loop?"
+      ],
+      "tags": ["node", "concurrency", "workers"]
+    },
+    {
+      "id": "node-worker-vs-cluster",
+      "type": "tradeoff",
+      "difficulty": "medium",
+      "question": "What is the difference between worker threads and cluster in Node.js?",
+      "shortAnswer": "Worker threads help with CPU-bound work inside one process, while cluster runs multiple Node processes to use multiple cores and isolate failures more cleanly.",
+      "expectedAnswer": "Worker threads are useful when you need CPU-bound parallelism inside a process and want to offload heavy computation from the main event loop. Cluster is about running multiple Node processes, often to use multiple CPU cores for request handling and get stronger process isolation. They solve related but different problems.",
+      "keyPoints": [
+        "worker threads for CPU-bound work",
+        "cluster for multiple processes and core usage",
+        "different tradeoffs around isolation and communication"
+      ],
+      "commonTraps": [
+        "treating them as interchangeable",
+        "ignoring process isolation differences"
+      ],
+      "followUps": [
+        "What is the communication cost with workers?",
+        "When would horizontal scaling be simpler?"
+      ],
+      "tags": ["node", "worker-threads", "cluster"]
+    }
+  ]
+}

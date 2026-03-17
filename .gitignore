@@ -1,0 +1,16 @@
+node_modules/
+.next/
+dist/
+coverage/
+.env
+.env.local
+.DS_Store
+/.local/
+/agents/
+/data/
+/docs/career-playbook/
+/docs/design-system-interview/
+/docs/objetivos/
+/docs/cv-feedback.md
+/docs/cv-rewrite-v1.md
+/docs/product-plan.md

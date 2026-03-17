@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "decks": [
+    {
+      "id": "react-rendering-core",
+      "topic": "react",
+      "title": "React Rendering Core",
+      "difficulty": "medium",
+      "path": "./decks/react/react-rendering-core.json",
+      "estimatedMinutes": 8
+    },
+    {
+      "id": "javascript-runtime-core",
+      "topic": "javascript",
+      "title": "JavaScript Runtime Core",
+      "difficulty": "medium",
+      "path": "./decks/javascript/javascript-runtime-core.json",
+      "estimatedMinutes": 8
+    },
+    {
+      "id": "node-runtime-core",
+      "topic": "node",
+      "title": "Node Runtime Core",
+      "difficulty": "medium",
+      "path": "./decks/node/node-runtime-core.json",
+      "estimatedMinutes": 8
+    },
+    {
+      "id": "system-design-core-tradeoffs",
+      "topic": "system-design",
+      "title": "System Design Core Tradeoffs",
+      "difficulty": "medium",
+      "path": "./decks/system-design/system-design-core-tradeoffs.json",
+      "estimatedMinutes": 10
+    },
+    {
+      "id": "leadership-ownership-core",
+      "topic": "leadership",
+      "title": "Leadership and Ownership Core",
+      "difficulty": "medium",
+      "path": "./decks/leadership/leadership-ownership-core.json",
+      "estimatedMinutes": 8
+    },
+    {
+      "id": "coding-arrays-hashmaps-basics",
+      "topic": "coding-interview",
+      "title": "Arrays and Hashmaps Basics",
+      "difficulty": "easy",
+      "path": "./decks/coding-interview/coding-arrays-hashmaps-basics.json",
+      "estimatedMinutes": 8
+    },
+    {
+      "id": "coding-two-pointers-sliding-window",
+      "topic": "coding-interview",
+      "title": "Two Pointers and Sliding Window",
+      "difficulty": "medium",
+      "path": "./decks/coding-interview/coding-two-pointers-sliding-window.json",
+      "estimatedMinutes": 10
+    },
+    {
+      "id": "coding-stacks-queues-binary-search",
+      "topic": "coding-interview",
+      "title": "Stacks, Queues, and Binary Search",
+      "difficulty": "medium",
+      "path": "./decks/coding-interview/coding-stacks-queues-binary-search.json",
+      "estimatedMinutes": 10
+    }
+  ]
+}

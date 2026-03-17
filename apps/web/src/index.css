@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  color: #f5f7ff;
+  --retro-bg: #09111f;
+  --retro-bg-strong: #101b2f;
+  --retro-surface: #152238;
+  --retro-surface-muted: #1d2d49;
+  --retro-surface-strong: #294064;
+  --retro-accent: #4a7dd8;
+  --retro-accent-strong: #5d90eb;
+  --retro-accent-soft: #21385f;
+  --retro-warning: #60718f;
+  --retro-danger: #8f5f73;
+  --retro-success: #537e92;
+  --retro-ink: #f5f7ff;
+  --retro-ink-muted: rgba(245, 247, 255, 0.76);
+  --retro-ink-soft: rgba(245, 247, 255, 0.58);
+  --retro-line: #50627f;
+  --retro-line-strong: #d7e2ff;
+  --retro-shadow: #020611;
+  --retro-shadow-soft: #08101d;
+  background:
+    radial-gradient(circle at top, rgba(93, 144, 235, 0.28), transparent 28%),
+    radial-gradient(circle at bottom right, rgba(80, 98, 127, 0.24), transparent 24%),
+    linear-gradient(180deg, #09111f 0%, #101a2d 100%);
+  font-family:
+    "Trebuchet MS",
+    "Verdana",
+    sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: transparent;
+  color: var(--retro-ink);
+  background-image:
+    linear-gradient(rgba(215, 226, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(215, 226, 255, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px, 24px 24px;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--retro-accent);
+  color: white;
+}

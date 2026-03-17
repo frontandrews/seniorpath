@@ -1,0 +1,14 @@
+{
+  "name": "prepdeck",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.32.0",
+  "scripts": {
+    "build": "pnpm --filter @prepdeck/web build",
+    "dev": "pnpm --filter @prepdeck/web dev",
+    "lint": "pnpm --filter @prepdeck/web lint",
+    "preview": "pnpm --filter @prepdeck/web preview",
+    "test": "pnpm --filter @prepdeck/web test",
+    "typecheck": "pnpm --filter @prepdeck/web exec tsc -b"
+  }
+}
