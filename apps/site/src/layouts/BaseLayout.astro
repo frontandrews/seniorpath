@@ -39,6 +39,12 @@ function getNavClass(href: string) {
     <meta content="summary_large_image" name="twitter:card" />
     <meta content={pageTitle} name="twitter:title" />
     <meta content={description} name="twitter:description" />
+    <script is:inline>
+      try {
+        const storedTheme = window.localStorage.getItem('prepdeck.site.theme.v1')
+        document.documentElement.classList.toggle('dark', storedTheme !== 'light')
+      } catch {}
+    </script>
   </head>
   <body>
     <div class="site-shell">
@@ -55,6 +61,9 @@ function getNavClass(href: string) {
             <a class={getNavClass('/blog')} href="/blog">Guides</a>
             <a class={getNavClass('/map')} href="/map">Map</a>
             <a class="site-nav__link" href={getAppHref('/')}>Practice</a>
+            <button class="site-theme-toggle" data-theme-toggle type="button">
+              <span data-theme-label>Dark</span>
+            </button>
           </nav>
         </div>
       </header>
@@ -65,3 +74,26 @@ function getNavClass(href: string) {
     </div>
   </body>
 </html>
+
+<script is:inline>
+  const themeButton = document.querySelector('[data-theme-toggle]')
+  const themeLabel = document.querySelector('[data-theme-label]')
+
+  const syncThemeLabel = () => {
+    const isDark = document.documentElement.classList.contains('dark')
+    if (themeLabel) {
+      themeLabel.textContent = isDark ? 'Dark' : 'Light'
+    }
+  }
+
+  syncThemeLabel()
+
+  themeButton?.addEventListener('click', () => {
+    const nextIsDark = !document.documentElement.classList.contains('dark')
+    document.documentElement.classList.toggle('dark', nextIsDark)
+    try {
+      window.localStorage.setItem('prepdeck.site.theme.v1', nextIsDark ? 'dark' : 'light')
+    } catch {}
+    syncThemeLabel()
+  })
+</script>

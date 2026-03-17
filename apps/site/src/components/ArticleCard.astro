@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
+import { getAppHref } from '../lib/app-links'
 
 type Props = {
   post: CollectionEntry<'blog'>
@@ -9,13 +10,7 @@ const { post } = Astro.props
 ---
 
 <article class="panel article-card">
-  <div class="meta-list">
-    <span class="badge badge--accent">{post.data.category}</span>
-    {post.data.topic ? <span class="badge">{post.data.topic}</span> : null}
-    {post.data.tags.slice(0, 2).map((tag) => (
-      <span class="badge">{tag}</span>
-    ))}
-  </div>
+  <p class="section-eyebrow">{post.data.path.join(' / ')}</p>
   <div>
     <h3>{post.data.title}</h3>
     <p class="article-excerpt">{post.data.summary}</p>
@@ -28,15 +23,9 @@ const { post } = Astro.props
     </ul>
   ) : null}
   <div class="meta-list">
-    <span class="badge">{post.data.pubDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-    {post.data.practiceChecklist.length > 0 ? (
-      <span class="badge">{post.data.practiceChecklist.length} checklist steps</span>
-    ) : null}
+    <a class="button-link button-link--primary" href={`/blog/${post.id}`}>Read</a>
     {post.data.relatedDeckIds.length > 0 ? (
-      <span class="badge">{post.data.relatedDeckIds.length} related deck{post.data.relatedDeckIds.length === 1 ? '' : 's'}</span>
+      <a class="button-link" href={getAppHref(`/decks/${post.data.relatedDeckIds[0]}`)}>Test</a>
     ) : null}
   </div>
-  <a class="button-link button-link--primary" href={`/blog/${post.id}`}>
-    Open guide
-  </a>
 </article>

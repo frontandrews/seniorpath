@@ -6,6 +6,7 @@ export type GuideTreeNode = {
   guideCount: number
   key: string
   label: string
+  postIds: string[]
   posts: CollectionEntry<'blog'>[]
 }
 
@@ -31,6 +32,7 @@ export function buildGuideTree(posts: CollectionEntry<'blog'>[]): GuideTreeNode[
           guideCount: 0,
           key,
           label: segment,
+          postIds: [],
           posts: [],
         }
         currentMap.set(key, node)
@@ -61,6 +63,10 @@ function materialize(nodes: Map<string, MutableGuideTreeNode>): GuideTreeNode[] 
           posts.length + children.reduce((total, child) => total + child.guideCount, 0),
         key: node.key,
         label: node.label,
+        postIds: [
+          ...posts.map((post) => post.id),
+          ...children.flatMap((child) => child.postIds),
+        ],
         posts,
       }
     })

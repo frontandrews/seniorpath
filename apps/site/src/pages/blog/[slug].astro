@@ -98,6 +98,9 @@ const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
       <div class="meta-list">
         <a class="button-link" href="/">Open tree</a>
         <a class="button-link" href="/map">Open map</a>
+        <button class="button-link" data-guide-complete-toggle data-guide-id={post.id} type="button">
+          Mark complete
+        </button>
       </div>
       <div class="meta-list">
         <span class="badge">
@@ -262,3 +265,48 @@ const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
     ) : null}
   </article>
 </BaseLayout>
+
+<script is:inline>
+  const guideId = document.querySelector('[data-guide-complete-toggle]')?.getAttribute('data-guide-id')
+  const completeButton = document.querySelector('[data-guide-complete-toggle]')
+
+  const readCompletedGuides = () => {
+    try {
+      return new Set(JSON.parse(window.localStorage.getItem('prepdeck.site.completed-guides.v1') || '[]'))
+    } catch {
+      return new Set()
+    }
+  }
+
+  const writeCompletedGuides = (set) => {
+    window.localStorage.setItem('prepdeck.site.completed-guides.v1', JSON.stringify([...set]))
+  }
+
+  const syncCompleteButton = () => {
+    const completed = readCompletedGuides()
+    const isComplete = Boolean(guideId && completed.has(guideId))
+
+    if (completeButton) {
+      completeButton.textContent = isComplete ? 'Completed' : 'Mark complete'
+      completeButton.classList.toggle('button-link--primary', isComplete)
+    }
+  }
+
+  completeButton?.addEventListener('click', () => {
+    if (!guideId) {
+      return
+    }
+
+    const completed = readCompletedGuides()
+    if (completed.has(guideId)) {
+      completed.delete(guideId)
+    } else {
+      completed.add(guideId)
+    }
+
+    writeCompletedGuides(completed)
+    syncCompleteButton()
+  })
+
+  syncCompleteButton()
+</script>

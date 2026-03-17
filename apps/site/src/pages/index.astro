@@ -8,11 +8,6 @@ import { buildGuideTree } from '../lib/guide-tree'
 
 const posts = await getCollection('blog')
 const guideTree = buildGuideTree(posts)
-const rootAreas = guideTree.length
-
-function getNodeHref(key: string) {
-  return `#guide-node-${key.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')}`
-}
 ---
 
 <BaseLayout
@@ -25,12 +20,12 @@ function getNodeHref(key: string) {
         <div class="hero__badges">
           <span class="badge badge--accent">Guide map</span>
           <span class="badge">{posts.length} guides</span>
-          <span class="badge">{rootAreas} root areas</span>
+          <span class="badge">{guideTree.length} categories</span>
         </div>
         <h1>Browse the map. Open what matters. Practice right after.</h1>
         <p>
-          Prepdeck works better when the content is easy to scan. Start from the tree,
-          open one guide, then jump into practice when you want to rehearse the topic.
+          Scan the tree, open the guide you need, then use practice when you want to
+          validate the topic instead of just reading it once.
         </p>
         <div class="meta-list">
           <a class="button-link button-link--primary" href={getAppHref('/')}>Open practice</a>
@@ -42,9 +37,9 @@ function getNodeHref(key: string) {
       <div class="panel">
         <p class="section-eyebrow">How to use it</p>
         <ul class="article-prose compact-list">
-          <li>Pick a main area first.</li>
-          <li>Drill into the sub-area that matches your current gap.</li>
-          <li>Open the guide, then practice the linked deck if one exists.</li>
+          <li>Filter one or more categories.</li>
+          <li>Open the guide that matches your current gap.</li>
+          <li>Use Test when you want to validate the topic inside the app.</li>
         </ul>
       </div>
     </div>
@@ -56,7 +51,7 @@ function getNodeHref(key: string) {
         <p class="section-eyebrow">Tree navigation</p>
         <h2 class="section-heading">Everything available right now</h2>
         <p class="section-copy">
-          One home for the current reading paths, grouped by primary category and nested
+          One tree for the current learning paths, grouped by primary category and nested
           sub-category.
         </p>
       </div>
@@ -64,7 +59,7 @@ function getNodeHref(key: string) {
 
     <div class="panel tree-controls">
       <div class="tree-controls__header">
-        <p class="section-eyebrow">Jump to area</p>
+        <p class="section-eyebrow">Filter by category</p>
         <div class="meta-list">
           <button class="guide-filter-chip" data-tree-action="expand-all" type="button">
             Expand all
@@ -76,7 +71,9 @@ function getNodeHref(key: string) {
       </div>
       <div class="meta-list">
         {guideTree.map((node) => (
-          <a class="guide-filter-chip" href={getNodeHref(node.key)}>{node.label}</a>
+          <button class="guide-filter-chip" data-tree-filter={node.label} type="button">
+            {node.label}
+          </button>
         ))}
       </div>
     </div>
@@ -91,6 +88,44 @@ function getNodeHref(key: string) {
 
 <script is:inline>
   const treeDetails = [...document.querySelectorAll('[data-guide-tree-details]')]
+  const rootNodes = [...document.querySelectorAll('[data-guide-node]')]
+  const categoryButtons = [...document.querySelectorAll('[data-tree-filter]')]
+  const activeCategories = new Set()
+  const completedGuides = (() => {
+    try {
+      return new Set(JSON.parse(window.localStorage.getItem('prepdeck.site.completed-guides.v1') || '[]'))
+    } catch {
+      return new Set()
+    }
+  })()
+
+  const syncGuideProgress = () => {
+    rootNodes.forEach((node) => {
+      const ids = (node.getAttribute('data-guide-post-ids') || '').split(',').filter(Boolean)
+      const completed = ids.filter((id) => completedGuides.has(id)).length
+      const progress = node.querySelector('[data-guide-progress]')
+
+      if (progress) {
+        progress.textContent = `${completed}/${ids.length}`
+        progress.classList.toggle('badge--complete', completed === ids.length && ids.length > 0)
+      }
+    })
+
+    document.querySelectorAll('[data-guide-post]').forEach((post) => {
+      const id = post.getAttribute('data-guide-post')
+      post.classList.toggle('guide-tree__post--complete', Boolean(id && completedGuides.has(id)))
+    })
+  }
+
+  const applyTreeFilter = () => {
+    const hasFilter = activeCategories.size > 0
+
+    rootNodes.forEach((node) => {
+      const label = node.querySelector(':scope > details > summary .guide-tree__label, :scope > .guide-tree__branch .guide-tree__label')?.textContent?.trim()
+      const shouldShow = !hasFilter || (label && activeCategories.has(label))
+      node.toggleAttribute('hidden', !shouldShow)
+    })
+  }
 
   document.querySelector('[data-tree-action="expand-all"]')?.addEventListener('click', () => {
     treeDetails.forEach((detail) => detail.setAttribute('open', ''))
@@ -99,4 +134,26 @@ function getNodeHref(key: string) {
   document.querySelector('[data-tree-action="collapse-all"]')?.addEventListener('click', () => {
     treeDetails.forEach((detail) => detail.removeAttribute('open'))
   })
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-tree-filter')
+
+      if (!value) {
+        return
+      }
+
+      if (activeCategories.has(value)) {
+        activeCategories.delete(value)
+      } else {
+        activeCategories.add(value)
+      }
+
+      button.classList.toggle('guide-filter-chip--active', activeCategories.has(value))
+      applyTreeFilter()
+    })
+  })
+
+  syncGuideProgress()
+  applyTreeFilter()
 </script>

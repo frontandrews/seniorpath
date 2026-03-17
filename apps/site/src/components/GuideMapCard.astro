@@ -11,19 +11,7 @@ const primaryDeckId = item.relatedDeckIds[0] ?? null
 ---
 
 <article class="panel guide-map-card">
-  <div class="meta-list">
-    <span class="badge badge--accent">{item.category}</span>
-    {item.topic ? <span class="badge">{item.topic}</span> : null}
-    {item.tags.slice(0, 2).map((tag) => (
-      <span class="badge">{tag}</span>
-    ))}
-  </div>
-
-  <div class="meta-list guide-map-card__path">
-    {item.path.map((segment) => (
-      <span class="badge">{segment}</span>
-    ))}
-  </div>
+  <p class="section-eyebrow">{item.path.join(' / ')}</p>
 
   <div>
     <h3>{item.title}</h3>
@@ -31,9 +19,9 @@ const primaryDeckId = item.relatedDeckIds[0] ?? null
   </div>
 
   <div class="meta-list">
-    <a class="button-link button-link--primary" href={`/blog/${item.id}`}>Open guide</a>
+    <a class="button-link button-link--primary" href={`/blog/${item.id}`}>Read</a>
     {primaryDeckId ? (
-      <a class="button-link" href={getAppHref(`/decks/${primaryDeckId}`)}>Open practice</a>
+      <a class="button-link" href={getAppHref(`/decks/${primaryDeckId}`)}>Test</a>
     ) : null}
   </div>
 
