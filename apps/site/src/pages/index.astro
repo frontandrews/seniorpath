@@ -79,7 +79,8 @@ const guideTree = buildGuideTree(posts)
 </BaseLayout>
 
 <script is:inline>
-  const rootNodes = [...document.querySelectorAll('[data-guide-node]')]
+  const allNodes = [...document.querySelectorAll('[data-guide-node]')]
+  const rootNodes = [...document.querySelectorAll('.guide-tree--root > [data-guide-node]')]
   const categoryButtons = [...document.querySelectorAll('[data-tree-filter]')]
   const activeCategories = new Set()
   const completedGuides = (() => {
@@ -91,7 +92,7 @@ const guideTree = buildGuideTree(posts)
   })()
 
   const syncGuideProgress = () => {
-    rootNodes.forEach((node) => {
+    allNodes.forEach((node) => {
       const ids = (node.getAttribute('data-guide-post-ids') || '').split(',').filter(Boolean)
       const completed = ids.filter((id) => completedGuides.has(id)).length
       const progress = node.querySelector('[data-guide-progress]')
