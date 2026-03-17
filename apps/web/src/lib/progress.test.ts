@@ -6,6 +6,7 @@ import {
   getCardStatus,
   getDeckCounts,
   getFirstUnseenCardIndex,
+  getMostRecentlyStudiedDeckId,
   readProgressStore,
   rememberDeckPosition,
   resetAllProgress,
@@ -103,6 +104,26 @@ describe('progress store', () => {
     writeProgressStore(store, window.localStorage)
 
     expect(readProgressStore(window.localStorage)).toEqual(store)
+  })
+
+  it('returns the most recently studied deck id', () => {
+    const store = {
+      version: 1 as const,
+      decks: {
+        'javascript-runtime-core': {
+          lastCardId: 'javascript-event-loop-phases',
+          lastStudiedAt: '2026-03-17T11:00:00.000Z',
+          cards: {},
+        },
+        'react-rendering-core': {
+          lastCardId: 'react-context-performance',
+          lastStudiedAt: '2026-03-17T12:00:00.000Z',
+          cards: {},
+        },
+      },
+    }
+
+    expect(getMostRecentlyStudiedDeckId(store)).toBe('react-rendering-core')
   })
 
   it('resets one deck or the whole store', () => {

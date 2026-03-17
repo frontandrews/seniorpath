@@ -25,8 +25,21 @@ describe('app routes', () => {
     renderApp(['/'])
 
     expect(screen.getByRole('heading', { name: 'React' })).toBeInTheDocument()
-    expect(screen.getByText('React Rendering Core')).toBeInTheDocument()
+    expect(screen.getAllByText('React Rendering Core').length).toBeGreaterThan(0)
     expect(screen.getByText('1 / 2 learned')).toBeInTheDocument()
+  })
+
+  it('filters the home deck list by selected topic', async () => {
+    const user = userEvent.setup()
+
+    renderApp(['/'])
+
+    await user.click(screen.getByRole('button', { name: 'JavaScript (1)' }))
+
+    expect(screen.getByRole('heading', { name: 'JavaScript' })).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: 'React' })).not.toBeInTheDocument()
+    expect(screen.getByText('JavaScript Runtime Core')).toBeInTheDocument()
+    expect(screen.queryByText('React Rendering Core')).not.toBeInTheDocument()
   })
 
   it('renders deck detail counts and actions', () => {
@@ -46,6 +59,18 @@ describe('app routes', () => {
     expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Review progress' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Reset deck' })).toBeInTheDocument()
+  })
+
+  it('uses the compact shell outside the home route', () => {
+    renderApp(['/decks/react-rendering-core'])
+
+    expect(screen.getByRole('link', { name: 'Back to library' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', {
+        name: 'Technical interview prep that feels manageable.',
+      }),
+    ).not.toBeInTheDocument()
   })
 
   it('shows X of Y and reaches the strong success state after rating every card as learned', async () => {

@@ -4,9 +4,14 @@ import { useState } from 'react'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { DeckCard } from '@/components/deck-card'
 import { Button } from '@/components/ui/button'
+import { LinkButton } from '@/components/ui/link-button'
 import { ProgressMeter } from '@/components/ui/progress-meter'
 import { Panel } from '@/components/ui/panel'
-import { combineDeckCounts, getDeckCounts } from '@/lib/progress'
+import {
+  combineDeckCounts,
+  getDeckCounts,
+  getMostRecentlyStudiedDeckId,
+} from '@/lib/progress'
 import { getTopicLabel } from '@/lib/topic-labels'
 import { useProgress } from '@/state/progress-context'
 
@@ -14,6 +19,8 @@ export function HomePage() {
   const { progressStore, resetAllProgress } = useProgress()
   const [isResetAllOpen, setIsResetAllOpen] = useState(false)
   const decksByTopic = getDecksByTopic()
+  const [selectedTopic, setSelectedTopic] = useState<'all' | string>('all')
+  const topicEntries = Object.entries(decksByTopic)
   const allDeckCounts = Object.values(decksByTopic)
     .flat()
     .map((summary) => {
@@ -22,6 +29,13 @@ export function HomePage() {
     })
     .filter((counts): counts is NonNullable<typeof counts> => Boolean(counts))
   const overallCounts = combineDeckCounts(allDeckCounts)
+  const lastStudiedDeckId = getMostRecentlyStudiedDeckId(progressStore)
+  const lastStudiedDeck = lastStudiedDeckId ? getDeckById(lastStudiedDeckId) : undefined
+  const lastStudiedCounts = lastStudiedDeck ? getDeckCounts(progressStore, lastStudiedDeck) : null
+  const visibleTopics =
+    selectedTopic === 'all'
+      ? topicEntries
+      : topicEntries.filter(([topic]) => topic === selectedTopic)
 
   return (
     <>
@@ -42,8 +56,76 @@ export function HomePage() {
         </Button>
       </Panel>
 
+      <div className="mb-6 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+        <Panel className="bg-[var(--retro-surface)] p-4">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+            Browse by topic
+          </p>
+          <div className="-mx-1 mt-3 flex gap-2 overflow-x-auto px-1 pb-1">
+            <Button
+              onClick={() => setSelectedTopic('all')}
+              size="sm"
+              type="button"
+              variant={selectedTopic === 'all' ? 'primary' : 'ghost'}
+            >
+              All topics
+            </Button>
+            {topicEntries.map(([topic, summaries]) => (
+              <Button
+                key={topic}
+                onClick={() => setSelectedTopic(topic)}
+                size="sm"
+                type="button"
+                variant={selectedTopic === topic ? 'primary' : 'ghost'}
+              >
+                {getTopicLabel(topic)} ({summaries.length})
+              </Button>
+            ))}
+          </div>
+        </Panel>
+
+        <Panel className="bg-[var(--retro-surface)] p-4">
+          <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+            Jump back in
+          </p>
+          {lastStudiedDeck && lastStudiedCounts ? (
+            <div className="mt-3 space-y-3">
+              <div>
+                <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[var(--retro-ink-soft)]">
+                  {getTopicLabel(lastStudiedDeck.topic)}
+                </p>
+                <h2 className="mt-1 text-lg font-black text-[var(--retro-ink)]">
+                  {lastStudiedDeck.title}
+                </h2>
+              </div>
+              <ProgressMeter current={lastStudiedCounts.seen} total={lastStudiedCounts.total} />
+              <div className="flex flex-wrap gap-2">
+                <LinkButton
+                  size="sm"
+                  to={
+                    lastStudiedCounts.allSeen
+                      ? `/decks/${lastStudiedDeck.id}/review`
+                      : `/study/${lastStudiedDeck.id}?mode=continue`
+                  }
+                  variant="primary"
+                >
+                  {lastStudiedCounts.allSeen ? 'Review latest deck' : 'Continue latest deck'}
+                </LinkButton>
+                <LinkButton size="sm" to={`/decks/${lastStudiedDeck.id}`} variant="ghost">
+                  Open deck
+                </LinkButton>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-3 text-sm leading-6 text-white/80">
+              Start with one deck, and Prepdeck will keep your latest session easy to reach.
+            </p>
+          )}
+        </Panel>
+      </div>
+
       <div className="space-y-8">
-        {Object.entries(decksByTopic).map(([topic, summaries]) => (
+        {visibleTopics.map(([topic, summaries]) => (
           <section key={topic}>
             <TopicSummary
               progressStore={progressStore}

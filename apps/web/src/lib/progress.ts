@@ -182,6 +182,18 @@ export function getFirstUnseenCardIndex(store: ProgressStore, deck: Deck): numbe
   return index === -1 ? null : index
 }
 
+export function getMostRecentlyStudiedDeckId(store: ProgressStore): string | null {
+  const sortedDecks = Object.entries(store.decks)
+    .filter(([, progress]) => Boolean(progress.lastStudiedAt))
+    .sort(([, a], [, b]) => {
+      const aTime = a.lastStudiedAt ? Date.parse(a.lastStudiedAt) : 0
+      const bTime = b.lastStudiedAt ? Date.parse(b.lastStudiedAt) : 0
+      return bTime - aTime
+    })
+
+  return sortedDecks[0]?.[0] ?? null
+}
+
 export function setLearnedToUnseen(
   store: ProgressStore,
   deckId: string,
