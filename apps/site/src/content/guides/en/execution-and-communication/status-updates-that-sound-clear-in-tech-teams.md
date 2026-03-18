@@ -14,15 +14,6 @@ path:
 order: 10
 relationships:
   - scope-risk-and-quality
-takeaways:
-  - "Use the same structure every time: progress, current focus, risk, next step."
-  - "Prefer concrete signal over long activity lists."
-  - "Simple English is usually stronger than decorative English."
-practiceChecklist:
-  - "Say what changed since the last update."
-  - "State what you are focused on now."
-  - "Name a blocker or risk if it exists."
-  - "Close with the next step or expected handoff."
 tags:
   - english
   - communication

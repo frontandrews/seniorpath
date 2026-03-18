@@ -14,14 +14,6 @@ path:
 order: 30
 relationships:
   - javascript-event-loop
-takeaways:
-  - "Node runs JavaScript on a main thread by default, but the runtime is not one-thread-only."
-  - "Event loop coordination is different from CPU-bound parallelism."
-  - "Worker threads and separate processes solve different scaling problems."
-practiceChecklist:
-  - "Separate the main JS thread from the runtime as a whole."
-  - "Call out libuv or asynchronous I/O as the concurrency layer."
-  - "Explain when worker threads or processes make sense."
 tags:
   - node
   - concurrency

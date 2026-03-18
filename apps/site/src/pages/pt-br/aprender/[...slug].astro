@@ -3,6 +3,7 @@ import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 
 import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { formatEditorialDate } from '../../../lib/format-date'
 import { getGuideHrefFromEntryId } from '../../../lib/guide-links'
 import { translateSiteLabel, translateSiteLabels } from '../../../lib/site-labels'
 import { sortGuides } from '../../../lib/guide-tree'
@@ -97,76 +98,34 @@ const translatedTags = translateSiteLabels(post.data.tags, post.data.locale)
       <h1 class="article-title">{post.data.title}</h1>
       <p class="article-excerpt">{post.data.description}</p>
       <div class="article-author-row">
-        <div class="article-author-avatar" aria-hidden="true">AR</div>
+        <img alt="Andrews Ribeiro" class="article-author-avatar" height="48" loading="lazy" src="/andrews.jpg" width="48" />
         <div class="article-author-copy">
           <p class="article-author-name">Andrews Ribeiro</p>
           <p class="article-author-meta">
-            {post.data.pubDate.toLocaleDateString('pt-BR', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            })}
-            {post.data.updatedDate
-              ? ` · ${copy.article.updatedPrefix} ${post.data.updatedDate.toLocaleDateString('pt-BR', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}`
-              : ''}
+            {formatEditorialDate(post.data.pubDate, 'pt-BR')}
           </p>
+          {post.data.updatedDate ? (
+            <p class="article-author-meta article-author-meta--updated">
+              {copy.article.updatedPrefix} {formatEditorialDate(post.data.updatedDate, 'pt-BR', {
+                month: 'short',
+              })}
+            </p>
+          ) : null}
         </div>
       </div>
-      <div class="meta-list article-header-actions">
-        <button class="button-link" data-guide-complete-toggle data-guide-id={post.data.guideId} type="button">
-          {copy.article.markCompleted}
-        </button>
-      </div>
-      {post.data.tags.length > 0 ? (
-        <div class="meta-list article-tags">
-          {translatedTags.map((tag) => (
-            <span class="badge">{tag}</span>
-          ))}
-        </div>
-      ) : null}
     </header>
-
-    {(post.data.takeaways.length > 0 || post.data.practiceChecklist.length > 0) ? (
-      <section class="article-section article-section--summary">
-        <div class="panel-grid panel-grid--summary">
-          {post.data.takeaways.length > 0 ? (
-            <div class="panel article-related-card">
-              <div>
-                <p class="section-eyebrow">{copy.article.quickSummary}</p>
-                <h2 class="section-heading section-heading--compact">{copy.article.quickSummaryTitle}</h2>
-              </div>
-              <ul class="article-prose compact-list">
-                {post.data.takeaways.map((point) => (
-                  <li>{point}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          {post.data.practiceChecklist.length > 0 ? (
-            <div class="panel article-related-card">
-              <div>
-                <p class="section-eyebrow">{copy.article.practiceChecklist}</p>
-                <h2 class="section-heading section-heading--compact">{copy.article.practiceChecklistTitle}</h2>
-              </div>
-              <ul class="article-prose compact-list">
-                {post.data.practiceChecklist.map((step) => (
-                  <li>{step}</li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </div>
-      </section>
-    ) : null}
 
     <div class="article-prose">
       <Content />
     </div>
+
+    {post.data.tags.length > 0 ? (
+      <div class="meta-list article-tags article-tags--end">
+        {translatedTags.map((tag) => (
+          <span class="badge">{tag}</span>
+        ))}
+      </div>
+    ) : null}
 
     {nextReads.length > 0 ? (
       <section class="article-section">
@@ -175,11 +134,11 @@ const translatedTags = translateSiteLabels(post.data.tags, post.data.locale)
             <h2 class="section-heading section-heading--compact">{copy.article.nextReads}</h2>
           </div>
         </div>
-        <div class="panel-grid panel-grid--summary">
+        <div class="panel-grid panel-grid--next-reads">
           {nextReads.map((entry) => (
             <a class="panel next-read-card" href={getGuideHrefFromEntryId(entry.id)}>
               <h3>{entry.data.title}</h3>
-              <p class="article-excerpt">{entry.data.summary}</p>
+              <p class="article-excerpt">{entry.data.description}</p>
             </a>
           ))}
         </div>

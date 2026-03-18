@@ -1,6 +1,6 @@
 ---
 title: Thinking Before You Code in Interviews
-description: A repeatable way to avoid writing the wrong solution too early during coding interviews.
+description: A repeatable way to avoid writing the wrong solution too early in coding interviews.
 summary: Clarify the shape, test the naive path, then code the smallest correct version first.
 guideId: thinking-before-you-code-in-interviews
 locale: en
@@ -16,14 +16,6 @@ path:
 order: 10
 relationships:
   - breaking-down-problems-without-panic
-takeaways:
-  - "Clarify the prompt before you optimize anything."
-  - "A correct brute-force outline is usually the fastest safe start."
-  - "Saying your trade-offs out loud is part of the answer."
-practiceChecklist:
-  - "Restate the problem in your own words."
-  - "Ask about edge cases that change the solution shape."
-  - "Name the first correct solution before improving it."
 tags:
   - interviews
   - coding
@@ -32,58 +24,73 @@ relatedDeckIds:
   - coding-arrays-hashmaps-basics
 ---
 
-A lot of interview mistakes happen before the code starts.
+## The problem
 
-The candidate hears something familiar, assumes the pattern too early, and writes a fast wrong answer.
+Many interview mistakes happen before the code starts.
 
-## The better sequence
+The candidate recognizes a pattern too early and answers a question that feels close, but is not actually the one being asked.
 
-Use this order:
+## Mental model
 
-1. Restate the problem.
-2. Check the inputs and edge cases.
-3. Say the simplest correct idea.
-4. Improve only if needed.
+Thinking before you code is not stalling. It is how you show control.
 
-That order keeps you from solving a different problem by accident.
+The simple model is:
 
-## A tiny example
+- understand the problem
+- name the first correct solution
+- improve only when there is a reason
+
+That keeps optimization from showing up before understanding.
+
+## Breaking it down
+
+A safe sequence is:
+
+1. restate the prompt in your own words
+2. confirm inputs, outputs, and edge cases
+3. name the simplest correct approach
+4. explain the trade-off
+5. optimize only if needed
+
+This sequence keeps you from solving the wrong problem by accident.
+
+## Simple example
 
 Suppose the prompt is:
 
 > Find the first repeated number in an array.
 
-Do not jump straight to a hash map without saying why.
+Instead of jumping straight to a hash map, say:
 
-A better answer sounds like:
+> The brute-force version compares each number with the values after it. That is easy to trust, but it is O(n²). If I need linear time, I would track seen values in a set and return the first number I encounter twice.
 
-> The brute-force version compares every number against the ones after it. That is easy to trust but it is O(n²). If we want linear time, I would track seen values in a set and return the first number I see twice.
-
-Now the interviewer can see your reasoning, not just the final code.
+Now the interviewer can see your reasoning, not just your final code.
 
 ## Common mistakes
 
-- jumping to the optimized pattern without proving you understood the problem
-- hiding your thought process because you want to look fast
+- jumping to the optimized pattern before proving you understood the prompt
+- hiding your reasoning because you want to look fast
 - forgetting edge cases like empty input or no repeated value
-- overexplaining theory and never landing the answer
+- explaining theory forever and never landing on a decision
 
-## How a senior engineer thinks
+## How a senior thinks
 
-A senior engineer knows that trust matters.
+A senior engineer knows that trust matters more than theatrics.
 
-They build trust by making the path visible:
+They make the path visible:
 
-> Here is the simplest correct version. Here is the trade-off. Here is why I would improve it this way.
+> Here is the simplest correct version. Here is the trade-off. Here is how I would improve it if needed.
 
-That is much stronger than silently producing a “smart” solution.
+## What the interviewer wants to see
 
-## Interview angle
+Most interviewers are looking for a few direct signals:
 
-Interviewers usually want signal in three areas:
+- you understood the problem
+- you can choose a sensible trade-off
+- you can explain your decision clearly
 
-- do you understand the problem
-- can you choose a sensible trade-off
-- can you explain your decision clearly
+That is why thinking before coding usually scores better than sounding fast.
 
-Thinking before coding helps all three.
+> In interviews, clarity beats speed more often than people think. First prove you understood the problem, then improve the solution.
+
+> If you have not explained the simplest correct version yet, you are probably optimizing too early.

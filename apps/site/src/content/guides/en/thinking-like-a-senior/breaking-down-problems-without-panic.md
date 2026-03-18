@@ -1,6 +1,6 @@
 ---
 title: Breaking Down Problems Without Panic
-description: A simple way to turn a messy ticket or interview question into smaller decisions you can actually trust.
+description: A simple way to turn a messy ticket or interview prompt into smaller decisions you can actually trust.
 summary: Slow down, name the shape of the problem, and shrink it before you try to solve everything at once.
 guideId: breaking-down-problems-without-panic
 locale: en
@@ -16,14 +16,6 @@ path:
 order: 10
 relationships:
   - thinking-before-you-code-in-interviews
-takeaways:
-  - "Strong engineers reduce ambiguity before they write code."
-  - "Inputs, outputs, constraints, and failure modes are the fastest first pass."
-  - "A smaller clear problem beats a big vague problem every time."
-practiceChecklist:
-  - "Say what the system receives and what it must return."
-  - "Name the constraint before the implementation."
-  - "Reduce the problem into the smallest useful unit."
 tags:
   - senior-thinking
   - problem-solving
@@ -32,28 +24,39 @@ relatedDeckIds:
   - coding-arrays-hashmaps-basics
 ---
 
-You got a new ticket or an interview prompt.
+## The problem
 
-Your brain wants to jump straight into code.
+You get a messy ticket or an interview prompt and your first instinct is to start coding.
 
-That is exactly where a lot of bad decisions start.
+That is usually where the wrong solution starts.
 
-## The mental model
+If the shape of the problem is still fuzzy, code only makes the confusion harder to undo.
 
-Treat the problem like a messy room.
+## Mental model
 
-Do not start decorating it.
+Treat the problem like something that needs structure before it needs implementation.
 
-First, separate what belongs where:
+Start by naming four things:
 
 - what goes in
 - what must come out
-- what cannot change
-- what can fail
+- what cannot break
+- what is still unclear
 
-That is already progress.
+That already turns a vague problem into something you can reason about.
 
-## A tiny example
+## Breaking it down
+
+A simple sequence is:
+
+1. restate the problem in plain words
+2. separate inputs, outputs, and constraints
+3. name the biggest unknown
+4. shrink the problem to the smallest useful version
+
+The goal is not to sound smart. The goal is to remove ambiguity before you spend effort.
+
+## Simple example
 
 Imagine the prompt is:
 
@@ -61,38 +64,44 @@ Imagine the prompt is:
 
 A weak start is:
 
-> I guess I need a query with sorting.
+> I guess I need a sorted query.
 
 A stronger start is:
 
-- input: maybe a date range, maybe a tenant, maybe pagination later
-- output: top 10 customers plus the revenue number
-- constraints: accuracy matters, response time matters, ties need a rule
+- input: maybe a date range, tenant, or filters
+- output: the top 10 customers and their revenue
+- constraints: accuracy matters, latency matters, ties need a rule
 - failure modes: missing data, bad filters, slow query
 
-Now the problem is smaller and clearer.
+Now the problem is smaller, clearer, and easier to trust.
 
 ## Common mistakes
 
-- starting with implementation before the shape is clear
-- ignoring constraints until the end
-- solving three future problems that were never asked
-- treating ambiguity like permission to guess
+- starting implementation before the problem is shaped
+- ignoring constraints until they break the solution later
+- solving future problems nobody asked for
+- using ambiguity as permission to guess
 
-## How a senior engineer thinks
+## How a senior thinks
 
 A senior engineer does not try to look fast.
 
-They try to become correct early.
+They try to get correct early.
 
 That usually sounds like:
 
-> Before I code this, I want to pin down the input, the output, and the main constraint. That gives me the right version of the problem first.
+> Before I code this, I want to lock the input, output, and main constraint. That gives me the right version of the problem first.
 
-That answer works in real work and in interviews.
+## What the interviewer wants to see
 
-## Interview angle
+Interviewers are usually looking for a few simple signals:
 
-Interviewers are often testing whether you can structure uncertainty.
+- you understood the problem
+- you can reduce uncertainty
+- you can explain your reasoning without getting lost
 
-If you can break the prompt down calmly before coding, you already look more senior than someone who rushes into syntax.
+If you break the problem down calmly before coding, you already look stronger than someone who rushes into syntax.
+
+> Do not solve everything at once. Shape the problem first, then choose the implementation.
+
+> If you cannot define the input, output, and main constraint yet, you are not ready to code.

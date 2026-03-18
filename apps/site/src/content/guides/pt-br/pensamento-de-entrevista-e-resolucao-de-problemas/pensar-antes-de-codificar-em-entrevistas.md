@@ -1,5 +1,5 @@
 ---
-title: Pensar Antes de Codificar em Entrevistas
+title: Pensar Antes de Codar em Entrevistas
 description: Uma forma repetível de evitar escrever a solução errada cedo demais em entrevistas de código.
 summary: Clarifique a forma do problema, valide o caminho ingênuo e só depois codifique a menor versão correta.
 guideId: thinking-before-you-code-in-interviews
@@ -16,14 +16,7 @@ path:
 order: 10
 relationships:
   - breaking-down-problems-without-panic
-takeaways:
-  - "Esclareça o prompt antes de otimizar qualquer coisa."
-  - "Uma versão bruta correta normalmente é o início mais seguro."
-  - "Dizer seus trade-offs em voz alta faz parte da resposta."
-practiceChecklist:
-  - "Reformule o problema com suas próprias palavras."
-  - "Pergunte pelos edge cases que mudam a solução."
-  - "Nomeie a primeira solução correta antes de melhorar."
+  - reconhecer-padroes-sem-decorar-respostas
 tags:
   - interviews
   - coding
@@ -32,58 +25,75 @@ relatedDeckIds:
   - coding-arrays-hashmaps-basics
 ---
 
-Muitos erros de entrevista acontecem antes do código começar.
+## O problema
 
-O candidato ouve algo familiar, assume o padrão cedo demais e escreve uma resposta rápida, mas errada.
+Muita gente erra a entrevista antes mesmo de começar a escrever código.
 
-## A sequência melhor
+O candidato reconhece um padrão, acelera cedo demais e responde uma pergunta parecida, mas não exatamente aquela que foi feita.
 
-Use esta ordem:
+## Modelo mental
 
-1. Reformule o problema.
-2. Valide entrada e edge cases.
-3. Diga a ideia correta mais simples.
-4. Só melhore se precisar.
+Em entrevista, pensar antes de codar não é enrolação. É como você mostra que sabe lidar com incerteza.
 
-Essa ordem evita que você resolva outro problema sem perceber.
+O modelo é simples:
 
-## Um exemplo pequeno
+- entenda o problema
+- diga a menor solução correta
+- só depois melhore
+
+Isso evita que a otimização apareça antes da compreensão.
+
+## Quebrando o problema
+
+Uma sequência segura costuma ser esta:
+
+1. reformule o problema com suas palavras
+2. confirme entrada, saída e edge cases
+3. diga a primeira solução correta
+4. explique o trade-off
+5. otimize só se fizer sentido
+
+Essa ordem ajuda você a não pular etapas importantes.
+
+## Exemplo simples
 
 Suponha o prompt:
 
 > Encontre o primeiro número repetido em um array.
 
-Não pule direto para hash map sem explicar por quê.
+Em vez de pular direto para `hash map`, uma resposta melhor seria:
 
-Uma resposta melhor soa assim:
+> A versão mais simples compara cada número com os seguintes. Ela é fácil de confiar, mas custa O(n²). Se eu precisar de tempo linear, guardo os valores já vistos em um set e retorno o primeiro que aparecer pela segunda vez.
 
-> A versão bruta compara cada número com os seguintes. Ela é fácil de confiar, mas custa O(n²). Se eu quiser tempo linear, eu guardaria os valores já vistos em um set e retornaria o primeiro valor que aparecer pela segunda vez.
-
-Agora o entrevistador enxerga seu raciocínio, não só o código final.
+Agora o entrevistador vê raciocínio, critério e clareza. Não só uma técnica decorada.
 
 ## Erros comuns
 
-- pular para o padrão otimizado sem provar que entendeu o problema
-- esconder o raciocínio porque quer parecer rápido
+- correr para o padrão otimizado sem provar que entendeu o problema
+- esconder o raciocínio para parecer rápido
 - esquecer edge cases como entrada vazia ou ausência de repetição
-- explicar teoria demais e nunca pousar a resposta
+- explicar teoria demais e não aterrissar numa decisão
 
 ## Como um senior pensa
 
-Um senior sabe que confiança importa.
+Um senior tende a criar confiança cedo.
 
-Ele cria confiança deixando o caminho visível:
+Ele não tenta impressionar com velocidade. Ele mostra controle do caminho.
 
-> Aqui está a versão correta mais simples. Aqui está o trade-off. Aqui está por que eu melhoraria assim.
+Isso normalmente soa assim:
 
-Isso é muito mais forte do que produzir uma solução “esperta” em silêncio.
+> Aqui está a menor solução correta. Este é o trade-off. Se eu precisar melhorar, eu seguiria por este caminho.
 
-## Contexto de entrevista
+## O que o entrevistador quer ver
 
-Normalmente o entrevistador quer sinal em três pontos:
+Na prática, o entrevistador quer sinais bem simples:
 
-- você entendeu o problema?
-- você escolhe trade-offs sensatos?
-- você consegue explicar sua decisão com clareza?
+- você entendeu o pedido
+- você escolhe trade-offs razoáveis
+- você consegue explicar por que tomou aquela decisão
 
-Pensar antes de codificar ajuda nos três.
+Pensar antes de codar ajuda exatamente nesses três pontos.
+
+> Em entrevista, clareza costuma valer mais do que velocidade. Primeiro prove que entendeu, depois mostre como melhoraria.
+
+> Se você não explicou a solução mais simples primeiro, provavelmente está otimizando cedo demais.

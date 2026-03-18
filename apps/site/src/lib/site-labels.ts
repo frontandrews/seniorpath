@@ -82,12 +82,38 @@ const PT_BR_LABELS: Record<string, string> = {
   risk: 'risco',
 }
 
+const EN_LABELS: Record<string, string> = {
+  'Thinking Like a Senior': 'Think more clearly',
+  'Problem Breakdown': 'Break the problem down',
+  'Trade-offs and Constraints': 'Trade-offs and limits',
+  'Code for Humans': 'Code people can read',
+  'Runtime & Execution': 'How code actually runs',
+  'Event Loop and Execution Order': 'Event loop and execution order',
+  'Concurrency and Parallelism': 'Concurrency and parallelism',
+  'Memory Basics': 'Memory without the mystery',
+  'Problem Solving & Interview Thinking': 'Solve problems and interviews',
+  'Approach and Framing': 'Where to start',
+  'Pattern Recognition': 'Spotting patterns',
+  'Communicating Solutions': 'Explain your solution',
+  'State & UI Thinking': 'State and interface',
+  'State Ownership': 'Who owns this state?',
+  'Effects and Side Effects': 'Effects without the mess',
+  'Server and Client Thinking': 'What runs on the client and the server',
+  'System Thinking': 'Systems in practice',
+  'AI Systems and Retrieval': 'AI, retrieval, and context',
+  'Execution & Communication': 'Execution and communication',
+  'Estimation and Risk': 'Estimation and risk',
+  'Communication in Work and Interviews': 'Communication at work and in interviews',
+}
+
 export function translateSiteLabel(label: string, locale?: string | null) {
-  if (getSiteLocale(locale) !== 'pt-br') {
-    return label
+  const normalizedLocale = getSiteLocale(locale)
+
+  if (normalizedLocale === 'pt-br') {
+    return PT_BR_LABELS[label] ?? label
   }
 
-  return PT_BR_LABELS[label] ?? label
+  return EN_LABELS[label] ?? label
 }
 
 export function translateSiteLabels(labels: string[], locale?: string | null) {

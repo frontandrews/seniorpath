@@ -15,6 +15,13 @@ const translatedLabel = getTranslatedSiteLabel(node.label, locale)
 const visibleChildren = node.children.filter((child) => child.guideCount > 0)
 const hasPosts = node.posts.length > 0
 const isEmptyLeaf = visibleChildren.length === 0 && !hasPosts
+const shouldFlattenChildren =
+  !hasPosts &&
+  visibleChildren.length > 0 &&
+  visibleChildren.every((child) => child.posts.length > 0 && child.children.length === 0)
+const flattenedPosts = shouldFlattenChildren
+  ? visibleChildren.flatMap((child) => child.posts)
+  : []
 const anchorId = `guide-node-${node.key.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')}`
 ---
 
@@ -37,8 +44,16 @@ const anchorId = `guide-node-${node.key.toLowerCase().replaceAll(/[^a-z0-9]+/g, 
       </div>
     ) : null}
 
-    {visibleChildren.length > 0 ? (
-      <ul class={`guide-tree guide-tree--depth-${node.depth + 1}`}>
+    {shouldFlattenChildren ? (
+      <div class="guide-tree__posts panel-grid panel-grid--articles">
+        {flattenedPosts.map((post) => (
+          <ArticleCard className="guide-tree__post" post={post} />
+        ))}
+      </div>
+    ) : null}
+
+    {visibleChildren.length > 0 && !shouldFlattenChildren ? (
+      <ul class={`guide-tree`}>
         {visibleChildren.map((child) => (
           <Astro.self locale={locale} node={child} />
         ))}

@@ -16,14 +16,7 @@ path:
 order: 10
 relationships:
   - thinking-before-you-code-in-interviews
-takeaways:
-  - "Engenheiros fortes reduzem ambiguidade antes de escrever código."
-  - "Entrada, saída, restrições e falhas já resolvem a primeira passada."
-  - "Um problema pequeno e claro vale mais do que um problema grande e vago."
-practiceChecklist:
-  - "Diga o que o sistema recebe e o que precisa devolver."
-  - "Nomeie a principal restrição antes da implementação."
-  - "Reduza o problema até a menor unidade útil."
+  - como-pensar-em-trade-offs-sem-fingir-certeza
 tags:
   - senior-thinking
   - problem-solving
@@ -32,67 +25,84 @@ relatedDeckIds:
   - coding-arrays-hashmaps-basics
 ---
 
-Chegou um ticket novo ou uma pergunta de entrevista.
+## O problema
 
-Sua cabeça quer ir direto para o código.
+Chega um ticket confuso ou uma pergunta de entrevista e a vontade é correr para o código.
 
-É exatamente aí que muita decisão ruim começa.
+O problema é que, quando você faz isso cedo demais, quase sempre resolve a versão errada do problema.
 
-## O modelo mental
+Você gasta energia com sintaxe antes de fechar o que entra, o que sai e o que realmente importa.
 
-Trate o problema como um quarto bagunçado.
+## Modelo mental
 
-Não comece decorando.
+Pense no problema como algo que precisa ganhar forma antes de ganhar código.
 
-Primeiro, separe o que pertence a cada lugar:
+Antes de implementar, organize quatro pontos:
 
 - o que entra
 - o que precisa sair
-- o que não pode mudar
-- o que pode quebrar
+- o que não pode quebrar
+- o que ainda está ambíguo
 
-Isso já é progresso.
+Quando isso fica claro, metade da dificuldade já caiu.
 
-## Um exemplo pequeno
+## Quebrando o problema
 
-Imagine o prompt:
+Uma forma simples de começar é esta:
+
+1. diga com suas palavras o que o problema pede
+2. separe entrada, saída e restrições
+3. nomeie a dúvida principal
+4. reduza até a menor versão que já seria útil
+
+O objetivo aqui não é parecer brilhante. É reduzir ruído até sobrar um problema que dá para confiar.
+
+## Exemplo simples
+
+Imagine este pedido:
 
 > Construa um endpoint para retornar os 10 clientes com maior receita.
 
-Um começo fraco seria:
+Uma reação apressada seria:
 
 > Acho que preciso de uma query com ordenação.
 
-Um começo melhor seria:
+Uma reação melhor seria:
 
-- entrada: talvez intervalo de datas, talvez tenant, talvez paginação depois
-- saída: top 10 clientes e o valor da receita
+- entrada: intervalo de datas, tenant e talvez filtros
+- saída: top 10 clientes com o valor da receita
 - restrições: precisão importa, tempo de resposta importa, empate precisa de regra
-- falhas: dado faltando, filtro ruim, query lenta
+- falhas: dado faltando, filtro inválido, consulta lenta
 
-Agora o problema ficou menor e mais claro.
+Agora você não tem mais um pedido solto. Você tem uma decisão pequena e clara.
 
 ## Erros comuns
 
-- começar pela implementação antes de entender a forma do problema
-- ignorar restrições até o fim
-- resolver três problemas futuros que ninguém pediu
-- tratar ambiguidade como permissão para chutar
+- começar pela implementação antes de entender o formato do problema
+- ignorar restrições até perceber tarde demais que elas mudavam tudo
+- tentar resolver futuros cenários que ninguém pediu
+- tratar ambiguidade como licença para adivinhar
 
 ## Como um senior pensa
 
-Um senior não tenta parecer rápido.
+Um senior forte não corre para parecer rápido.
 
-Ele tenta ficar correto cedo.
+Ele reduz ambiguidade antes de gastar energia.
 
-Isso normalmente soa assim:
+Normalmente isso soa assim:
 
-> Antes de codar, eu quero fechar entrada, saída e principal restrição. Isso me dá a versão certa do problema primeiro.
+> Antes de codar, eu quero fechar entrada, saída e principal restrição. Aí eu resolvo a versão certa do problema.
 
-Essa resposta funciona no trabalho real e na entrevista.
+## O que o entrevistador quer ver
 
-## Contexto de entrevista
+Em entrevista, isso sinaliza três coisas rápido:
 
-Muitas entrevistas estão testando se você consegue estruturar incerteza.
+- você entendeu o problema
+- você sabe reduzir incerteza
+- você consegue explicar seu raciocínio sem se perder
 
-Se você quebra o problema com calma antes de codar, já parece mais senior do que alguém que corre direto para a sintaxe.
+Quem faz isso bem costuma transmitir mais maturidade do que alguém que abre o editor cedo demais.
+
+> Não tente resolver tudo de uma vez. Dê forma ao problema primeiro e só depois escolha a implementação.
+
+> Se você ainda não consegue dizer entrada, saída e restrição principal, ainda não é hora de codar.

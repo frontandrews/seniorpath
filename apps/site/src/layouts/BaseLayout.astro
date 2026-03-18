@@ -7,11 +7,13 @@ import { getSiteCopy } from '../lib/site-copy'
 
 type Props = {
   description: string
+  localeSuggestionHref?: string | null
   title: string
 }
 
 const {
   description,
+  localeSuggestionHref = null,
   title,
 } = Astro.props
 
@@ -52,6 +54,21 @@ const currentYear = new Date().getFullYear()
     </script>
   </head>
   <body>
+    {guideLocale === 'en' && localeSuggestionHref ? (
+      <div class="site-locale-prompt" data-locale-prompt hidden>
+        <div class="site-frame site-locale-prompt__inner">
+          <p class="site-locale-prompt__text">{copy.localePrompt.message}</p>
+          <div class="site-locale-prompt__actions">
+            <a class="site-locale-prompt__action" data-locale-prompt-link href={localeSuggestionHref}>
+              {copy.localePrompt.action}
+            </a>
+            <button class="site-locale-prompt__dismiss" data-locale-prompt-dismiss type="button">
+              {copy.localePrompt.dismiss}
+            </button>
+          </div>
+        </div>
+      </div>
+    ) : null}
     <header class="site-header">
       <div class="site-frame site-header__inner">
           <a class="site-brand" href={homeHref}>
@@ -92,17 +109,20 @@ const currentYear = new Date().getFullYear()
     <footer class="site-footer">
       <div class="site-frame site-footer__main">
           <div class="site-footer__intro">
-            <p class="site-footer__brand">{copy.footer.title}</p>
+            <a class="site-brand" href={homeHref}>
+              <span class="site-brand__mark">
+                <Icon aria-hidden="true" class="site-brand__icon" name="lucide:waypoints" />
+              </span>
+              <span class="site-brand__label">{copy.header.brand}</span>
+            </a>
             <p class="site-footer__copy">{copy.footer.description}</p>
           </div>
           <div class="site-footer__group">
-            <p class="site-footer__heading">{copy.footer.linksTitle}</p>
             <div class="site-footer__stack">
               <a class="site-footer__link" href={homeHref}>{copy.footer.home}</a>
             </div>
           </div>
           <div class="site-footer__group">
-            <p class="site-footer__heading">{copy.footer.legalTitle}</p>
             <div class="site-footer__stack">
               <a class="site-footer__link" href="/terms">{copy.footer.terms}</a>
               <a class="site-footer__link" href="/privacy">{copy.footer.privacy}</a>
@@ -120,12 +140,47 @@ const currentYear = new Date().getFullYear()
 
 <script is:inline>
   const themeButton = document.querySelector('[data-theme-toggle]')
+  const localePrompt = document.querySelector('[data-locale-prompt]')
+  const localePromptDismiss = document.querySelector('[data-locale-prompt-dismiss]')
+  const localePromptLink = document.querySelector('[data-locale-prompt-link]')
 
   themeButton?.addEventListener('click', () => {
     const nextIsDark = !document.documentElement.classList.contains('dark')
     document.documentElement.classList.toggle('dark', nextIsDark)
     try {
       window.localStorage.setItem('seniorpath.site.theme.v1', nextIsDark ? 'dark' : 'light')
+    } catch {}
+  })
+
+  if (localePrompt) {
+    try {
+      const localePreference = window.localStorage.getItem('seniorpath.site.locale-suggestion.v1')
+      const prefersPortuguese =
+        navigator.language?.toLowerCase().startsWith('pt') ||
+        navigator.languages?.some((value) => value.toLowerCase().startsWith('pt'))
+
+      if (!localePreference && prefersPortuguese) {
+        localePrompt.hidden = false
+      }
+    } catch {}
+  }
+
+  localePromptDismiss?.addEventListener('click', () => {
+    const prompt = document.querySelector('[data-locale-prompt]')
+    if (!(prompt instanceof HTMLElement)) {
+      return
+    }
+
+    prompt.hidden = true
+
+    try {
+      window.localStorage.setItem('seniorpath.site.locale-suggestion.v1', 'dismissed')
+    } catch {}
+  })
+
+  localePromptLink?.addEventListener('click', () => {
+    try {
+      window.localStorage.setItem('seniorpath.site.locale-suggestion.v1', 'accepted')
     } catch {}
   })
 </script>

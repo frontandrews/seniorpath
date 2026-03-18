@@ -14,14 +14,6 @@ path:
 order: 10
 relationships:
   - javascript-event-loop
-takeaways:
-  - "Treat duplicated state as a synchronization risk, not as a convenience."
-  - "Derive cheap values during render instead of copying props into state."
-  - "Reach for memoization before inventing extra state."
-practiceChecklist:
-  - "Explain why duplicated state creates two sources of truth."
-  - "Name the safer default: derive during render."
-  - "Mention when separate state is justified, such as drafts or optimistic UI."
 tags:
   - react
   - state

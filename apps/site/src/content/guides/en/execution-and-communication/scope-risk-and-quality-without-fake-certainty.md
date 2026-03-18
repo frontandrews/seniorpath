@@ -14,14 +14,6 @@ path:
 order: 10
 relationships:
   - status-updates
-takeaways:
-  - "If scope, time, and quality are in tension, say it early."
-  - "Separate must-have scope from nice-to-have scope."
-  - "Protect the quality bar for what actually ships."
-practiceChecklist:
-  - "Name the actual constraint."
-  - "Separate must-have from phase-two scope."
-  - "Explain impact, confidence, and mitigation clearly."
 tags:
   - delivery
   - scope

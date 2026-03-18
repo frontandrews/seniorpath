@@ -14,14 +14,6 @@ path:
 order: 10
 relationships:
   - scope-risk-and-quality
-takeaways:
-  - "Use RAG when the main problem is missing or stale context."
-  - "Use fine-tuning when the model behavior itself needs to change in a repeatable way."
-  - "Choose by control point, iteration speed, and operational cost."
-practiceChecklist:
-  - "Name the actual problem: missing knowledge or weak behavior."
-  - "Explain why retrieval is easier to update and inspect."
-  - "Mention when fine-tuning becomes worth the cost."
 tags:
   - ai
   - rag

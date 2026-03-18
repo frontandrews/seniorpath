@@ -20,8 +20,6 @@ type SiteCopy = {
   }
   footer: {
     description: string
-    legalTitle: string
-    linksTitle: string
     home: string
     learn: string
     privacy: string
@@ -35,6 +33,11 @@ type SiteCopy = {
     copy: string
     filterLabel: string
     title: string
+  }
+  localePrompt: {
+    action: string
+    dismiss: string
+    message: string
   }
   header: {
     brand: string
@@ -68,9 +71,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       updatedPrefix: 'Updated',
     },
     footer: {
-      description: 'Clear articles for people who want to understand better, not just decorate answers.',
-      legalTitle: 'Legal',
-      linksTitle: 'Quick Links',
+      description: 'Clear guides for people who want to understand better, not just decorate answers.',
       home: 'Home',
       learn: 'Path to Senior',
       privacy: 'Privacy policy',
@@ -84,9 +85,14 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
     },
     guideIndex: {
       comingSoon: 'Coming soon',
-      copy: 'Learn the deeper idea first. Practice when you want to validate it.',
-      filterLabel: 'Filter by category',
-      title: 'Path to Senior',
+      copy: 'Direct explanations so you can actually understand the idea, without extra jargon.',
+      filterLabel: 'Pick a topic',
+      title: 'Learn without the fluff',
+    },
+    localePrompt: {
+      action: 'Ver em português',
+      dismiss: 'Continuar em inglês',
+      message: 'Quer ver este conteúdo em português?',
     },
     learn: 'Learn',
     layout: {
@@ -115,9 +121,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       updatedPrefix: 'Atualizado',
     },
     footer: {
-      description: 'Textos claros para quem quer entender melhor, sem enrolacao e sem pose.',
-      legalTitle: 'Institucional',
-      linksTitle: 'Links rapidos',
+      description: 'Guias claros para pessoas que querem entender, não apenas decorar respostas.',
       home: 'Inicio',
       learn: 'Caminho para Senior',
       privacy: 'Politica de privacidade',
@@ -133,7 +137,12 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       comingSoon: 'Em breve',
       copy: 'Explicacoes diretas para entender de verdade, sem jargao desnecessario.',
       filterLabel: 'Escolha um tema',
-      title: 'Aprenda sem enrolacao',
+      title: 'Aprenda sem enrolação',
+    },
+    localePrompt: {
+      action: 'View in English',
+      dismiss: 'Continuar em portugues',
+      message: 'It looks like you may prefer English. Do you want to switch?',
     },
     learn: 'Aprender',
     layout: {
