@@ -39,7 +39,7 @@ const allPosts = sortGuides(
 const portugueseVersion = allGuideEntries.find(
   (entry) => entry.data.locale === 'pt-br' && entry.data.guideId === post.data.guideId,
 )
-const localeSuggestionHref = portugueseVersion ? getGuideHrefFromEntryId(portugueseVersion.id) : null
+const portugueseHref = portugueseVersion ? getGuideHrefFromEntryId(portugueseVersion.id) : null
 const parentPathKey = post.data.path.slice(0, -1).join('>')
 const connectedPosts = allPosts.filter((entry) => {
   if (entry.data.guideId === post.data.guideId) {
@@ -97,7 +97,7 @@ const translatedTags = translateSiteLabels(post.data.tags, post.data.locale)
 
 <BaseLayout
   description={post.data.description}
-  localeSuggestionHref={localeSuggestionHref}
+  portugueseHref={portugueseHref}
   title={post.data.title}
 >
   <article class="article-shell">

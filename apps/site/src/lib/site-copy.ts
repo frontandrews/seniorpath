@@ -34,11 +34,6 @@ type SiteCopy = {
     filterLabel: string
     title: string
   }
-  localePrompt: {
-    action: string
-    dismiss: string
-    message: string
-  }
   header: {
     brand: string
   }
@@ -89,11 +84,6 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       filterLabel: 'Pick a topic',
       title: 'Learn without the fluff',
     },
-    localePrompt: {
-      action: 'Ver em português',
-      dismiss: 'Continuar em inglês',
-      message: 'Quer ver este conteúdo em português?',
-    },
     learn: 'Learn',
     layout: {
       home: 'Home',
@@ -138,11 +128,6 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       copy: 'Explicacoes diretas para entender de verdade, sem jargao desnecessario.',
       filterLabel: 'Escolha um tema',
       title: 'Aprenda sem enrolação',
-    },
-    localePrompt: {
-      action: 'View in English',
-      dismiss: 'Continuar em portugues',
-      message: 'It looks like you may prefer English. Do you want to switch?',
     },
     learn: 'Aprender',
     layout: {

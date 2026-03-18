@@ -30,11 +30,16 @@ type Props = {
 
 const { post } = Astro.props
 const { Content } = await render(post)
+const allGuideEntries = await getCollection('guides')
 const allPosts = sortGuides(
-  (await getCollection('guides')).filter(
+  allGuideEntries.filter(
     (entry) => entry.data.locale === post.data.locale && entry.data.status !== 'archived',
   ),
 )
+const englishVersion = allGuideEntries.find(
+  (entry) => entry.data.locale === 'en' && entry.data.guideId === post.data.guideId,
+)
+const englishHref = englishVersion ? getGuideHrefFromEntryId(englishVersion.id) : null
 const parentPathKey = post.data.path.slice(0, -1).join('>')
 const connectedPosts = allPosts.filter((entry) => {
   if (entry.data.guideId === post.data.guideId) {
@@ -90,7 +95,11 @@ const articlePath = translateSiteLabels(
 const translatedTags = translateSiteLabels(post.data.tags, post.data.locale)
 ---
 
-<BaseLayout description={post.data.description} title={post.data.title}>
+<BaseLayout
+  description={post.data.description}
+  englishHref={englishHref}
+  title={post.data.title}
+>
   <article class="article-shell">
     <header class="article-header">
       <p class="article-kicker">{articleKicker}</p>

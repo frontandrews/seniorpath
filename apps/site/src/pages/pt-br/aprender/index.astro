@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content'
 
 import GuideTreeNode from '../../../components/GuideTreeNode.astro'
 import BaseLayout from '../../../layouts/BaseLayout.astro'
+import { getGuideIndexHref } from '../../../lib/guide-links'
 import { getTranslatedSiteLabel } from '../../../lib/site-labels'
 import { buildGuideTree, sortGuides } from '../../../lib/guide-tree'
 import { getSiteCopy } from '../../../lib/site-copy'
@@ -24,6 +25,7 @@ const copy = getSiteCopy('pt-br')
 
 <BaseLayout
   description="Browse the Path to Senior: structured learn-first guides for deeper understanding, stronger interviews, and better engineering judgment."
+  englishHref={getGuideIndexHref('en')}
   title={copy.guideIndex.title}
 >
   <section class="section section--compact">

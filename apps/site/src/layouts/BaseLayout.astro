@@ -7,13 +7,15 @@ import { getSiteCopy } from '../lib/site-copy'
 
 type Props = {
   description: string
-  localeSuggestionHref?: string | null
+  englishHref?: string | null
+  portugueseHref?: string | null
   title: string
 }
 
 const {
   description,
-  localeSuggestionHref = null,
+  englishHref = null,
+  portugueseHref = null,
   title,
 } = Astro.props
 
@@ -21,10 +23,12 @@ const pageTitle = `${title} | SeniorPath`
 const pathname = Astro.url.pathname
 const guideLocale = getGuideLocaleFromPathname(pathname)
 const copy = getSiteCopy(guideLocale)
-const englishGuideIndexHref = getGuideIndexHref('en')
-const portugueseGuideIndexHref = getGuideIndexHref('pt-br')
+const englishGuideIndexHref = englishHref ?? getGuideIndexHref('en')
+const portugueseGuideIndexHref = portugueseHref ?? getGuideIndexHref('pt-br')
 const homeHref = guideLocale === 'pt-br' ? '/pt-br' : '/'
 const currentYear = new Date().getFullYear()
+const alternateLocale = guideLocale === 'pt-br' ? 'en' : 'pt-br'
+const localeRedirectHref = guideLocale === 'pt-br' ? englishGuideIndexHref : portugueseGuideIndexHref
 ---
 
 <!doctype html>
@@ -53,22 +57,7 @@ const currentYear = new Date().getFullYear()
       } catch {}
     </script>
   </head>
-  <body>
-    {guideLocale === 'en' && localeSuggestionHref ? (
-      <div class="site-locale-prompt" data-locale-prompt hidden>
-        <div class="site-frame site-locale-prompt__inner">
-          <p class="site-locale-prompt__text">{copy.localePrompt.message}</p>
-          <div class="site-locale-prompt__actions">
-            <a class="site-locale-prompt__action" data-locale-prompt-link href={localeSuggestionHref}>
-              {copy.localePrompt.action}
-            </a>
-            <button class="site-locale-prompt__dismiss" data-locale-prompt-dismiss type="button">
-              {copy.localePrompt.dismiss}
-            </button>
-          </div>
-        </div>
-      </div>
-    ) : null}
+  <body data-locale-alternate={alternateLocale} data-locale-redirect-href={localeRedirectHref}>
     <header class="site-header">
       <div class="site-frame site-header__inner">
           <a class="site-brand" href={homeHref}>
@@ -84,6 +73,7 @@ const currentYear = new Date().getFullYear()
                 href={englishGuideIndexHref}
                 hreflang="en"
                 lang="en"
+                data-locale-choice="en"
               >
                 EN
               </a>
@@ -92,6 +82,7 @@ const currentYear = new Date().getFullYear()
                 href={portugueseGuideIndexHref}
                 hreflang="pt-BR"
                 lang="pt-BR"
+                data-locale-choice="pt-br"
               >
                 PT
               </a>
@@ -140,9 +131,7 @@ const currentYear = new Date().getFullYear()
 
 <script is:inline>
   const themeButton = document.querySelector('[data-theme-toggle]')
-  const localePrompt = document.querySelector('[data-locale-prompt]')
-  const localePromptDismiss = document.querySelector('[data-locale-prompt-dismiss]')
-  const localePromptLink = document.querySelector('[data-locale-prompt-link]')
+  const localeChoiceLinks = [...document.querySelectorAll('[data-locale-choice]')]
 
   themeButton?.addEventListener('click', () => {
     const nextIsDark = !document.documentElement.classList.contains('dark')
@@ -152,35 +141,31 @@ const currentYear = new Date().getFullYear()
     } catch {}
   })
 
-  if (localePrompt) {
-    try {
-      const localePreference = window.localStorage.getItem('seniorpath.site.locale-suggestion.v1')
-      const prefersPortuguese =
-        navigator.language?.toLowerCase().startsWith('pt') ||
-        navigator.languages?.some((value) => value.toLowerCase().startsWith('pt'))
-
-      if (!localePreference && prefersPortuguese) {
-        localePrompt.hidden = false
+  localeChoiceLinks.forEach((link) => {
+    link.addEventListener('click', () => {
+      const value = link.getAttribute('data-locale-choice')
+      if (!value) {
+        return
       }
-    } catch {}
-  }
 
-  localePromptDismiss?.addEventListener('click', () => {
-    const prompt = document.querySelector('[data-locale-prompt]')
-    if (!(prompt instanceof HTMLElement)) {
-      return
+      try {
+        window.localStorage.setItem('seniorpath.site.locale-preference.v1', value)
+      } catch {}
+    })
+  })
+
+  try {
+    const savedLocalePreference = window.localStorage.getItem('seniorpath.site.locale-preference.v1')
+    const currentLocale = document.documentElement.lang === 'pt-BR' ? 'pt-br' : 'en'
+    const alternateHref = document.body.getAttribute('data-locale-redirect-href')
+    const alternateLocale = document.body.getAttribute('data-locale-alternate')
+    const browserPrefersPortuguese =
+      navigator.language?.toLowerCase().startsWith('pt') ||
+      navigator.languages?.some((value) => value.toLowerCase().startsWith('pt'))
+    const preferredLocale = savedLocalePreference ?? (browserPrefersPortuguese ? 'pt-br' : 'en')
+
+    if (!savedLocalePreference && preferredLocale !== currentLocale && alternateHref && alternateLocale === preferredLocale) {
+      window.location.replace(alternateHref)
     }
-
-    prompt.hidden = true
-
-    try {
-      window.localStorage.setItem('seniorpath.site.locale-suggestion.v1', 'dismissed')
-    } catch {}
-  })
-
-  localePromptLink?.addEventListener('click', () => {
-    try {
-      window.localStorage.setItem('seniorpath.site.locale-suggestion.v1', 'accepted')
-    } catch {}
-  })
+  } catch {}
 </script>
