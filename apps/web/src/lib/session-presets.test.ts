@@ -1,4 +1,4 @@
-import { getDeckManifest } from '@prepdeck/content'
+import { getDeckManifest } from '@seniorpath/content'
 
 import { createEmptyProgressStore, getDeckCountsFromSummary, setCardStatus } from '@/lib/progress'
 import { getSessionPresets } from '@/lib/session-presets'

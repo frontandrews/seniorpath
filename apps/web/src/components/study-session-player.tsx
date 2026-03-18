@@ -1,4 +1,4 @@
-import type { ProgressStatus, SessionHistoryKind } from '@prepdeck/schemas'
+import type { ProgressStatus, SessionHistoryKind } from '@seniorpath/schemas'
 import { m } from 'motion/react'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'

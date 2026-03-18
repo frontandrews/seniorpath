@@ -4,7 +4,7 @@ import {
   getDeckManifest,
   getDecksByTopic,
   getDecksByTrack,
-} from '@prepdeck/content'
+} from '@seniorpath/content'
 
 describe('content registry', () => {
   it('loads every manifest entry into a real deck', () => {

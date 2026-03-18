@@ -1,4 +1,4 @@
-import type { Deck, ProgressStore, ProgressStatus } from '@prepdeck/schemas'
+import type { Deck, ProgressStore, ProgressStatus } from '@seniorpath/schemas'
 
 import { getCardNote, getCardStatus } from '@/lib/progress'
 import { createStudyEntries, type StudyCardEntry } from '@/lib/study-session'

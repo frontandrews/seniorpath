@@ -1,4 +1,4 @@
-import { getDeckById } from '@prepdeck/content'
+import { getDeckById } from '@seniorpath/content'
 import { fireEvent, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
@@ -38,6 +38,9 @@ describe('app routes', () => {
     renderApp(['/'])
 
     expect(screen.getByTestId(testIds.firstRun.page)).toBeInTheDocument()
+    expect(
+      within(screen.getByTestId(testIds.home.deckLibrary)).queryByTestId(testIds.firstRun.page),
+    ).not.toBeInTheDocument()
     expect(screen.getByTestId(testIds.firstRun.startDeckLink('coding-arrays-hashmaps-basics'))).toHaveAttribute(
       'href',
       '/study/coding-arrays-hashmaps-basics?mode=start',
@@ -62,6 +65,9 @@ describe('app routes', () => {
 
     expect(screen.getByTestId(testIds.home.page)).toBeInTheDocument()
     expect(screen.getByTestId(testIds.home.deckLibrary)).toBeInTheDocument()
+    expect(screen.getByTestId(testIds.appShell.pageIntro)).toBeInTheDocument()
+    expect(screen.getAllByRole('heading', { name: 'Path to Senior' })).toHaveLength(1)
+    expect(screen.queryByRole('heading', { name: 'Deck library' })).not.toBeInTheDocument()
     expect(screen.getByTestId(testIds.deckCard(deck.id))).toBeInTheDocument()
     expect(screen.getByText('1 / 2 learned')).toBeInTheDocument()
     expect(screen.getByTestId(testIds.home.presetCard('continue'))).toBeInTheDocument()
@@ -196,20 +202,28 @@ describe('app routes', () => {
     expect(screen.getByTestId(testIds.deckDetail.reviewLink)).toBeInTheDocument()
     expect(screen.getByTestId(testIds.deckDetail.resetButton)).toBeInTheDocument()
     expect(screen.getByTestId(testIds.deckDetail.learnMoreSection)).toBeInTheDocument()
-    expect(screen.getByTestId(testIds.deckDetail.learnMoreLink('en/guides/state-and-ui-thinking/react-derived-state-without-extra-bugs'))).toHaveAttribute(
+    expect(screen.getByTestId(testIds.deckDetail.learnMoreLink('learn/state-and-ui-thinking/react-derived-state-without-extra-bugs'))).toHaveAttribute(
       'href',
-      '/en/guides/state-and-ui-thinking/react-derived-state-without-extra-bugs',
+      '/learn/state-and-ui-thinking/react-derived-state-without-extra-bugs',
     )
   })
 
-  it('uses the compact shell outside the home route', () => {
+  it('uses the global shell on non-focus routes and keeps the page intro separate', () => {
     renderApp(['/decks/react-rendering-core'])
 
-    expect(screen.getByTestId(testIds.appShell.compactBackLink)).toBeInTheDocument()
+    const globalHeader = screen.getByTestId(testIds.appShell.globalHeader)
+    const pageIntro = screen.getByTestId(testIds.appShell.pageIntro)
+
+    expect(globalHeader).toBeInTheDocument()
+    expect(pageIntro).toBeInTheDocument()
+    expect(within(globalHeader).queryByText('React Rendering Core')).not.toBeInTheDocument()
+    expect(within(pageIntro).getByText('React Rendering Core')).toBeInTheDocument()
+    expect(screen.queryByTestId(testIds.appShell.compactBackLink)).not.toBeInTheDocument()
     expect(screen.getByTestId(testIds.appShell.primaryNav)).toBeInTheDocument()
-    expect(screen.getAllByTestId(testIds.appShell.homeProgressLink).length).toBeGreaterThan(0)
-    expect(screen.getAllByTestId(testIds.appShell.homeSettingsLink).length).toBeGreaterThan(0)
-    expect(screen.getAllByTestId(testIds.appShell.homePremiumLink).length).toBeGreaterThan(0)
+    expect(within(globalHeader).getByTestId(testIds.appShell.homeGuidesLink)).toBeInTheDocument()
+    expect(within(globalHeader).getByTestId(testIds.appShell.homeProgressLink)).toBeInTheDocument()
+    expect(within(globalHeader).getByTestId(testIds.appShell.homeSettingsLink)).toBeInTheDocument()
+    expect(within(globalHeader).getByTestId(testIds.appShell.homePremiumLink)).toBeInTheDocument()
     expect(screen.queryByTestId(testIds.home.page)).not.toBeInTheDocument()
   })
 
@@ -288,6 +302,8 @@ describe('app routes', () => {
   it('keeps the bottom navigation hidden during focused study routes', () => {
     renderApp(['/study/react-rendering-core?mode=start'])
 
+    expect(screen.getByTestId(testIds.appShell.focusHeader)).toBeInTheDocument()
+    expect(screen.queryByTestId(testIds.appShell.globalHeader)).not.toBeInTheDocument()
     expect(screen.queryByTestId(testIds.appShell.primaryNav)).not.toBeInTheDocument()
   })
 
@@ -369,7 +385,7 @@ describe('app routes', () => {
     expect(screen.getByText(/const visibleUsers = users\.filter/i)).toBeInTheDocument()
     expect(screen.getByTestId(testIds.study.learnMoreLink)).toHaveAttribute(
       'href',
-      '/en/guides/state-and-ui-thinking/react-derived-state-without-extra-bugs',
+      '/learn/state-and-ui-thinking/react-derived-state-without-extra-bugs',
     )
   })
 

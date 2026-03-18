@@ -66,20 +66,28 @@ function spawnDevProcess(label, command, args, options = {}) {
 
 const webPort = await getFreePort(4510)
 const sitePort = await getFreePort(4520)
+const webEnv = {
+  VITE_PUBLIC_SITE_URL: `http://localhost:${sitePort}`,
+}
 const siteEnv = {
   PUBLIC_APP_URL: `http://localhost:${webPort}`,
 }
 
-process.stdout.write(`Starting Prepdeck dev servers\n`)
+process.stdout.write(`Starting SeniorPath dev servers\n`)
 process.stdout.write(`- Site: http://localhost:${sitePort}\n`)
 process.stdout.write(`- App:  http://localhost:${webPort}\n`)
 
 const children = [
-  spawnDevProcess('web', 'pnpm', ['--filter', '@prepdeck/web', 'exec', 'vite', '--port', String(webPort)]),
+  spawnDevProcess(
+    'web',
+    'pnpm',
+    ['--filter', '@seniorpath/web', 'exec', 'vite', '--port', String(webPort)],
+    { env: webEnv },
+  ),
   spawnDevProcess(
     'site',
     'pnpm',
-    ['--filter', '@prepdeck/site', 'exec', 'astro', 'dev', '--port', String(sitePort)],
+    ['--filter', '@seniorpath/site', 'exec', 'astro', 'dev', '--port', String(sitePort)],
     { env: siteEnv },
   ),
 ]

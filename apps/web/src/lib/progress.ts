@@ -4,13 +4,13 @@ import type {
   ProgressStatus,
   ProgressStore,
   ProgressV1Store,
-} from '@prepdeck/schemas'
-import { progressV1StoreSchema, userDataStoreSchema } from '@prepdeck/schemas'
+} from '@seniorpath/schemas'
+import { progressV1StoreSchema, userDataStoreSchema } from '@seniorpath/schemas'
 
 import { getBrowserStorageAdapter, type StorageAdapter } from '@/lib/storage-adapter'
 
-export const PREVIOUS_STORAGE_KEY = 'prepdeck.progress.v1'
-export const STORAGE_KEY = 'prepdeck.user-data.v1'
+export const PREVIOUS_STORAGE_KEY = 'seniorpath.progress.v1'
+export const STORAGE_KEY = 'seniorpath.user-data.v1'
 
 export type DeckCounts = {
   allLearned: boolean

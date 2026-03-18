@@ -1,1 +1,1 @@
-export { TRACK_LABELS, getTrackLabel } from '@prepdeck/content'
+export { TRACK_LABELS, getTrackLabel } from '@seniorpath/content'

@@ -1,6 +1,6 @@
 # Flashcards App
 
-Implementation notes for the Prepdeck practice app.
+Implementation notes for the SeniorPath practice app.
 
 ## Product direction
 

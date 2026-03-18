@@ -1,7 +1,8 @@
-import { getGuideRoutePath } from '@prepdeck/content'
-import type { Deck } from '@prepdeck/schemas'
+import { getGuideRoutePath } from '@seniorpath/content'
+import type { Deck } from '@seniorpath/schemas'
 
-const LEGACY_GUIDE_SEGMENTS = ['/guides', '/guias']
+const LEGACY_GUIDE_SEGMENTS = ['/guides', '/guias', '/learn', '/aprender']
+const GUIDE_INDEX_SUFFIXES = ['/learn', '/pt-br/aprender', '/en/guides', '/pt-br/guias', ...LEGACY_GUIDE_SEGMENTS]
 
 function getSiteBase(siteBaseUrl?: string): string {
   const normalizedBase = siteBaseUrl?.trim().replace(/\/+$/, '') ?? ''
@@ -10,10 +11,10 @@ function getSiteBase(siteBaseUrl?: string): string {
     return ''
   }
 
-  const legacySegment = LEGACY_GUIDE_SEGMENTS.find((segment) => normalizedBase.endsWith(segment))
+  const guideSegment = GUIDE_INDEX_SUFFIXES.find((segment) => normalizedBase.endsWith(segment))
 
-  return legacySegment
-    ? normalizedBase.slice(0, normalizedBase.length - legacySegment.length)
+  return guideSegment
+    ? normalizedBase.slice(0, normalizedBase.length - guideSegment.length)
     : normalizedBase
 }
 
@@ -32,6 +33,18 @@ export function getArticleHref(guideId: string): string | null {
   }
 
   return resolveArticleHref(routePath, import.meta.env.VITE_PUBLIC_SITE_URL)
+}
+
+export function getGuideIndexHref(locale = 'en', siteBaseUrl?: string): string {
+  const normalizedLocale = locale === 'pt-br' ? 'pt-br' : 'en'
+  const section = normalizedLocale === 'pt-br' ? 'aprender' : 'learn'
+  const siteBase = getSiteBase(siteBaseUrl ?? import.meta.env.VITE_PUBLIC_SITE_URL)
+
+  if (normalizedLocale === 'en') {
+    return siteBase ? `${siteBase}/${section}` : `/${section}`
+  }
+
+  return siteBase ? `${siteBase}/${normalizedLocale}/${section}` : `/${normalizedLocale}/${section}`
 }
 
 export type DeckArticleLink = {

@@ -1,0 +1,113 @@
+---
+import { getCollection } from 'astro:content'
+
+import GuideTreeNode from '../../components/GuideTreeNode.astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import { getTranslatedSiteLabel } from '../../lib/site-labels'
+import { buildGuideTree, sortGuides } from '../../lib/guide-tree'
+import { getSiteCopy } from '../../lib/site-copy'
+
+const posts = sortGuides((await getCollection('guides')).filter(
+  (post) => post.data.status !== 'archived' && post.data.locale === 'en',
+))
+const guideTree = buildGuideTree(posts)
+const filterTones = [
+  { dark: '#24364f', light: '#dbeafe' },
+  { dark: '#2d3358', light: '#dbe4ff' },
+  { dark: '#334155', light: '#e2e8f0' },
+  { dark: '#1f4556', light: '#e0f2fe' },
+  { dark: '#41305a', light: '#ede9fe' },
+  { dark: '#274737', light: '#e2f2ea' },
+]
+const copy = getSiteCopy('en')
+---
+
+<BaseLayout
+  description="The Path to Senior: a structured learning journey for mid-level developers leveling up through deeper concepts and interview practice."
+  title={copy.guideIndex.title}
+>
+  <section class="section section--compact">
+    <div class="panel page-toolbar">
+      <div class="page-toolbar__intro">
+        <h1 class="section-heading section-heading--compact">{copy.guideIndex.title}</h1>
+        <p class="page-toolbar__copy">{copy.guideIndex.copy}</p>
+      </div>
+    </div>
+
+    <div class="tree-controls tree-controls--compact">
+      <p class="section-eyebrow">{copy.guideIndex.filterLabel}</p>
+      <div class="meta-list">
+        {guideTree.map((node, index) => {
+          const tone = filterTones[index % filterTones.length]
+
+          return (
+            <button
+              class="guide-filter-chip"
+              data-tree-filter={node.label}
+              style={`--chip-accent: ${tone.light}; --chip-accent-dark: ${tone.dark};`}
+              type="button"
+            >
+              <span>{getTranslatedSiteLabel(node.label, 'en')}</span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+
+    <ul class="guide-tree guide-tree--root">
+      {guideTree.map((node) => (
+        <GuideTreeNode locale="en" node={node} />
+      ))}
+    </ul>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  const rootNodes = [...document.querySelectorAll('.guide-tree--root > [data-guide-node]')]
+  const categoryButtons = [...document.querySelectorAll('[data-tree-filter]')]
+  let activeCategory = null
+  const completedGuides = (() => {
+    try {
+      return new Set(JSON.parse(window.localStorage.getItem('seniorpath.site.completed-guides.v1') || '[]'))
+    } catch {
+      return new Set()
+    }
+  })()
+
+  const syncCompletedPosts = () => {
+    document.querySelectorAll('[data-guide-post]').forEach((post) => {
+      const id = post.getAttribute('data-guide-post')
+      post.classList.toggle('guide-tree__post--complete', Boolean(id && completedGuides.has(id)))
+    })
+  }
+
+  const applyTreeFilter = () => {
+    const hasFilter = Boolean(activeCategory)
+
+    rootNodes.forEach((node) => {
+      const label = node.getAttribute('data-guide-node-label')
+      const shouldShow = !hasFilter || label === activeCategory
+      node.toggleAttribute('hidden', !shouldShow)
+    })
+  }
+
+  categoryButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const value = button.getAttribute('data-tree-filter')
+
+      if (!value) {
+        return
+      }
+
+      activeCategory = activeCategory === value ? null : value
+      categoryButtons.forEach((item) => {
+        const itemValue = item.getAttribute('data-tree-filter')
+        item.classList.toggle('guide-filter-chip--active', itemValue === activeCategory)
+      })
+      applyTreeFilter()
+    })
+  })
+
+  syncCompletedPosts()
+  applyTreeFilter()
+</script>

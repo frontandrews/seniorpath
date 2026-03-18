@@ -13,8 +13,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
-        name: 'Prepdeck',
-        short_name: 'Prepdeck',
+        name: 'SeniorPath',
+        short_name: 'SeniorPath',
         description: 'Mobile-first technical interview flashcards.',
         theme_color: '#101425',
         background_color: '#101425',
@@ -55,17 +55,17 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@prepdeck/content/decks': fileURLToPath(
+      '@seniorpath/content/decks': fileURLToPath(
         new URL('../../packages/content/src/decks.ts', import.meta.url),
       ),
-      '@prepdeck/content/manifest': fileURLToPath(
+      '@seniorpath/content/manifest': fileURLToPath(
         new URL('../../packages/content/src/manifest.ts', import.meta.url),
       ),
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      '@prepdeck/content': fileURLToPath(
+      '@seniorpath/content': fileURLToPath(
         new URL('../../packages/content/src/index.ts', import.meta.url),
       ),
-      '@prepdeck/schemas': fileURLToPath(
+      '@seniorpath/schemas': fileURLToPath(
         new URL('../../packages/schemas/src/index.ts', import.meta.url),
       ),
     },

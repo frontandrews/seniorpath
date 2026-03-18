@@ -1,4 +1,4 @@
-import type { ProgressStore, SessionHistoryStore } from '@prepdeck/schemas'
+import type { ProgressStore, SessionHistoryStore } from '@seniorpath/schemas'
 import { LazyMotion, MotionConfig, domMax } from 'motion/react'
 import type { PropsWithChildren } from 'react'
 import { render } from '@testing-library/react'

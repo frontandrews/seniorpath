@@ -1,4 +1,4 @@
-import type { DeckManifestEntry } from '@prepdeck/schemas'
+import type { DeckManifestEntry } from '@seniorpath/schemas'
 
 import { getTrackLabel } from '@/lib/track-labels'
 import { getTopicLabel } from '@/lib/topic-labels'

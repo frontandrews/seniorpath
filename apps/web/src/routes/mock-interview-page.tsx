@@ -1,4 +1,4 @@
-import { getAllDecks } from '@prepdeck/content/decks'
+import { getAllDecks } from '@seniorpath/content/decks'
 import { Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 
 import { LinkButton } from '@/components/ui/link-button'

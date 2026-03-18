@@ -1,7 +1,6 @@
-import { getDeckManifest } from '@prepdeck/content'
+import { getDeckManifest } from '@seniorpath/content'
 import { useMemo, useState } from 'react'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
 import {
@@ -53,15 +52,11 @@ export function ProgressSharePanel() {
     <Panel className="p-5" data-testid={testIds.progress.shareCardPanel}>
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_22rem] xl:items-start">
         <div>
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="accent">Shareable</Badge>
-            <Badge>SVG card</Badge>
-            <Badge>Local-first</Badge>
-          </div>
-          <h2 className="mt-4 text-2xl font-black text-[var(--retro-ink)]">
-            Download a portfolio-ready progress card.
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/80">
+          <p className="app-eyebrow">Share snapshot</p>
+          <h3 className="text-2xl font-black text-[var(--retro-ink)]">
+            Download a clean progress card.
+          </h3>
+          <p className="app-copy mt-3 max-w-2xl text-sm">
             Generate a clean snapshot of your progress with no backend and no account.
             It is useful for portfolio screenshots, posting updates, or keeping a visual
             checkpoint of your prep.

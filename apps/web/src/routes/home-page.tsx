@@ -1,5 +1,6 @@
-import type { DeckManifestEntry } from '@prepdeck/schemas'
-import { getDecksByTrack } from '@prepdeck/content/manifest'
+import type { ComponentPropsWithoutRef } from 'react'
+import type { DeckManifestEntry } from '@seniorpath/schemas'
+import { getDecksByTrack } from '@seniorpath/content/manifest'
 import { useMemo, useState } from 'react'
 
 import { AdSlot } from '@/components/ad-slot'
@@ -7,8 +8,10 @@ import { DeckCard } from '@/components/deck-card'
 import { FirstRunPanel } from '@/components/first-run-panel'
 import { InstallAppPanel } from '@/components/install-app-panel'
 import { Button } from '@/components/ui/button'
+import { PageIntro } from '@/components/ui/page-intro'
 import { LinkButton } from '@/components/ui/link-button'
 import { Panel } from '@/components/ui/panel'
+import { SectionHeader } from '@/components/ui/section-header'
 import {
   filterDeckLibraryRecords,
   type DeckLibraryFilters,
@@ -76,133 +79,116 @@ export function HomePage() {
   const starterDecks = getStarterDeckRecords(deckRecords, 3).map((record) => record.summary)
 
   return (
-    <div data-testid={testIds.home.page}>
+    <div className="space-y-6" data-testid={testIds.home.page}>
       <section
         aria-labelledby="deck-library-region-heading"
-        className="mb-6"
+        className="space-y-4"
         data-testid={testIds.home.deckLibrary}
       >
-        <Panel className="mb-4 p-4 sm:p-5">
-          <p
-            className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]"
-            id="deck-library-region-heading"
-          >
-            Deck library
-          </p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-[var(--retro-ink)] sm:text-4xl">
-            Path to Senior
-          </h1>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-white/80">
-            Learn the intuition first. Practice when you want to prove it.
-          </p>
-        </Panel>
+        <PageIntro
+          description="Learn the intuition first. Practice when you want to prove it."
+          title="Path to Senior"
+        />
 
-        <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-          <div>
-            <h2 className="text-2xl font-black text-[var(--retro-ink)]">
-              Deck library
-            </h2>
-            <p className="mt-1 text-sm leading-6 text-white/75">
-              {selectedTrack === 'all'
-                ? `Showing all ${visibleDeckRecords.length} decks.`
-                : `Showing ${visibleDeckRecords.length} deck${visibleDeckRecords.length === 1 ? '' : 's'} in ${getTrackLabel(selectedTrack)}.`}
-            </p>
-          </div>
-          <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
-            <Button
-              data-testid={testIds.home.trackFilter('all')}
-              onClick={() => setSelectedTrack('all')}
-              size="sm"
-              type="button"
-              variant={selectedTrack === 'all' ? 'primary' : 'ghost'}
-            >
-              All areas
-            </Button>
-            {trackEntries.map(([track, summaries]) => (
-              <Button
-                data-testid={testIds.home.trackFilter(track)}
-                key={track}
-                onClick={() => setSelectedTrack(track)}
-                size="sm"
-                type="button"
-                variant={selectedTrack === track ? 'primary' : 'ghost'}
-              >
-                {getTrackLabel(track)} ({summaries.length})
-              </Button>
-            ))}
-          </div>
-        </div>
-
-        <Panel className="mb-4 p-4">
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
-            <div>
-              <label
-                className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]"
-                htmlFor="deck-library-search"
-              >
-                Search decks
-              </label>
-              <input
-                className="mt-3 min-h-12 w-full rounded-[0.95rem] border-2 border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.04)] px-4 text-sm text-[var(--retro-ink)] outline-none transition placeholder:text-white/40 focus:border-[var(--retro-line-strong)]"
-                data-testid={testIds.home.deckSearch}
-                id="deck-library-search"
-                onChange={(event) => setLibraryQuery(event.target.value)}
-                placeholder="React, RAG, standups, delivery, ownership..."
-                type="text"
-                value={libraryQuery}
-              />
-            </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-                  Difficulty
+        <Panel className="p-4 sm:p-5">
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="max-w-2xl">
+                <p
+                  className="app-field-label"
+                  id="deck-library-region-heading"
+                >
+                  Find a deck
                 </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {(['all', 'easy', 'medium', 'hard'] as const).map((difficulty) => (
-                    <Button
-                      data-testid={testIds.home.difficultyFilter(difficulty)}
-                      key={difficulty}
-                      onClick={() => setLibraryDifficulty(difficulty)}
-                      size="sm"
-                      type="button"
-                      variant={libraryDifficulty === difficulty ? 'primary' : 'ghost'}
-                    >
-                      {difficulty === 'all' ? 'All' : difficulty}
-                    </Button>
-                  ))}
-                </div>
+                <p className="app-copy mt-2 text-sm">
+                  {selectedTrack === 'all'
+                    ? `Showing all ${visibleDeckRecords.length} decks.`
+                    : `Showing ${visibleDeckRecords.length} deck${visibleDeckRecords.length === 1 ? '' : 's'} in ${getTrackLabel(selectedTrack)}.`}
+                </p>
               </div>
+              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+                <FilterChip
+                  active={selectedTrack === 'all'}
+                  data-testid={testIds.home.trackFilter('all')}
+                  onClick={() => setSelectedTrack('all')}
+                >
+                  All areas
+                </FilterChip>
+                {trackEntries.map(([track]) => (
+                  <FilterChip
+                    active={selectedTrack === track}
+                    data-testid={testIds.home.trackFilter(track)}
+                    key={track}
+                    onClick={() => setSelectedTrack(track)}
+                  >
+                    {getTrackLabel(track)}
+                  </FilterChip>
+                ))}
+              </div>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
               <div>
-                <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-                  Status
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  {[
-                    ['all', 'All'],
-                    ['needs_review', 'Needs review'],
-                    ['has_notes', 'Has notes'],
-                    ['started', 'Started'],
-                  ].map(([status, label]) => (
-                    <Button
-                      data-testid={testIds.home.statusFilter(status)}
-                      key={status}
-                      onClick={() => setLibraryStatus(status as DeckLibraryFilters['status'])}
-                      size="sm"
-                      type="button"
-                      variant={libraryStatus === status ? 'primary' : 'ghost'}
-                    >
-                      {label}
-                    </Button>
-                  ))}
+                <label
+                  className="app-field-label"
+                  htmlFor="deck-library-search"
+                >
+                  Search decks
+                </label>
+                <input
+                  className="app-input mt-3"
+                  data-testid={testIds.home.deckSearch}
+                  id="deck-library-search"
+                  onChange={(event) => setLibraryQuery(event.target.value)}
+                  placeholder="React, RAG, standups, delivery, ownership..."
+                  type="text"
+                  value={libraryQuery}
+                />
+              </div>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <p className="app-field-label">
+                    Difficulty
+                  </p>
+                  <div className="app-filter-row mt-3">
+                    {(['all', 'easy', 'medium', 'hard'] as const).map((difficulty) => (
+                      <FilterChip
+                        active={libraryDifficulty === difficulty}
+                        data-testid={testIds.home.difficultyFilter(difficulty)}
+                        key={difficulty}
+                        onClick={() => setLibraryDifficulty(difficulty)}
+                      >
+                        {difficulty === 'all' ? 'All' : difficulty}
+                      </FilterChip>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="app-field-label">
+                    Status
+                  </p>
+                  <div className="app-filter-row mt-3">
+                    {[
+                      ['all', 'All'],
+                      ['needs_review', 'Needs review'],
+                      ['has_notes', 'Has notes'],
+                      ['started', 'Started'],
+                    ].map(([status, label]) => (
+                      <FilterChip
+                        active={libraryStatus === status}
+                        data-testid={testIds.home.statusFilter(status)}
+                        key={status}
+                        onClick={() => setLibraryStatus(status as DeckLibraryFilters['status'])}
+                      >
+                        {label}
+                      </FilterChip>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </Panel>
-
-        {isFirstRun ? <FirstRunPanel starterDecks={starterDecks} /> : null}
-        <InstallAppPanel />
-        <AdSlot placement="home-primary" />
 
         {visibleDeckRecords.length > 0 ? (
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -220,14 +206,14 @@ export function HomePage() {
           </div>
         ) : (
           <Panel className="p-5">
-            <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+            <p className="app-eyebrow">
               No match
             </p>
-            <h3 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">
-              No decks match the current library filters.
+            <h3 className="text-2xl font-black text-[var(--retro-ink)]">
+              No decks match these filters.
             </h3>
-            <p className="mt-3 text-sm leading-6 text-white/80">
-              Clear the search or filter chips to reopen the full deck library.
+            <p className="app-copy mt-3 text-sm">
+              Clear the current filters to reopen the full library.
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <Button
@@ -247,15 +233,25 @@ export function HomePage() {
         )}
       </section>
 
-      <section aria-labelledby="session-presets-heading" className="mb-6">
-        <div className="mb-3 flex items-center justify-between gap-4">
-          <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="session-presets-heading">
-            Practice presets
-          </h2>
-          <LinkButton to="/progress" variant="ghost">
-            Progress
-          </LinkButton>
+      <section className={isFirstRun ? 'grid gap-4 xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]' : 'grid gap-4'}>
+        {isFirstRun ? <FirstRunPanel starterDecks={starterDecks} /> : null}
+        <div className="grid gap-4">
+          <InstallAppPanel />
+          <AdSlot placement="home-primary" />
         </div>
+      </section>
+
+      <section aria-labelledby="session-presets-heading" className="space-y-4">
+        <SectionHeader
+          action={
+            <LinkButton to="/progress" variant="ghost">
+              Progress
+            </LinkButton>
+          }
+          description="Shortcuts for the most useful reps when you do not want to think about setup."
+          id="session-presets-heading"
+          title="Practice presets"
+        />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {sessionPresets.map((preset) => (
             <SessionPresetCard key={preset.id} preset={preset} />
@@ -265,17 +261,19 @@ export function HomePage() {
 
       <section
         aria-labelledby="progress-hub-heading"
-        className="mb-6"
+        className="space-y-4"
         data-testid={testIds.home.progressSection}
       >
-        <div className="mb-3 flex items-center justify-between gap-4">
-          <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="progress-hub-heading">
-            Progress
-          </h2>
-          <LinkButton to={goalsSnapshot.nextAction.href} variant="ghost">
-            {goalsSnapshot.nextAction.label}
-          </LinkButton>
-        </div>
+        <SectionHeader
+          action={
+            <LinkButton to={goalsSnapshot.nextAction.href} variant="ghost">
+              {goalsSnapshot.nextAction.label}
+            </LinkButton>
+          }
+          description="A quick read on streak, weekly pace, and how much review debt is still open."
+          id="progress-hub-heading"
+          title="Progress snapshot"
+        />
         <div className="grid gap-4 sm:grid-cols-3">
           <HubSignalCard label="Current streak" value={getStreakLabel(sessionHistorySnapshot.currentStreak)} />
           <HubSignalCard label="This week" value={`${sessionHistorySnapshot.sessionsThisWeek} sessions`} />
@@ -283,6 +281,24 @@ export function HomePage() {
         </div>
       </section>
     </div>
+  )
+}
+
+function FilterChip({
+  active = false,
+  children,
+  ...props
+}: ComponentPropsWithoutRef<'button'> & {
+  active?: boolean
+}) {
+  return (
+    <button
+      className={active ? 'app-filter-chip app-filter-chip--active' : 'app-filter-chip'}
+      type="button"
+      {...props}
+    >
+      {children}
+    </button>
   )
 }
 

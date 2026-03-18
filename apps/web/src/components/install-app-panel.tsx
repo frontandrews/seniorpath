@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
 import { testIds } from '@/lib/test-ids'
 
-const INSTALL_PROMPT_STORAGE_KEY = 'prepdeck.install-prompt.v1'
+const INSTALL_PROMPT_STORAGE_KEY = 'seniorpath.install-prompt.v1'
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>
@@ -88,22 +87,17 @@ export function InstallAppPanel() {
 
   return (
     <Panel
-      className="mb-6 bg-[linear-gradient(145deg,rgba(22,38,63,0.98),rgba(9,16,29,0.96))] p-5"
+      className="p-5"
       data-testid={testIds.install.panel}
     >
-      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-4">
         <div>
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="accent">Install Prepdeck</Badge>
-            <Badge>PWA</Badge>
-            <Badge tone="success">Offline-friendly</Badge>
-          </div>
-          <h2 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">
-            Put it on the home screen like a real study app.
-          </h2>
-          <p className="mt-3 max-w-2xl text-sm leading-6 text-white/80">
-            Installing Prepdeck makes it easier to reopen fast, keep the habit alive, and
-            use the app with less browser friction on mobile.
+          <p className="app-eyebrow">Install app</p>
+          <h3 className="text-xl font-black text-[var(--retro-ink)]">
+            Reopen SeniorPath faster on mobile.
+          </h3>
+          <p className="app-copy mt-3 text-sm">
+            Installing the PWA cuts browser friction and makes short study reps easier to repeat.
           </p>
         </div>
         <div className="flex flex-wrap gap-3">

@@ -1,6 +1,7 @@
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { LinkButton } from '@/components/ui/link-button'
+import { PageIntro } from '@/components/ui/page-intro'
 import { Panel } from '@/components/ui/panel'
 import { testIds } from '@/lib/test-ids'
 import { useMonetization } from '@/state/monetization-context'
@@ -10,22 +11,9 @@ export function PremiumPage() {
 
   return (
     <div className="space-y-6" data-testid={testIds.premium.page}>
-      <section>
-        <Panel className="overflow-hidden p-6">
-          <div className="flex flex-wrap gap-2">
-            <Badge tone="accent">Premium</Badge>
-            <Badge>Learn free</Badge>
-            <Badge>Practice deeper</Badge>
-          </div>
-          <h1 className="mt-4 text-3xl font-black tracking-tight text-[var(--retro-ink)] sm:text-4xl">
-            Learn for free. Practice for free. Go premium when you want deeper reps.
-          </h1>
-          <p className="mt-4 max-w-3xl text-sm leading-7 text-white/80 sm:text-base">
-            Free content stays open. Free practice stays useful. Premium removes ads
-            and unlocks the more advanced interview loops for people who want to go
-            further without adding a backend or forcing sign-in.
-          </p>
-          <div className="mt-5 flex flex-wrap gap-3">
+      <PageIntro
+        actions={
+          <>
             <Button
               data-testid={testIds.premium.previewButton}
               onClick={() => setMembershipTier(isPremium ? 'free' : 'premium')}
@@ -34,12 +22,14 @@ export function PremiumPage() {
             >
               {isPremium ? 'Switch to free preview' : 'Preview premium locally'}
             </Button>
-            <LinkButton data-testid={testIds.premium.freePlanLink} to="/" variant="secondary">
+            <LinkButton data-testid={testIds.premium.freePlanLink} to="/" variant="ghost">
               Keep using the free plan
             </LinkButton>
-          </div>
-        </Panel>
-      </section>
+          </>
+        }
+        description="Free stays useful. Premium removes sponsor surfaces and opens the deeper practice loops."
+        title="Premium"
+      />
 
       <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <PlanCard
@@ -67,10 +57,12 @@ export function PremiumPage() {
       </section>
 
       <Panel className="p-5" data-testid={testIds.premium.statusPanel}>
-        <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-          Current status
-        </p>
-        <h2 className="mt-3 text-2xl font-black text-[var(--retro-ink)]">
+        <div className="flex flex-wrap gap-2">
+          <Badge tone={membership.tier === 'premium' ? 'accent' : 'default'}>
+            {membership.tier === 'premium' ? 'Premium preview active' : 'Free plan active'}
+          </Badge>
+        </div>
+        <h2 className="mt-4 text-2xl font-black text-[var(--retro-ink)]">
           {membership.tier === 'premium'
             ? 'Premium preview is active on this device.'
             : 'Premium checkout is not live yet.'}
@@ -102,9 +94,8 @@ function PlanCard({
           : 'p-5'
       }
     >
-      <div className="flex items-center gap-3">
-        <Badge tone={tone}>{title}</Badge>
-      </div>
+      <p className="app-eyebrow">{tone === 'accent' ? 'Recommended' : 'Included'}</p>
+      <h2 className="text-2xl font-black text-[var(--retro-ink)]">{title}</h2>
       <ul className="mt-5 space-y-3 text-sm leading-6 text-white/80">
         {items.map((item) => (
           <li key={item}>- {item}</li>

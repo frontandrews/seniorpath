@@ -1,4 +1,4 @@
-import type { ProgressStore } from '@prepdeck/schemas'
+import type { ProgressStore } from '@seniorpath/schemas'
 
 type DeckCountsLike = {
   allLearned: boolean

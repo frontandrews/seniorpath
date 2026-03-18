@@ -1,4 +1,4 @@
-import { getDeckById } from '@prepdeck/content'
+import { getDeckById } from '@seniorpath/content'
 
 import { createEmptyProgressStore, setCardStatus } from '@/lib/progress'
 import {

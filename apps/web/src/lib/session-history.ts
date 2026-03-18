@@ -3,12 +3,12 @@ import type {
   SessionHistoryFormat,
   SessionHistoryKind,
   SessionHistoryStore,
-} from '@prepdeck/schemas'
-import { sessionHistoryStoreSchema } from '@prepdeck/schemas'
+} from '@seniorpath/schemas'
+import { sessionHistoryStoreSchema } from '@seniorpath/schemas'
 
 import { getBrowserStorageAdapter, type StorageAdapter } from '@/lib/storage-adapter'
 
-export const SESSION_HISTORY_STORAGE_KEY = 'prepdeck.session-history.v1'
+export const SESSION_HISTORY_STORAGE_KEY = 'seniorpath.session-history.v1'
 
 const SESSION_HISTORY_LIMIT = 60
 

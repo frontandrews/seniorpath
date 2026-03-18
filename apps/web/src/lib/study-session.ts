@@ -1,5 +1,5 @@
 import type { InterviewTimerPreset } from '@/lib/preferences'
-import type { Deck, Flashcard, ProgressStore } from '@prepdeck/schemas'
+import type { Deck, Flashcard, ProgressStore } from '@seniorpath/schemas'
 
 import { getCardStatus, getFirstUnseenCardIndex } from '@/lib/progress'
 import { getInterviewTimerMultiplier } from '@/lib/preferences'

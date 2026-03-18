@@ -1,4 +1,4 @@
-import type { Flashcard } from '@prepdeck/schemas'
+import type { Flashcard } from '@seniorpath/schemas'
 
 import { filterReviewCardRecords } from '@/lib/review-filters'
 

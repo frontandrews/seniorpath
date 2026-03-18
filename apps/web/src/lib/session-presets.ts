@@ -1,4 +1,4 @@
-import type { DeckManifestEntry } from '@prepdeck/schemas'
+import type { DeckManifestEntry } from '@seniorpath/schemas'
 
 import { createDailyQueueHref, createMockInterviewHref, createStudyHref } from '@/lib/study-session'
 import { getTopicLabel } from '@/lib/topic-labels'

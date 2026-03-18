@@ -1,4 +1,4 @@
-import type { Flashcard } from '@prepdeck/schemas'
+import type { Flashcard } from '@seniorpath/schemas'
 
 export type ReviewCardRecord = {
   card: Flashcard

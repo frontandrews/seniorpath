@@ -2,7 +2,7 @@ import type {
   ProgressStatus,
   ProgressStore,
   SessionHistoryStore,
-} from '@prepdeck/schemas'
+} from '@seniorpath/schemas'
 import {
   type PropsWithChildren,
   createContext,

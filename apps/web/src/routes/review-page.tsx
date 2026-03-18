@@ -1,5 +1,5 @@
-import type { ProgressStatus } from '@prepdeck/schemas'
-import { getDeckById } from '@prepdeck/content/decks'
+import type { ProgressStatus } from '@seniorpath/schemas'
+import { getDeckById } from '@seniorpath/content/decks'
 import { useMemo, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
 
@@ -7,8 +7,10 @@ import { AdSlot } from '@/components/ad-slot'
 import { ConfirmDialog } from '@/components/confirm-dialog'
 import { ReviewCard } from '@/components/review-card'
 import { StatusTabs } from '@/components/status-tabs'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { LinkButton } from '@/components/ui/link-button'
+import { PageIntro } from '@/components/ui/page-intro'
 import { Panel } from '@/components/ui/panel'
 import {
   filterReviewCardRecords,
@@ -84,38 +86,41 @@ export function ReviewPage() {
 
   return (
     <>
-      <Panel className="bg-[var(--retro-surface)] p-5" data-testid={testIds.review.page}>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-bold uppercase tracking-[0.25em] text-[var(--retro-line)]">
-              Review mode
-            </p>
-            <h2 className="mt-3 text-3xl font-black text-[var(--retro-ink)]">{deck.title}</h2>
-            <p className="mt-3 text-sm leading-6 text-white/80">
-              Inspect what is learned, what still feels partial, and what needs a full
-              revisit.
-            </p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {counts.partial + counts.notLearned > 0 ? (
-              <LinkButton
-                data-testid={testIds.review.studyWeakCardsLink}
-                to={`/study/${deck.id}?mode=start&scope=weak`}
-                variant="secondary"
-              >
-                Study weak cards
+      <div className="space-y-4" data-testid={testIds.review.page}>
+        <PageIntro
+          actions={
+            <>
+              {counts.partial + counts.notLearned > 0 ? (
+                <LinkButton
+                  data-testid={testIds.review.studyWeakCardsLink}
+                  to={`/study/${deck.id}?mode=start&scope=weak`}
+                  variant="secondary"
+                >
+                  Study weak cards
+                </LinkButton>
+              ) : null}
+              <LinkButton to={`/decks/${deck.id}`} variant="ghost">
+                Back to deck
               </LinkButton>
-            ) : null}
-            <LinkButton to={`/decks/${deck.id}`} variant="ghost">
-              Back to deck
-            </LinkButton>
-            <Button data-testid={testIds.review.resetButton} onClick={() => setIsResetOpen(true)} type="button" variant="danger">
-              Reset deck
-            </Button>
-          </div>
-        </div>
+              <Button data-testid={testIds.review.resetButton} onClick={() => setIsResetOpen(true)} type="button" variant="danger">
+                Reset deck
+              </Button>
+            </>
+          }
+          description="Inspect what is learned, what still feels partial, and what needs a full revisit."
+          eyebrow="Review mode"
+          meta={
+            <>
+              <Badge tone="accent">{counts.learned} learned</Badge>
+              <Badge>{counts.partial} partial</Badge>
+              <Badge>{counts.notLearned} need review</Badge>
+              <Badge>{counts.unseen} unseen</Badge>
+            </>
+          }
+          title={deck.title}
+        />
 
-        <div className="mt-6">
+        <Panel className="p-5">
           <StatusTabs
             activeStatus={activeStatus}
             counts={{
@@ -126,19 +131,19 @@ export function ReviewPage() {
             }}
             onSelect={setActiveStatus}
           />
-        </div>
+        </Panel>
 
-        <Panel className="mt-4 bg-[var(--retro-surface-muted)] p-4" inset>
+        <Panel className="p-4" inset>
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
             <div>
               <label
-                className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]"
+                className="app-field-label"
                 htmlFor="review-search"
               >
                 Search current bucket
               </label>
               <input
-                className="mt-3 min-h-12 w-full rounded-[0.95rem] border-2 border-[var(--retro-line)] bg-[color:rgba(255,255,255,0.04)] px-4 text-sm text-[var(--retro-ink)] outline-none transition placeholder:text-white/40 focus:border-[var(--retro-line-strong)]"
+                className="app-input mt-3"
                 data-testid={testIds.review.searchInput}
                 id="review-search"
                 onChange={(event) => setQuery(event.target.value)}
@@ -148,7 +153,7 @@ export function ReviewPage() {
               />
             </div>
             <div>
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
+              <p className="app-field-label">
                 Quick filters
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -171,18 +176,14 @@ export function ReviewPage() {
               </div>
             </div>
           </div>
-          <p className="mt-4 text-sm leading-6 text-white/75">
+          <p className="app-copy mt-4 text-sm">
             Showing {visibleCardRecords.length} of {cardRecordsForActiveStatus.length}{' '}
             {cardRecordsForActiveStatus.length === 1 ? 'card' : 'cards'} in this bucket.
           </p>
         </Panel>
+      </div>
 
-        <div className="mt-6">
-          <AdSlot placement="review" />
-        </div>
-      </Panel>
-
-      <section className="mt-5 space-y-3">
+      <section className="space-y-3">
         {visibleCardRecords.length ? (
           visibleCardRecords.map(({ card, note }) => (
             <ReviewCard
@@ -207,6 +208,8 @@ export function ReviewPage() {
           </Panel>
         )}
       </section>
+
+      <AdSlot placement="review" />
 
       <ConfirmDialog
         confirmLabel="Reset deck"

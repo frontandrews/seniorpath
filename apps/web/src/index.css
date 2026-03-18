@@ -1,6 +1,6 @@
 @import "@fontsource/archivo-black";
 @import "@fontsource/space-grotesk";
-@import "@prepdeck/theme/retroui.css";
+@import "@seniorpath/theme/retroui.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -107,6 +107,224 @@ body {
   min-height: 100vh;
 }
 
+.app-shell {
+  margin: 0 auto;
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  max-width: 72rem;
+  flex-direction: column;
+  padding:
+    calc(1rem + env(safe-area-inset-top))
+    1rem
+    calc(6.5rem + env(safe-area-inset-bottom));
+}
+
+.app-header-panel {
+  position: sticky;
+  top: calc(0.5rem + env(safe-area-inset-top));
+  z-index: 20;
+  margin-bottom: 1rem;
+}
+
+.app-header-inner {
+  display: flex;
+  justify-content: center;
+}
+
+.app-header-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.55rem;
+}
+
+.app-nav-link,
+.app-theme-button {
+  display: inline-flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--retro-line);
+  border-radius: var(--radius);
+  background: var(--retro-surface);
+  color: var(--retro-ink);
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0 0 var(--retro-line);
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.app-nav-link {
+  padding: 0.58rem 0.8rem;
+}
+
+.app-nav-link:hover,
+.app-theme-button:hover {
+  border-color: var(--retro-line-strong);
+  background: var(--retro-accent-soft);
+}
+
+.app-nav-link--active {
+  border-color: var(--retro-line-strong);
+  background: var(--retro-accent-soft);
+}
+
+.app-theme-button {
+  min-width: 2.5rem;
+  cursor: pointer;
+  padding-inline: 0.65rem;
+}
+
+.app-theme-button__icon {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.app-theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  padding: 0.4rem 0.6rem;
+  box-shadow: 2px 2px 0 0 var(--color-border);
+}
+
+.app-eyebrow {
+  margin: 0 0 0.75rem;
+  color: var(--retro-line);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.app-page-title,
+.app-section-title {
+  margin: 0;
+  color: var(--retro-ink);
+  font-family: var(--font-head);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+}
+
+.app-page-title {
+  font-size: clamp(2.4rem, 7vw, 4rem);
+  line-height: 0.96;
+}
+
+.app-section-title {
+  font-size: 1.75rem;
+  line-height: 1;
+}
+
+.app-copy {
+  color: var(--retro-ink-soft);
+  line-height: 1.8;
+}
+
+.app-field-label {
+  color: var(--retro-line);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.app-input {
+  width: 100%;
+  min-height: 3rem;
+  border: 2px solid var(--retro-line);
+  border-radius: 0.95rem;
+  background: var(--retro-surface);
+  color: var(--retro-ink);
+  padding: 0.9rem 1rem;
+  font-size: 0.95rem;
+  outline: none;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.app-input:focus {
+  border-color: var(--retro-line-strong);
+}
+
+.app-input::placeholder {
+  color: var(--retro-ink-soft);
+}
+
+.app-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.app-filter-chip {
+  display: inline-flex;
+  min-height: 2.05rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.42rem 0.72rem;
+  border: 2px solid var(--retro-line);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--retro-accent-soft) 50%, white);
+  color: var(--retro-ink);
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 0 var(--retro-line);
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.app-filter-chip:hover {
+  border-color: var(--retro-line-strong);
+}
+
+.app-filter-chip--active {
+  border-color: var(--retro-line-strong);
+  background: color-mix(in srgb, var(--retro-accent-soft) 82%, var(--retro-accent));
+  transform: translate(-1px, -1px);
+}
+
+.app-mobile-nav-link {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--retro-line);
+  border-radius: 0.95rem;
+  background: var(--retro-surface);
+  color: var(--retro-ink);
+  padding: 0.45rem 0.35rem;
+  font-family: var(--font-sans);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  box-shadow: 3px 3px 0 0 var(--retro-line);
+}
+
+.app-mobile-nav-link--active {
+  border-color: var(--retro-line-strong);
+  background: var(--retro-accent-soft);
+}
+
 button,
 a {
   -webkit-tap-highlight-color: transparent;
@@ -130,5 +348,14 @@ a {
   input,
   textarea {
     @apply font-sans;
+  }
+}
+
+@media (min-width: 640px) {
+  .app-shell {
+    padding:
+      calc(1rem + env(safe-area-inset-top))
+      1rem
+      6rem;
   }
 }

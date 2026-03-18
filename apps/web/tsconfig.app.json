@@ -18,8 +18,8 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@prepdeck/content": ["../../packages/content/src/index.ts"],
-      "@prepdeck/schemas": ["../../packages/schemas/src/index.ts"],
+      "@seniorpath/content": ["../../packages/content/src/index.ts"],
+      "@seniorpath/schemas": ["../../packages/schemas/src/index.ts"],
       "@/*": ["./src/*"]
     },
 

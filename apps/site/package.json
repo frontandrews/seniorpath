@@ -1,5 +1,5 @@
 {
-  "name": "@prepdeck/site",
+  "name": "@seniorpath/site",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@iconify-json/lucide": "^1.2.98",
-    "@prepdeck/content": "workspace:*",
-    "@prepdeck/theme": "workspace:*",
+    "@seniorpath/content": "workspace:*",
+    "@seniorpath/theme": "workspace:*",
     "astro-icon": "^1.1.5"
   },
   "devDependencies": {

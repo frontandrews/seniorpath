@@ -1,4 +1,4 @@
-import { getDeckManifest } from '@prepdeck/content'
+import { getDeckManifest } from '@seniorpath/content'
 
 import { createEmptyProgressStore, setCardNote, setCardStatus } from '@/lib/progress'
 import {
@@ -55,7 +55,7 @@ describe('progress share card', () => {
 
   it('creates a stable download filename', () => {
     expect(getProgressShareCardFilename(new Date('2026-03-17T10:00:00.000Z'))).toBe(
-      'prepdeck-progress-card-2026-03-17.svg',
+      'seniorpath-progress-card-2026-03-17.svg',
     )
   })
 })

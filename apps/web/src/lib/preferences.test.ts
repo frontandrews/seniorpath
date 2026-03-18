@@ -27,7 +27,7 @@ describe('preferences', () => {
 
   it('falls back to defaults when stored data is invalid', () => {
     window.localStorage.setItem(
-      'prepdeck.preferences.v1',
+      'seniorpath.preferences.v1',
       JSON.stringify({
         dailyGoalTarget: 0,
         hapticsEnabled: 'yes',
@@ -43,7 +43,7 @@ describe('preferences', () => {
 
   it('fills new preference fields with defaults when old local data is restored', () => {
     window.localStorage.setItem(
-      'prepdeck.preferences.v1',
+      'seniorpath.preferences.v1',
       JSON.stringify({
         dailyGoalTarget: 2,
         hapticsEnabled: true,

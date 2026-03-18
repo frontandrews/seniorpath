@@ -1,6 +1,6 @@
 import { getBrowserStorageAdapter, type StorageAdapter } from '@/lib/storage-adapter'
 
-export const MEMBERSHIP_STORAGE_KEY = 'prepdeck.membership.v1'
+export const MEMBERSHIP_STORAGE_KEY = 'seniorpath.membership.v1'
 
 export type MembershipTier = 'free' | 'premium'
 

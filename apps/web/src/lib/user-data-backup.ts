@@ -1,5 +1,5 @@
-import type { ProgressStore, SessionHistoryStore } from '@prepdeck/schemas'
-import { sessionHistoryStoreSchema, userDataStoreSchema } from '@prepdeck/schemas'
+import type { ProgressStore, SessionHistoryStore } from '@seniorpath/schemas'
+import { sessionHistoryStoreSchema, userDataStoreSchema } from '@seniorpath/schemas'
 
 import {
   createDefaultPreferencesState,
@@ -8,7 +8,7 @@ import {
 } from '@/lib/preferences'
 import { normalizeSessionHistoryStore } from '@/lib/session-history'
 
-export const USER_DATA_BACKUP_APP = 'prepdeck'
+export const USER_DATA_BACKUP_APP = 'seniorpath'
 export const USER_DATA_BACKUP_VERSION = 3
 
 export type LocalDataSnapshot = {
@@ -45,7 +45,7 @@ export function getUserDataBackupFilename(date: Date = new Date()): string {
   const month = String(date.getMonth() + 1).padStart(2, '0')
   const day = String(date.getDate()).padStart(2, '0')
 
-  return `prepdeck-backup-${year}-${month}-${day}.json`
+  return `seniorpath-backup-${year}-${month}-${day}.json`
 }
 
 export function serializeUserDataBackup(
@@ -94,5 +94,5 @@ export function parseUserDataBackup(raw: string): LocalDataSnapshot {
     }
   }
 
-  throw new Error('This file is not a Prepdeck backup.')
+  throw new Error('This file is not a SeniorPath backup.')
 }

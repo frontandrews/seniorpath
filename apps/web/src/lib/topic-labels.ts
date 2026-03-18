@@ -1,1 +1,1 @@
-export { TOPIC_LABELS, getTopicLabel } from '@prepdeck/content'
+export { TOPIC_LABELS, getTopicLabel } from '@seniorpath/content'

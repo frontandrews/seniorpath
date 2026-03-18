@@ -1,4 +1,4 @@
-import type { DeckManifestEntry } from '@prepdeck/schemas'
+import type { DeckManifestEntry } from '@seniorpath/schemas'
 import { m } from 'motion/react'
 
 import { Badge } from '@/components/ui/badge'

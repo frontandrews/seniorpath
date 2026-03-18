@@ -1,4 +1,4 @@
-import { getAllDecks } from '@prepdeck/content'
+import { getAllDecks } from '@seniorpath/content'
 
 import { getDailyQueueEntries } from '@/lib/daily-queue'
 import { createEmptyProgressStore, setCardNote, setCardStatus } from '@/lib/progress'

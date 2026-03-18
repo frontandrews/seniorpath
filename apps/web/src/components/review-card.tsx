@@ -1,4 +1,4 @@
-import type { Flashcard, ProgressStatus } from '@prepdeck/schemas'
+import type { Flashcard, ProgressStatus } from '@seniorpath/schemas'
 
 import { CardNoteEditor } from '@/components/card-note-editor'
 import { Button } from '@/components/ui/button'

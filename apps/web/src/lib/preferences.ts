@@ -1,6 +1,6 @@
 import { getBrowserStorageAdapter, type StorageAdapter } from '@/lib/storage-adapter'
 
-export const PREFERENCES_STORAGE_KEY = 'prepdeck.preferences.v1'
+export const PREFERENCES_STORAGE_KEY = 'seniorpath.preferences.v1'
 
 export type InterviewTimerPreset = 'deep' | 'short' | 'standard'
 

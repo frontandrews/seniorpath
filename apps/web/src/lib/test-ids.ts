@@ -3,9 +3,13 @@ export const testIds = {
   appShell: {
     bottomNav: 'app-shell-bottom-nav',
     compactBackLink: 'app-shell-compact-back-link',
+    focusHeader: 'app-shell-focus-header',
+    globalHeader: 'app-shell-global-header',
+    homeGuidesLink: 'app-shell-home-guides-link',
     homePremiumLink: 'app-shell-home-premium-link',
     homeProgressLink: 'app-shell-home-progress-link',
     homeSettingsLink: 'app-shell-home-settings-link',
+    pageIntro: 'app-shell-page-intro',
     primaryNav: 'app-shell-primary-nav',
     themeToggle: 'app-shell-theme-toggle',
   },

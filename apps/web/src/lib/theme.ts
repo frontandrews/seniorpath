@@ -1,6 +1,6 @@
 export type ThemeMode = 'dark' | 'light'
 
-const STORAGE_KEY = 'prepdeck.theme.v1'
+const STORAGE_KEY = 'seniorpath.theme.v1'
 
 export function applyTheme(mode: ThemeMode) {
   document.documentElement.classList.toggle('dark', mode === 'dark')

@@ -1,22 +1,38 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { getAppHref } from '../lib/app-links'
 import { getGuideHrefFromEntryId } from '../lib/guide-links'
+import { getSiteCopy } from '../lib/site-copy'
 
 type Props = {
+  categoryLabel?: string
+  className?: string
+  eyebrow?: string
   post: CollectionEntry<'guides'>
 }
 
-const { post } = Astro.props
+const {
+  categoryLabel,
+  className,
+  eyebrow,
+  post,
+} = Astro.props
+const href = getGuideHrefFromEntryId(post.id)
+const copy = getSiteCopy(post.data.locale)
 ---
 
-<article class="panel article-card">
-  <p class="section-eyebrow">{post.data.path.join(' / ')}</p>
-  <h3>{post.data.title}</h3>
-  <div class="meta-list">
-    <a class="button-link button-link--primary" href={getGuideHrefFromEntryId(post.id)}>Learn</a>
-    {post.data.relatedDeckIds.length > 0 ? (
-      <a class="button-link" href={getAppHref(`/decks/${post.data.relatedDeckIds[0]}`)}>Practice</a>
-    ) : null}
+<article
+  class:list={['panel', 'article-card', className]}
+  data-guide-card-category={categoryLabel}
+  data-guide-post={post.data.guideId}
+>
+  <div class="article-card__body">
+    {eyebrow ? <p class="article-card__eyebrow">{eyebrow}</p> : null}
+    <h3>
+      <a class="article-card__title-link" href={href}>{post.data.title}</a>
+    </h3>
+    <p class="article-card__summary">{post.data.summary}</p>
+  </div>
+  <div class="article-card__footer">
+    <a class="button-link button-link--primary" href={href}>{copy.learn}</a>
   </div>
 </article>

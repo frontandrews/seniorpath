@@ -74,11 +74,11 @@ describe('user data backup helpers', () => {
 
   it('builds a predictable filename for exported backups', () => {
     expect(getUserDataBackupFilename(new Date('2026-03-17T12:00:00.000Z'))).toBe(
-      'prepdeck-backup-2026-03-17.json',
+      'seniorpath-backup-2026-03-17.json',
     )
   })
 
-  it('rejects files that are not prepdeck backups', () => {
+  it('rejects files that are not seniorpath backups', () => {
     const payload = createUserDataBackup({
       preferencesState: createDefaultPreferencesState(),
       progressStore: createEmptyProgressStore(),
@@ -87,13 +87,13 @@ describe('user data backup helpers', () => {
 
     expect(() =>
       parseUserDataBackup(JSON.stringify({ ...payload, app: 'other-app' })),
-    ).toThrow('This file is not a Prepdeck backup.')
+    ).toThrow('This file is not a SeniorPath backup.')
   })
 
   it('accepts older backups that do not include session history yet', () => {
     const restored = parseUserDataBackup(
       JSON.stringify({
-        app: 'prepdeck',
+        app: 'seniorpath',
         exportedAt: '2026-03-17T12:00:00.000Z',
         userData: createEmptyProgressStore(),
         version: 1,
@@ -125,7 +125,7 @@ describe('user data backup helpers', () => {
 
     const restored = parseUserDataBackup(
       JSON.stringify({
-        app: 'prepdeck',
+        app: 'seniorpath',
         exportedAt: '2026-03-17T12:00:00.000Z',
         sessionHistory: sessionHistoryStore,
         userData: createEmptyProgressStore(),

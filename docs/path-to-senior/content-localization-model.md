@@ -1,6 +1,6 @@
 # Content and Localization Model
 
-This is the target model for Astro content once Prepdeck starts shipping localized guides.
+This is the target model for Astro content once SeniorPath starts shipping localized guides.
 
 ## Non-negotiable rule
 
@@ -141,7 +141,7 @@ When we start this migration, the safest order is:
 
 Translations should preserve the mental model, not just the sentence.
 
-Prepdeck content should remain:
+SeniorPath content should remain:
 
 - direct
 - simple on first read

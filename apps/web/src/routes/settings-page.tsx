@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { m } from 'motion/react'
 
 import { Badge } from '@/components/ui/badge'
+import { PageIntro } from '@/components/ui/page-intro'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
 import { cardRevealVariants, hoverLiftMotionProps } from '@/lib/motion'
@@ -41,20 +42,10 @@ export function SettingsPage() {
 
   return (
     <section className="space-y-6" data-testid={testIds.settings.page}>
-      <Panel className="overflow-hidden bg-[linear-gradient(145deg,rgba(28,45,72,0.98),rgba(10,18,31,0.96))] p-5 sm:p-6">
-        <div className="flex flex-wrap gap-2">
-          <Badge tone="accent">Settings</Badge>
-          <Badge>Local-only</Badge>
-          <Badge tone="success">No account needed</Badge>
-        </div>
-        <h2 className="mt-4 text-3xl font-black tracking-tight text-[var(--retro-ink)] sm:text-4xl">
-          Tune the app to your study rhythm.
-        </h2>
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-white/80 sm:text-base">
-          Prepdeck now lets you control the local goal pace and the interview timer style.
-          Everything stays on this device and applies instantly across the app.
-        </p>
-      </Panel>
+      <PageIntro
+        description="Tune goals, timer defaults, haptics, and screen behavior for the way you actually study."
+        title="Settings"
+      />
 
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
         <SettingCard
@@ -160,7 +151,7 @@ export function SettingsPage() {
       </SettingCard>
 
       <SettingCard
-        description="When the browser supports it, Prepdeck can keep the screen awake during focused study sessions."
+        description="When the browser supports it, SeniorPath can keep the screen awake during focused study sessions."
         title="Screen wake lock"
       >
         <div className="flex flex-wrap gap-3">

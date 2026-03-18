@@ -2,7 +2,7 @@ import {
   deckManifestSchema,
   type DeckManifest,
   type DeckManifestEntry,
-} from '@prepdeck/schemas'
+} from '@seniorpath/schemas'
 
 import manifestRaw from './data/decks/index.json'
 

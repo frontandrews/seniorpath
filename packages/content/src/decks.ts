@@ -1,4 +1,4 @@
-import { deckSchema, type Deck } from '@prepdeck/schemas'
+import { deckSchema, type Deck } from '@seniorpath/schemas'
 
 import { getDeckSummaries } from './manifest'
 import codingArraysHashmapsBasicsRaw from './data/decks/coding-interview/coding-arrays-hashmaps-basics.json'

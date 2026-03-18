@@ -1,4 +1,4 @@
-import type { ProgressStatus } from '@prepdeck/schemas'
+import type { ProgressStatus } from '@seniorpath/schemas'
 
 import { Button } from '@/components/ui/button'
 import { testIds } from '@/lib/test-ids'

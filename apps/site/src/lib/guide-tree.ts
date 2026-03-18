@@ -1,5 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
-import { PATH_TO_SENIOR_PILLARS } from '@prepdeck/content'
+import { PATH_TO_SENIOR_PILLARS } from '@seniorpath/content'
 
 export type GuideTreeNode = {
   children: GuideTreeNode[]

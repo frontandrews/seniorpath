@@ -1,5 +1,5 @@
 {
-  "name": "@prepdeck/content",
+  "name": "@seniorpath/content",
   "private": true,
   "version": "0.1.0",
   "type": "module",
@@ -9,6 +9,6 @@
     "./manifest": "./src/manifest.ts"
   },
   "dependencies": {
-    "@prepdeck/schemas": "workspace:*"
+    "@seniorpath/schemas": "workspace:*"
   }
 }

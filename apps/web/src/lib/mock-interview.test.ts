@@ -1,4 +1,4 @@
-import { getAllDecks } from '@prepdeck/content'
+import { getAllDecks } from '@seniorpath/content'
 
 import { createEmptyProgressStore, setCardStatus } from '@/lib/progress'
 import { getMockInterviewEntries } from '@/lib/mock-interview'

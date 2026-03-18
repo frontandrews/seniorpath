@@ -1,6 +1,6 @@
-# Prepdeck
+# SeniorPath
 
-Prepdeck is a small open-source project I’m building to make technical growth less messy.
+SeniorPath is a small open-source project I’m building to make technical growth less messy.
 
 The goal is simple: open the app, get one clear next step, study on a phone-sized screen, and come back later without losing your place.
 

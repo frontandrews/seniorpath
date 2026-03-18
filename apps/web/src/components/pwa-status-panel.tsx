@@ -32,8 +32,8 @@ export function PwaStatusPanel({ hasBottomNavigation }: { hasBottomNavigation: b
             </div>
             <h2 className="mt-3 text-lg font-black text-[var(--retro-ink)]">
               {needRefresh
-                ? 'A newer version of Prepdeck is ready.'
-                : 'Prepdeck is cached for offline reps.'}
+                ? 'A newer version of SeniorPath is ready.'
+                : 'SeniorPath is cached for offline reps.'}
             </h2>
             <p className="mt-2 text-sm leading-6 text-white/80">
               {needRefresh

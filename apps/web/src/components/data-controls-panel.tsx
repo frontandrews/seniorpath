@@ -2,7 +2,6 @@ import type { ChangeEvent } from 'react'
 import { useRef, useState } from 'react'
 
 import { ConfirmDialog } from '@/components/confirm-dialog'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Panel } from '@/components/ui/panel'
 import {
@@ -81,7 +80,7 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
     } catch {
       setPendingImport(null)
       setFeedback({
-        text: 'Could not read that backup file. Use a Prepdeck backup JSON exported from the app.',
+        text: 'Could not read that backup file. Use a SeniorPath backup JSON exported from the app.',
         tone: 'danger',
       })
     }
@@ -106,15 +105,11 @@ export function DataControlsPanel({ onResetAll }: DataControlsPanelProps) {
       <Panel className="p-5" data-testid={testIds.dataControls.root}>
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div className="max-w-2xl">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone="accent">Local data</Badge>
-              <Badge>Export</Badge>
-              <Badge>Import</Badge>
-            </div>
-            <h2 className="mt-4 text-2xl font-black text-[var(--retro-ink)]">
-              Own your progress on this device.
-            </h2>
-            <p className="mt-3 text-sm leading-6 text-white/80">
+            <p className="app-eyebrow">Backup and restore</p>
+            <h3 className="text-2xl font-black text-[var(--retro-ink)]">
+              Keep a local copy of your progress.
+            </h3>
+            <p className="app-copy mt-3 text-sm">
               Download a backup of your statuses and notes before switching browsers,
               clearing storage, or moving to another machine. Imports replace the local
               data on this device.

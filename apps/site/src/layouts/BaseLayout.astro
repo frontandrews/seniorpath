@@ -2,8 +2,8 @@
 import '../styles/global.css'
 import { Icon } from 'astro-icon/components'
 
-import { getAppHref } from '../lib/app-links'
 import { getGuideIndexHref, getGuideLocaleFromPathname } from '../lib/guide-links'
+import { getSiteCopy } from '../lib/site-copy'
 
 type Props = {
   description: string
@@ -15,24 +15,18 @@ const {
   title,
 } = Astro.props
 
-const pageTitle = `${title} | Prepdeck`
+const pageTitle = `${title} | SeniorPath`
 const pathname = Astro.url.pathname
 const guideLocale = getGuideLocaleFromPathname(pathname)
+const copy = getSiteCopy(guideLocale)
 const englishGuideIndexHref = getGuideIndexHref('en')
 const portugueseGuideIndexHref = getGuideIndexHref('pt-br')
-
-function getNavClass(href: string) {
-  const isActive =
-    href === '/'
-      ? pathname === '/'
-      : pathname === href || pathname.startsWith(`${href}/`)
-
-  return isActive ? 'site-nav__link site-nav__link--active' : 'site-nav__link'
-}
+const homeHref = guideLocale === 'pt-br' ? '/pt-br' : '/'
+const currentYear = new Date().getFullYear()
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang={guideLocale === 'pt-br' ? 'pt-BR' : 'en'}>
   <head>
     <meta charset="utf-8" />
     <meta content="width=device-width, initial-scale=1" name="viewport" />
@@ -52,18 +46,21 @@ function getNavClass(href: string) {
     <meta content={description} name="twitter:description" />
     <script is:inline>
       try {
-        const storedTheme = window.localStorage.getItem('prepdeck.site.theme.v1')
+        const storedTheme = window.localStorage.getItem('seniorpath.site.theme.v1')
         document.documentElement.classList.toggle('dark', storedTheme !== 'light')
       } catch {}
     </script>
   </head>
   <body>
-    <div class="site-shell">
-      <header class="site-header">
-        <div class="site-header__inner">
-          <nav class="site-nav">
-            <a class={getNavClass('/')} href="/">Home</a>
-            <a class="site-nav__link" href={getAppHref('/')}>Practice</a>
+    <header class="site-header">
+      <div class="site-frame site-header__inner">
+          <a class="site-brand" href={homeHref}>
+            <span class="site-brand__mark">
+              <Icon aria-hidden="true" class="site-brand__icon" name="lucide:waypoints" />
+            </span>
+            <span class="site-brand__label">{copy.header.brand}</span>
+          </a>
+          <div class="site-header__actions">
             <div aria-label="Language switcher" class="site-lang-switcher">
               <a
                 class={guideLocale === 'en' ? 'site-nav__link site-nav__link--active' : 'site-nav__link'}
@@ -82,18 +79,42 @@ function getNavClass(href: string) {
                 PT
               </a>
             </div>
-            <button aria-label="Toggle theme" class="site-theme-toggle" data-theme-toggle type="button">
+            <button aria-label={copy.layout.themeToggle} class="site-theme-toggle" data-theme-toggle type="button">
               <Icon aria-hidden="true" class="site-theme-toggle__icon site-theme-toggle__icon--sun" name="lucide:sun" />
               <Icon aria-hidden="true" class="site-theme-toggle__icon site-theme-toggle__icon--moon" name="lucide:moon" />
             </button>
-          </nav>
-        </div>
-      </header>
+          </div>
+      </div>
+    </header>
+    <div class="site-shell">
       <slot />
-      <footer class="site-footer">
-        Learn, practice, master.
-      </footer>
     </div>
+    <footer class="site-footer">
+      <div class="site-frame site-footer__main">
+          <div class="site-footer__intro">
+            <p class="site-footer__brand">{copy.footer.title}</p>
+            <p class="site-footer__copy">{copy.footer.description}</p>
+          </div>
+          <div class="site-footer__group">
+            <p class="site-footer__heading">{copy.footer.linksTitle}</p>
+            <div class="site-footer__stack">
+              <a class="site-footer__link" href={homeHref}>{copy.footer.home}</a>
+            </div>
+          </div>
+          <div class="site-footer__group">
+            <p class="site-footer__heading">{copy.footer.legalTitle}</p>
+            <div class="site-footer__stack">
+              <a class="site-footer__link" href="/terms">{copy.footer.terms}</a>
+              <a class="site-footer__link" href="/privacy">{copy.footer.privacy}</a>
+            </div>
+          </div>
+      </div>
+      <div class="site-footer__bottom">
+        <div class="site-frame">
+          <p class="site-footer__meta">© {currentYear} {copy.footer.title}. {copy.footer.rights}</p>
+        </div>
+      </div>
+    </footer>
   </body>
 </html>
 
@@ -104,7 +125,7 @@ function getNavClass(href: string) {
     const nextIsDark = !document.documentElement.classList.contains('dark')
     document.documentElement.classList.toggle('dark', nextIsDark)
     try {
-      window.localStorage.setItem('prepdeck.site.theme.v1', nextIsDark ? 'dark' : 'light')
+      window.localStorage.setItem('seniorpath.site.theme.v1', nextIsDark ? 'dark' : 'light')
     } catch {}
   })
 </script>

@@ -1,61 +1,50 @@
 ---
-import type { CollectionEntry } from 'astro:content'
-
-import { getAppHref } from '../lib/app-links'
-import { getGuideHrefFromEntryId } from '../lib/guide-links'
+import ArticleCard from './ArticleCard.astro'
+import { getTranslatedSiteLabel } from '../lib/site-labels'
 import type { GuideTreeNode } from '../lib/guide-tree'
+import { getSiteCopy, type SiteLocale } from '../lib/site-copy'
 
 type Props = {
+  locale: SiteLocale
   node: GuideTreeNode
 }
 
-const { node } = Astro.props
-const hasChildren = node.children.length > 0
-const isEmptyLeaf = node.posts.length === 0 && !hasChildren
+const { locale, node } = Astro.props
+const copy = getSiteCopy(locale)
+const translatedLabel = getTranslatedSiteLabel(node.label, locale)
+const visibleChildren = node.children.filter((child) => child.guideCount > 0)
+const hasPosts = node.posts.length > 0
+const isEmptyLeaf = visibleChildren.length === 0 && !hasPosts
 const anchorId = `guide-node-${node.key.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')}`
-
-function getPrimaryDeckHref(post: CollectionEntry<'guides'>) {
-  const deckId = post.data.relatedDeckIds[0]
-  return deckId ? getAppHref(`/decks/${deckId}`) : null
-}
 ---
 
 <li
   class={`guide-tree__item guide-tree__item--depth-${node.depth}`}
   data-guide-node={node.key}
+  data-guide-node-label={node.label}
   data-guide-post-ids={node.postIds.join(',')}
 >
   <div class="guide-tree__branch">
     <div class="guide-tree__label-row" id={anchorId}>
-      <p class="guide-tree__label">{node.label}</p>
+      <p class="guide-tree__label">{translatedLabel}</p>
     </div>
 
-    {node.posts.length > 0 ? (
-      <div class="guide-tree__posts">
+    {hasPosts ? (
+      <div class="guide-tree__posts panel-grid panel-grid--articles">
         {node.posts.map((post) => (
-          <article class="guide-tree__post" data-guide-post={post.data.guideId}>
-            <a class="guide-tree__post-link" href={getGuideHrefFromEntryId(post.id)}>
-              <h3 class="guide-tree__post-title">{post.data.title}</h3>
-            </a>
-            <div class="guide-tree__post-actions">
-              <a class="button-link button-link--primary" href={getGuideHrefFromEntryId(post.id)}>Learn</a>
-              {getPrimaryDeckHref(post) ? (
-                <a class="button-link" href={getPrimaryDeckHref(post)!}>Practice</a>
-              ) : null}
-            </div>
-          </article>
+          <ArticleCard className="guide-tree__post" post={post} />
         ))}
       </div>
     ) : null}
 
-    {isEmptyLeaf ? <p class="guide-tree__placeholder">Coming soon</p> : null}
-
-    {hasChildren ? (
-      <ul class="guide-tree">
-        {node.children.map((child) => (
-          <Astro.self node={child} />
+    {visibleChildren.length > 0 ? (
+      <ul class={`guide-tree guide-tree--depth-${node.depth + 1}`}>
+        {visibleChildren.map((child) => (
+          <Astro.self locale={locale} node={child} />
         ))}
       </ul>
     ) : null}
+
+    {isEmptyLeaf ? <p class="guide-tree__placeholder">{copy.guideIndex.comingSoon}</p> : null}
   </div>
 </li>

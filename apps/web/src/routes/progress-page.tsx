@@ -1,5 +1,5 @@
-import type { DeckManifestEntry, SessionHistoryEntry } from '@prepdeck/schemas'
-import { getDecksByTopic } from '@prepdeck/content/manifest'
+import type { DeckManifestEntry, SessionHistoryEntry } from '@seniorpath/schemas'
+import { getDecksByTopic } from '@seniorpath/content/manifest'
 import { m } from 'motion/react'
 import { useMemo, useState } from 'react'
 
@@ -9,8 +9,10 @@ import { DataControlsPanel } from '@/components/data-controls-panel'
 import { ProgressSharePanel } from '@/components/progress-share-panel'
 import { Badge } from '@/components/ui/badge'
 import { LinkButton } from '@/components/ui/link-button'
+import { PageIntro } from '@/components/ui/page-intro'
 import { Panel } from '@/components/ui/panel'
 import { ProgressMeter } from '@/components/ui/progress-meter'
+import { SectionHeader } from '@/components/ui/section-header'
 import { cardRevealVariants, hoverLiftMotionProps } from '@/lib/motion'
 import {
   combineDeckCounts,
@@ -78,50 +80,43 @@ export function ProgressPage() {
 
   return (
     <>
-      <section className="mb-6" data-testid={testIds.progress.page}>
-        <Panel className="overflow-hidden bg-[linear-gradient(145deg,rgba(28,45,72,0.98),rgba(10,18,31,0.96))] p-5 sm:p-6">
-          <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
-            <div>
-              <div className="flex flex-wrap gap-2">
-                <Badge tone="accent">Progress hub</Badge>
-                <Badge>Local-first</Badge>
-                <Badge tone="success">History + goals + tools</Badge>
-              </div>
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-[var(--retro-ink)] sm:text-4xl">
-                Keep the product state in one clear place.
-              </h1>
-              <p className="mt-4 max-w-2xl text-sm leading-7 text-white/80 sm:text-base">
-                This is the tracking layer behind Prepdeck: momentum, goals, mastery signals,
-                backup, and shareable progress. The home screen stays focused on starting the
-                next useful rep.
-              </p>
-              <div className="mt-5 flex flex-wrap gap-3">
-                <LinkButton to="/daily-queue" variant="primary">
-                  Start daily queue
-                </LinkButton>
-                <LinkButton to="/" variant="secondary">
-                  Back to decks
-                </LinkButton>
-              </div>
-            </div>
+      <section className="space-y-4" data-testid={testIds.progress.page}>
+        <PageIntro
+          actions={
+            <>
+              <LinkButton to="/daily-queue" variant="primary">
+                Start daily queue
+              </LinkButton>
+              <LinkButton to="/" variant="ghost">
+                Back to decks
+              </LinkButton>
+            </>
+          }
+          description="History, goals, backups, and local progress in one clear place."
+          title="Progress"
+        />
 
-            <Panel className="bg-[color:rgba(6,12,23,0.42)] p-4">
-              <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-[var(--retro-line)]">
-                Overview
-              </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
+        <Panel className="p-5">
+          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+            <div>
+              <p className="app-eyebrow">Overview</p>
+              <div className="grid gap-3 sm:grid-cols-2">
                 <SummaryStat label="Cards learned" value={`${overallCounts.learned}`} />
                 <SummaryStat label="Review debt" value={`${masterySnapshot.reviewDebt}`} />
                 <SummaryStat label="Decks completed" value={`${masterySnapshot.decksCompleted}`} />
                 <SummaryStat label="Saved notes" value={`${masterySnapshot.savedNotes}`} />
               </div>
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--retro-ink-soft)]">
-                  <span>Cards seen</span>
-                  <span>
-                    {overallCounts.seen} of {overallCounts.total}
-                  </span>
-                </div>
+            </div>
+
+            <Panel className="p-4" inset>
+              <p className="app-eyebrow">Coverage</p>
+              <div className="flex items-center justify-between text-[0.72rem] font-semibold uppercase tracking-[0.16em] text-[var(--retro-ink-soft)]">
+                <span>Cards seen</span>
+                <span>
+                  {overallCounts.seen} of {overallCounts.total}
+                </span>
+              </div>
+              <div className="mt-3">
                 <ProgressMeter current={overallCounts.seen} total={overallCounts.total} />
               </div>
             </Panel>
@@ -129,24 +124,16 @@ export function ProgressPage() {
         </Panel>
       </section>
 
-      <section className="mb-6">
-        <AdSlot placement="home-primary" />
-      </section>
-
       <section
         aria-labelledby="momentum-heading"
-        className="mb-6"
+        className="space-y-4"
         data-testid={testIds.progress.momentum}
       >
-        <div className="mb-4">
-          <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="momentum-heading">
-            Momentum
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-white/75">
-            Local session history that shows whether the habit is alive, how often you are
-            actually practicing, and what the latest reps looked like.
-          </p>
-        </div>
+        <SectionHeader
+          description="Local session history that shows whether the habit is alive and what the latest reps looked like."
+          id="momentum-heading"
+          title="Momentum"
+        />
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
           <div className="grid gap-4 sm:grid-cols-3">
             <MomentumStatCard
@@ -210,7 +197,7 @@ export function ProgressPage() {
               ) : (
                 <Panel className="mt-5 bg-[var(--retro-surface-muted)] p-4" inset>
                   <p className="text-sm leading-6 text-white/80">
-                    Finish any deck, daily queue, or mock interview and Prepdeck will keep a
+                    Finish any deck, daily queue, or mock interview and SeniorPath will keep a
                     local recap here so the product feels like a living study app, not just
                     a deck browser.
                   </p>
@@ -223,18 +210,14 @@ export function ProgressPage() {
 
       <section
         aria-labelledby="goal-tracker-heading"
-        className="mb-6"
+        className="space-y-4"
         data-testid={testIds.progress.goalTracker}
       >
-        <div className="mb-4">
-          <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="goal-tracker-heading">
-            Goal tracker
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-white/75">
-            Simple local targets that make the app feel like a habit loop instead of a static
-            deck shelf.
-          </p>
-        </div>
+        <SectionHeader
+          description="Simple local targets that keep the app feeling like a habit loop instead of a static shelf."
+          id="goal-tracker-heading"
+          title="Goal tracker"
+        />
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_minmax(0,1.15fr)]">
           <GoalCard
             description={
@@ -287,18 +270,14 @@ export function ProgressPage() {
 
       <section
         aria-labelledby="mastery-snapshot-heading"
-        className="mb-6"
+        className="space-y-4"
         data-testid={testIds.progress.masterySnapshot}
       >
-        <div className="mb-4">
-          <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="mastery-snapshot-heading">
-            Mastery snapshot
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-white/75">
-            Local signals that show where you are strongest, where the review debt lives, and
-            how much groundwork is already done.
-          </p>
-        </div>
+        <SectionHeader
+          description="Local signals that show where you are strongest, where the review debt lives, and how much groundwork is already done."
+          id="mastery-snapshot-heading"
+          title="Mastery snapshot"
+        />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           <MasterySignalCard
             detail={
@@ -341,22 +320,21 @@ export function ProgressPage() {
 
       <section
         aria-labelledby="local-tools-heading"
-        className="mb-6"
+        className="space-y-4"
         data-testid={testIds.progress.localTools}
       >
-        <div className="mb-4">
-          <h2 className="text-2xl font-black text-[var(--retro-ink)]" id="local-tools-heading">
-            Local tools
-          </h2>
-          <p className="mt-1 text-sm leading-6 text-white/75">
-            Backup, restore, reset, and share from the same place without touching a backend.
-          </p>
-        </div>
+        <SectionHeader
+          description="Backup, restore, reset, and share from the same place without touching a backend."
+          id="local-tools-heading"
+          title="Local tools"
+        />
         <div className="space-y-6">
           <ProgressSharePanel />
           <DataControlsPanel onResetAll={() => setIsResetAllOpen(true)} />
         </div>
       </section>
+
+      <AdSlot placement="home-primary" />
 
       <ConfirmDialog
         confirmLabel="Reset all"

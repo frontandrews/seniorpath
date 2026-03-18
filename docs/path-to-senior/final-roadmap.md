@@ -1,6 +1,6 @@
 # Path to Senior
 
-This is the product-level roadmap for Prepdeck.
+This is the product-level roadmap for SeniorPath.
 
 It is not organized by framework first.
 It is organized by how stronger engineers think, decide, communicate, and solve problems.
@@ -208,7 +208,7 @@ Active guides and decks should map into this structure directly.
 
 ## Product rule
 
-Every item in Prepdeck should follow the same loop:
+Every item in SeniorPath should follow the same loop:
 
 - `Learn`
 - `Practice`

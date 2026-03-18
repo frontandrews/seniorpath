@@ -1,4 +1,4 @@
-import { getDeckById } from '@prepdeck/content'
+import { getDeckById } from '@seniorpath/content'
 
 import {
   PREVIOUS_STORAGE_KEY,

@@ -5,8 +5,8 @@ export type GuideRegistryEntry = {
 }
 
 export const GUIDE_SECTION_BY_LOCALE = {
-  en: 'guides',
-  'pt-br': 'guias',
+  en: 'learn',
+  'pt-br': 'aprender',
 } as const
 
 export const SUPPORTED_GUIDE_LOCALES = Object.keys(GUIDE_SECTION_BY_LOCALE)
@@ -18,8 +18,10 @@ export function getGuideSectionSegment(locale = 'en') {
 export function getGuideRoutePathFromEntryId(entryId: string) {
   const normalizedEntryId = entryId.replace(/^\/+|\/+$/g, '')
   const [locale = 'en', ...slugParts] = normalizedEntryId.split('/').filter(Boolean)
+  const section = getGuideSectionSegment(locale)
+  const slug = slugParts.join('/')
 
-  return `${locale}/${getGuideSectionSegment(locale)}/${slugParts.join('/')}`
+  return locale === 'en' ? `${section}/${slug}` : `${locale}/${section}/${slug}`
 }
 
 const GUIDE_REGISTRY: GuideRegistryEntry[] = [
