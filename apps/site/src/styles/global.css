@@ -303,23 +303,28 @@ pre {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.4rem;
-  padding: 0.55rem 0.85rem;
+  min-height: 2.05rem;
+  padding: 0.42rem 0.72rem;
   border: 2px solid var(--site-line);
   border-radius: var(--radius);
-  background: var(--site-surface);
+  background: var(--chip-accent, color-mix(in srgb, var(--site-accent-soft) 50%, white));
   color: var(--site-ink);
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  letter-spacing: 0.01em;
   cursor: pointer;
+  box-shadow: 3px 3px 0 0 var(--site-line);
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
 }
 
 .guide-filter-chip--active {
   border-color: var(--site-line-strong);
-  background: var(--site-accent-soft);
+  background: color-mix(in srgb, var(--chip-accent, var(--site-accent-soft)) 82%, var(--site-accent));
   color: var(--site-ink);
+  transform: translate(-1px, -1px);
 }
 
 .guide-filter-chip--active::after {
@@ -334,11 +339,13 @@ pre {
 .tree-controls {
   display: grid;
   gap: 1rem;
+  margin-top: 0.9rem;
   margin-bottom: 1rem;
   justify-items: center;
 }
 
 .tree-controls--compact {
+  margin-top: 1.15rem;
   margin-bottom: 0.75rem;
 }
 

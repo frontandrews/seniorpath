@@ -9,6 +9,7 @@ const posts = (await getCollection('guides')).filter(
   (post) => post.data.status !== 'archived' && post.data.locale === 'en',
 )
 const guideTree = buildGuideTree(posts)
+const filterTones = ['#dbeafe', '#dbe4ff', '#e2e8f0', '#e0f2fe', '#ede9fe', '#e2f2ea']
 ---
 
 <BaseLayout
@@ -24,10 +25,15 @@ const guideTree = buildGuideTree(posts)
     </div>
 
     <div class="tree-controls tree-controls--compact">
-      <p class="section-eyebrow">Filter by category</p>
-      <div class="meta-list">
-        {guideTree.map((node) => (
-          <button class="guide-filter-chip" data-tree-filter={node.label} type="button">
+        <p class="section-eyebrow">Filter by category</p>
+        <div class="meta-list">
+        {guideTree.map((node, index) => (
+          <button
+            class="guide-filter-chip"
+            data-tree-filter={node.label}
+            style={`--chip-accent: ${filterTones[index % filterTones.length]};`}
+            type="button"
+          >
             {node.label}
           </button>
         ))}
