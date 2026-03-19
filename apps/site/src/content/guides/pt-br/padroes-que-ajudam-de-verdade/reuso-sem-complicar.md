@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - composition-vs-abstraction-without-theatre
-  - sem-overengineering
+  - avoiding-overengineering-without-regret
 tags:
   - patterns
   - reuse

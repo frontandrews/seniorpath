@@ -1,0 +1,25 @@
+---
+import type { GuideBreadcrumbItem } from '../lib/guide-taxonomy'
+
+type Props = {
+  items: GuideBreadcrumbItem[]
+}
+
+const { items } = Astro.props
+---
+
+{items.length > 0 ? (
+  <nav aria-label="Breadcrumb" class="article-breadcrumbs">
+    <ol class="article-path article-breadcrumbs__list">
+      {items.map((item, index) => (
+        <li class="article-breadcrumbs__item">
+          {item.href ? (
+            <a class="article-breadcrumbs__link" href={item.href}>{item.label}</a>
+          ) : (
+            <span aria-current={index === items.length - 1 ? 'page' : undefined}>{item.label}</span>
+          )}
+        </li>
+      ))}
+    </ol>
+  </nav>
+) : null}

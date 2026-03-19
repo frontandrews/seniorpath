@@ -2,7 +2,7 @@
 title: RAG vs Fine-Tuning Sem Falso Dilema
 description: Como decidir entre retrieval e fine-tuning olhando para o tipo de falha real do sistema, nao para hype.
 summary: Antes de escolher a tecnica, descubra se o problema e falta de contexto ou comportamento ruim mesmo com contexto.
-guideId: rag-vs-fine-tuning-without-false-binaries
+guideId: rag-vs-fine-tuning
 locale: pt-br
 status: active
 pillarId: system-thinking

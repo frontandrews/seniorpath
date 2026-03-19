@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - breaking-down-problems-without-panic
-  - reconhecer-padroes-sem-decorar-respostas
+  - recognizing-patterns-without-memorizing-tricks
 tags:
   - interviews
   - coding

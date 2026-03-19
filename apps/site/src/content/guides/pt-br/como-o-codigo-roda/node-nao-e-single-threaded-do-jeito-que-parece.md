@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - javascript-event-loop
-  - memoria-sem-misterio
+  - memory-basics-without-theatre
 tags:
   - node
   - concurrency

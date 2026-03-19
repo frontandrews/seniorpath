@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - thinking-before-you-code-in-interviews
-  - como-explicar-sua-solucao-sem-se-perder
+  - explaining-your-solution-without-losing-the-thread
 tags:
   - interviews
   - problem-solving

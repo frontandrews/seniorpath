@@ -202,9 +202,15 @@ describe('app routes', () => {
     expect(screen.getByTestId(testIds.deckDetail.reviewLink)).toBeInTheDocument()
     expect(screen.getByTestId(testIds.deckDetail.resetButton)).toBeInTheDocument()
     expect(screen.getByTestId(testIds.deckDetail.learnMoreSection)).toBeInTheDocument()
-    expect(screen.getByTestId(testIds.deckDetail.learnMoreLink('learn/state-and-ui-thinking/react-derived-state-without-extra-bugs'))).toHaveAttribute(
+    expect(
+      screen.getByTestId(
+        testIds.deckDetail.learnMoreLink(
+          'learn/state-and-ui-thinking/state-ownership-without-confusion',
+        ),
+      ),
+    ).toHaveAttribute(
       'href',
-      '/learn/state-and-ui-thinking/react-derived-state-without-extra-bugs',
+      '/learn/state-and-ui-thinking/state-ownership-without-confusion',
     )
   })
 
@@ -385,7 +391,7 @@ describe('app routes', () => {
     expect(screen.getByText(/const visibleUsers = users\.filter/i)).toBeInTheDocument()
     expect(screen.getByTestId(testIds.study.learnMoreLink)).toHaveAttribute(
       'href',
-      '/learn/state-and-ui-thinking/react-derived-state-without-extra-bugs',
+      '/learn/state-and-ui-thinking/state-ownership-without-confusion',
     )
   })
 

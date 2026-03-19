@@ -15,7 +15,7 @@ path:
   - Modelagem de dados
 order: 10
 relationships:
-  - sql-vs-nosql-sem-slogan
+  - sql-vs-nosql-without-slogans
 tags:
   - data
   - modeling

@@ -34,6 +34,14 @@ type SiteCopy = {
     filterLabel: string
     title: string
   }
+  challengeIndex: {
+    copy: string
+    title: string
+  }
+  glossaryIndex: {
+    copy: string
+    title: string
+  }
   header: {
     brand: string
   }
@@ -42,6 +50,10 @@ type SiteCopy = {
     home: string
     practice: string
     themeToggle: string
+  }
+  topicIndex: {
+    copy: string
+    title: string
   }
 }
 
@@ -84,11 +96,23 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       filterLabel: 'Pick a topic',
       title: 'Learn without the fluff',
     },
+    challengeIndex: {
+      copy: 'Practice spaces reserved for worked examples, step-by-step solutions, and applied scenarios.',
+      title: 'Challenges',
+    },
+    glossaryIndex: {
+      copy: 'Short reference entries for concepts that keep showing up across guides and interviews.',
+      title: 'Glossary',
+    },
     learn: 'Learn',
     layout: {
       home: 'Home',
       practice: 'Practice',
       themeToggle: 'Toggle theme',
+    },
+    topicIndex: {
+      copy: 'Cross-cutting hubs that connect guides by theme instead of by curriculum branch.',
+      title: 'Topics',
     },
   },
   'pt-br': {
@@ -129,11 +153,23 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       filterLabel: 'Escolha um tema',
       title: 'Aprenda sem enrolação',
     },
+    challengeIndex: {
+      copy: 'Espacos de pratica reservados para exemplos resolvidos, passo a passo e cenarios aplicados.',
+      title: 'Desafios',
+    },
+    glossaryIndex: {
+      copy: 'Entradas curtas de referencia para conceitos que aparecem o tempo todo em guias e entrevistas.',
+      title: 'Glossario',
+    },
     learn: 'Aprender',
     layout: {
       home: 'Inicio',
       practice: 'Praticar',
       themeToggle: 'Alternar tema',
+    },
+    topicIndex: {
+      copy: 'Hubs transversais que conectam os guias por tema, nao so pela trilha curricular.',
+      title: 'Topicos',
     },
   },
 }

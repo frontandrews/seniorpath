@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - scalability-and-bottlenecks-without-theatre
-  - rag-vs-fine-tuning-sem-falso-dilema
+  - rag-vs-fine-tuning
 tags:
   - api
   - services

@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - trust-boundaries-without-hand-waving
-  - entradas-e-apis-mais-seguras
+  - safer-input-and-api-design
 tags:
   - security
   - auth

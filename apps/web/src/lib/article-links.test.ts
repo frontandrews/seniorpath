@@ -4,8 +4,10 @@ import { getDeckArticleLinks, getGuideIndexHref, resolveArticleHref } from '@/li
 
 describe('article links', () => {
   it('falls back to the same-domain blog path when no site URL is configured', () => {
-    expect(resolveArticleHref('learn/state-and-ui-thinking/react-derived-state-without-extra-bugs')).toBe(
-      '/learn/state-and-ui-thinking/react-derived-state-without-extra-bugs',
+    expect(
+      resolveArticleHref('learn/state-and-ui-thinking/state-ownership-without-confusion'),
+    ).toBe(
+      '/learn/state-and-ui-thinking/state-ownership-without-confusion',
     )
   })
 
@@ -15,7 +17,9 @@ describe('article links', () => {
         'learn/runtime-and-execution/javascript-event-loop-without-hand-waving',
         'http://localhost:4321',
       ),
-    ).toBe('http://localhost:4321/learn/runtime-and-execution/javascript-event-loop-without-hand-waving')
+    ).toBe(
+      'http://localhost:4321/learn/runtime-and-execution/javascript-event-loop-without-hand-waving',
+    )
   })
 
   it('avoids duplicating the blog segment when the configured URL already includes it', () => {
@@ -24,7 +28,9 @@ describe('article links', () => {
         'learn/runtime-and-execution/node-single-threaded-does-not-mean-what-people-think',
         'https://seniorpath.pro/guides/',
       ),
-    ).toBe('https://seniorpath.pro/learn/runtime-and-execution/node-single-threaded-does-not-mean-what-people-think')
+    ).toBe(
+      'https://seniorpath.pro/learn/runtime-and-execution/node-single-threaded-does-not-mean-what-people-think',
+    )
   })
 
   it('builds the guide index href without duplicating locale segments', () => {
@@ -42,9 +48,9 @@ describe('article links', () => {
     expect(deck).toBeDefined()
     expect(getDeckArticleLinks(deck!)).toEqual([
       {
-        guideId: 'react-derived-state',
+        guideId: 'state-ownership-without-confusion',
         question: 'Why is derived state dangerous in React?',
-        routePath: 'learn/state-and-ui-thinking/react-derived-state-without-extra-bugs',
+        routePath: 'learn/state-and-ui-thinking/state-ownership-without-confusion',
       },
     ])
   })

@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - production-failures-without-guessing
-  - bugs-assincronos-e-race-conditions-sem-drama
+  - async-and-race-bugs-without-drama
 tags:
   - debugging
   - logs

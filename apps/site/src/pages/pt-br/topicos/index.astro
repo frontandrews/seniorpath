@@ -1,0 +1,14 @@
+---
+import { getCollection } from 'astro:content'
+
+import TopicIndexPage from '../../../components/TopicIndexPage.astro'
+import { getAvailableTopics, getTopicGuides } from '../../../lib/topic-taxonomy'
+
+const posts = await getCollection('guides')
+const topics = getAvailableTopics(posts, 'pt-br').map((topic) => ({
+  count: getTopicGuides(posts, topic.id, 'pt-br').length,
+  topic,
+}))
+---
+
+<TopicIndexPage locale="pt-br" topics={topics} />

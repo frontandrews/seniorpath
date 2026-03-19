@@ -15,7 +15,7 @@ path:
   - Semantica e estrutura
 order: 10
 relationships:
-  - teclado-e-foco-sem-frustracao
+  - keyboard-and-focus-without-frustration
 tags:
   - accessibility
   - semantics

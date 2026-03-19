@@ -15,8 +15,8 @@ path:
   - De quem e esse estado?
 order: 10
 relationships:
-  - react-derived-state
-  - effects-sem-bagunca
+  - server-and-client-thinking-without-confusion
+  - effects-without-the-mess
 tags:
   - react
   - state

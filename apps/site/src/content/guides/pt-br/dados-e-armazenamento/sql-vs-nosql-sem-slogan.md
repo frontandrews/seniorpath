@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - data-modeling-without-overcomplicating
-  - cache-e-consistencia-sem-autoengano
+  - cache-and-consistency-without-self-deception
 tags:
   - data
   - sql

@@ -15,7 +15,7 @@ path:
   - Cenarios de API em escala
 order: 10
 relationships:
-  - cenarios-de-falha-e-recuperacao
+  - failure-and-recovery-scenarios-with-clarity
 tags:
   - systems
   - api

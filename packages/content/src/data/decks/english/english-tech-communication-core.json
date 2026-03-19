@@ -22,7 +22,7 @@
         "next step"
       ],
       "learnMore": "A good update is not about sounding sophisticated. It is about making the room understand what changed, what matters now, and whether anything needs attention.\n\nSimple phrasing is usually stronger than overexplaining. Most people benefit from a repeatable structure they can reuse under pressure.",
-      "learnMoreGuideId": "status-updates",
+      "learnMoreGuideId": "communication-in-work-and-interviews-with-clarity",
       "exampleCode": "Yesterday I finished the API contract cleanup.\nToday I am wiring the last dashboard state.\nThe only risk is the reporting endpoint latency.\nIf that stays stable, I should hand this off for QA tomorrow.",
       "exampleLanguage": "text",
       "commonTraps": [

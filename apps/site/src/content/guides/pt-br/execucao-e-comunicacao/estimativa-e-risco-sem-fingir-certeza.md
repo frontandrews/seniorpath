@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - ticket-and-task-thinking-with-clarity
-  - comunicacao-no-trabalho-e-em-entrevistas
+  - communication-in-work-and-interviews-with-clarity
 tags:
   - execution
   - risk

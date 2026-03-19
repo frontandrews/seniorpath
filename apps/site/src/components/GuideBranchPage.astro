@@ -1,0 +1,56 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import type { PathBranch, PathPillar } from '@seniorpath/content'
+
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getGuideBranchHref } from '../lib/guide-links'
+import { getBranchBreadcrumb, getLocalizedBranchLabel, getLocalizedPillarLabel } from '../lib/guide-taxonomy'
+import type { SiteLocale } from '../lib/site-copy'
+import ArticleCard from './ArticleCard.astro'
+import Breadcrumbs from './Breadcrumbs.astro'
+
+type Props = {
+  branch: PathBranch
+  locale: SiteLocale
+  pillar: PathPillar
+  posts: CollectionEntry<'guides'>[]
+}
+
+const { branch, locale, pillar, posts } = Astro.props
+const title = getLocalizedBranchLabel(branch, locale)
+const pillarLabel = getLocalizedPillarLabel(pillar, locale)
+const englishHref = getGuideBranchHref(pillar.id, branch.id, 'en')
+const portugueseHref = getGuideBranchHref(pillar.id, branch.id, 'pt-br')
+const description =
+  posts[0]?.data.description ??
+  (locale === 'pt-br'
+    ? `Guias de ${title} dentro de ${pillarLabel}.`
+    : `Guides about ${title} inside ${pillarLabel}.`)
+const breadcrumbItems = getBranchBreadcrumb(pillar, branch, locale)
+const selectionLabel = locale === 'pt-br' ? 'Escolha um guia' : 'Select a guide'
+---
+
+<BaseLayout
+  description={description}
+  englishHref={englishHref}
+  portugueseHref={portugueseHref}
+  title={title}
+>
+  <section class="section section--compact">
+    <div class="panel page-toolbar page-toolbar--stacked">
+      <Breadcrumbs items={breadcrumbItems} />
+      <p class="section-eyebrow">{pillarLabel}</p>
+      <h1 class="section-heading section-heading--compact">{title}</h1>
+      <p class="page-toolbar__copy">{description}</p>
+    </div>
+  </section>
+
+  <section class="section section--compact">
+    <p class="section-eyebrow">{selectionLabel}</p>
+    <div class="panel-grid panel-grid--articles">
+      {posts.map((post) => (
+        <ArticleCard post={post} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

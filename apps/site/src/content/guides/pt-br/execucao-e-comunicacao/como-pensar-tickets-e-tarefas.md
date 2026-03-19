@@ -15,7 +15,7 @@ path:
   - Como pensar tickets e tarefas
 order: 10
 relationships:
-  - estimativa-e-risco-sem-fingir-certeza
+  - estimation-and-risk-without-fake-certainty
 tags:
   - execution
   - delivery

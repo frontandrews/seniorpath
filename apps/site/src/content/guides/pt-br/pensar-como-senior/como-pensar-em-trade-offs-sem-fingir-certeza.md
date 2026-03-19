@@ -2,7 +2,7 @@
 title: Como Pensar em Trade-offs Sem Fingir Certeza
 description: Um jeito mais honesto de decidir quando nenhuma opcao e perfeita e voce precisa explicar por que escolheu um caminho.
 summary: Pare de procurar a resposta perfeita. Nomeie o custo de cada escolha e decida com clareza.
-guideId: como-pensar-em-trade-offs-sem-fingir-certeza
+guideId: trade-offs-and-constraints-without-fake-certainty
 locale: pt-br
 status: active
 pillarId: thinking-like-a-senior
@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - breaking-down-problems-without-panic
-  - escrever-codigo-que-gente-consegue-entender
+  - writing-code-people-can-read
 tags:
   - senior-thinking
   - trade-offs

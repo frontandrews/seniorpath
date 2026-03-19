@@ -1,0 +1,151 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
+
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { formatEditorialDate } from '../lib/format-date'
+import { getGuideHrefFromEntry } from '../lib/guide-links'
+import { getGuideBreadcrumb } from '../lib/guide-taxonomy'
+import { translateSiteLabels } from '../lib/site-labels'
+import { sortGuides } from '../lib/guide-tree'
+import { getLocalizedGuideTopics } from '../lib/topic-taxonomy'
+import { getSiteCopy } from '../lib/site-copy'
+import Breadcrumbs from './Breadcrumbs.astro'
+
+type Props = {
+  post: CollectionEntry<'guides'>
+}
+
+const { post } = Astro.props
+const { Content } = await render(post)
+const allGuideEntries = await getCollection('guides')
+const activePosts = sortGuides(
+  allGuideEntries.filter(
+    (entry) => entry.data.locale === post.data.locale && entry.data.status !== 'archived',
+  ),
+)
+const englishVersion = allGuideEntries.find(
+  (entry) => entry.data.locale === 'en' && entry.data.guideId === post.data.guideId,
+)
+const portugueseVersion = allGuideEntries.find(
+  (entry) => entry.data.locale === 'pt-br' && entry.data.guideId === post.data.guideId,
+)
+const englishHref =
+  post.data.locale === 'en' ? getGuideHrefFromEntry(post) : englishVersion ? getGuideHrefFromEntry(englishVersion) : null
+const portugueseHref =
+  post.data.locale === 'pt-br'
+    ? getGuideHrefFromEntry(post)
+    : portugueseVersion
+      ? getGuideHrefFromEntry(portugueseVersion)
+      : null
+const connectedPosts = activePosts.filter((entry) => {
+  if (entry.data.guideId === post.data.guideId) {
+    return false
+  }
+
+  return post.data.relationships.includes(entry.data.guideId)
+})
+const relatedPosts = activePosts
+  .filter((entry) => {
+    if (entry.data.guideId === post.data.guideId) {
+      return false
+    }
+
+    if (post.data.relationships.includes(entry.data.guideId)) {
+      return false
+    }
+
+    const sharesTopic = entry.data.topic && entry.data.topic === post.data.topic
+    const sharesTag = entry.data.tags.some((tag) => post.data.tags.includes(tag))
+
+    return Boolean(sharesTopic || sharesTag)
+  })
+  .slice(0, 2)
+const siblingPosts = activePosts
+  .filter((entry) => {
+    if (entry.id === post.id) {
+      return false
+    }
+
+    return entry.data.pillarId === post.data.pillarId && entry.data.branchId === post.data.branchId
+  })
+  .slice(0, 3)
+const currentIndex = activePosts.findIndex((entry) => entry.data.guideId === post.data.guideId)
+const previousPost = currentIndex >= 0 ? activePosts[currentIndex + 1] ?? null : null
+const nextPost = currentIndex > 0 ? activePosts[currentIndex - 1] ?? null : null
+const nextReads = [...new Map(
+  [nextPost, previousPost, ...connectedPosts, ...siblingPosts, ...relatedPosts]
+    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
+    .filter((entry) => entry.data.guideId !== post.data.guideId)
+    .map((entry) => [entry.data.guideId, entry]),
+).values()].slice(0, 3)
+const copy = getSiteCopy(post.data.locale)
+const translatedTags = translateSiteLabels(post.data.tags, post.data.locale)
+const breadcrumbItems = getGuideBreadcrumb(post)
+const linkedTopics = getLocalizedGuideTopics(post)
+const dateLocale = post.data.locale === 'pt-br' ? 'pt-BR' : 'en-US'
+---
+
+<BaseLayout
+  description={post.data.description}
+  englishHref={englishHref}
+  portugueseHref={portugueseHref}
+  title={post.data.title}
+>
+  <article class="article-shell">
+    <header class="article-header">
+      <Breadcrumbs items={breadcrumbItems} />
+      <h1 class="article-title">{post.data.title}</h1>
+      <p class="article-excerpt">{post.data.description}</p>
+      <div class="article-author-row">
+        <img alt="Andrews Ribeiro" class="article-author-avatar" height="48" loading="lazy" src="/andrews.jpg" width="48" />
+        <div class="article-author-copy">
+          <p class="article-author-name">Andrews Ribeiro</p>
+          <p class="article-author-meta">
+            {formatEditorialDate(post.data.pubDate, dateLocale)}
+          </p>
+          {post.data.updatedDate ? (
+            <p class="article-author-meta article-author-meta--updated">
+              {copy.article.updatedPrefix} {formatEditorialDate(post.data.updatedDate, dateLocale, {
+                month: 'short',
+              })}
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </header>
+
+    <div class="article-prose">
+      <Content />
+    </div>
+
+    {linkedTopics.length > 0 || translatedTags.length > 0 ? (
+      <div class="meta-list article-tags article-tags--end">
+        {linkedTopics.map((topic) => (
+          <a class="badge badge--link" href={topic.href}>{topic.label}</a>
+        ))}
+        {translatedTags.map((tag) => (
+          <span class="badge">{tag}</span>
+        ))}
+      </div>
+    ) : null}
+
+    {nextReads.length > 0 ? (
+      <section class="article-section">
+        <div class="section-header">
+          <div>
+            <h2 class="section-heading section-heading--compact">{copy.article.nextReads}</h2>
+          </div>
+        </div>
+        <div class="panel-grid panel-grid--next-reads">
+          {nextReads.map((entry) => (
+            <a class="panel next-read-card" href={getGuideHrefFromEntry(entry)}>
+              <h3>{entry.data.title}</h3>
+              <p class="article-excerpt">{entry.data.description}</p>
+            </a>
+          ))}
+        </div>
+      </section>
+    ) : null}
+  </article>
+</BaseLayout>

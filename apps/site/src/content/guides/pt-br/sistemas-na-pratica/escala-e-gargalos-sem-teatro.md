@@ -15,7 +15,7 @@ path:
   - Escala e gargalos
 order: 10
 relationships:
-  - api-e-servicos-sem-fronteira-confusa
+  - api-and-service-design-with-clear-boundaries
 tags:
   - systems
   - scaling

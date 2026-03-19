@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - semantics-and-structure-that-actually-help
-  - componentes-react-acessiveis-sem-gambiarra
+  - accessible-react-components-without-hacks
 tags:
   - accessibility
   - keyboard

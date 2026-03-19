@@ -11,7 +11,7 @@ import { getSiteCopy } from '../../../lib/site-copy'
 const posts = sortGuides((await getCollection('guides')).filter(
   (post) => post.data.status !== 'archived' && post.data.locale === 'pt-br',
 ))
-const guideTree = buildGuideTree(posts)
+const guideTree = buildGuideTree(posts, 'pt-br')
 const filterTones = [
   { dark: '#24364f', light: '#dbeafe' },
   { dark: '#2d3358', light: '#dbe4ff' },
@@ -55,9 +55,7 @@ const copy = getSiteCopy('pt-br')
         })}
       </div>
     </div>
-  </section>
 
-  <section class="section section--compact">
     <ul class="guide-tree guide-tree--root">
       {guideTree.map((node) => (
         <GuideTreeNode locale="pt-br" node={node} />

@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - bottleneck-detection-without-guessing
-  - medir-antes-de-otimizar
+  - measure-before-you-optimize
 tags:
   - performance
   - rendering

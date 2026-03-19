@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content'
+import { getGuideLegacyRoutePathFromEntryId, getGuideRoutePath } from '@seniorpath/content'
 
 import { sortGuides } from './guide-tree'
 
@@ -56,7 +57,9 @@ export function buildGuideMap(posts: CollectionEntry<'guides'>[]): GuideMapSecti
         {
           category: relatedPost.data.path[0] ?? relatedPost.data.category,
           id: relatedPost.data.guideId,
-          routePath: relatedPost.id,
+          routePath:
+            getGuideRoutePath(relatedPost.data.guideId, relatedPost.data.locale) ??
+            getGuideLegacyRoutePathFromEntryId(relatedPost.id),
           relation: 'connects_to' as const,
           title: relatedPost.data.title,
         },
@@ -73,7 +76,9 @@ export function buildGuideMap(posts: CollectionEntry<'guides'>[]): GuideMapSecti
         {
           category: relatedPost.data.path[0] ?? relatedPost.data.category,
           id: relatedPost.data.guideId,
-          routePath: relatedPost.id,
+          routePath:
+            getGuideRoutePath(relatedPost.data.guideId, relatedPost.data.locale) ??
+            getGuideLegacyRoutePathFromEntryId(relatedPost.id),
           relation: 'referenced_by' as const,
           title: relatedPost.data.title,
         },
@@ -88,7 +93,7 @@ export function buildGuideMap(posts: CollectionEntry<'guides'>[]): GuideMapSecti
       id: post.data.guideId,
       path: post.data.path,
       relatedDeckIds: post.data.relatedDeckIds,
-      routePath: post.id,
+      routePath: getGuideRoutePath(post.data.guideId, post.data.locale) ?? getGuideLegacyRoutePathFromEntryId(post.id),
       summary: post.data.summary,
       tags: post.data.tags,
       title: post.data.title,

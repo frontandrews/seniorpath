@@ -15,7 +15,7 @@ path:
   - Composicao ou abstracao?
 order: 10
 relationships:
-  - reuso-sem-complicar
+  - reuse-without-extra-complexity
 tags:
   - patterns
   - architecture

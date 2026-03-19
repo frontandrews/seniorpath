@@ -15,7 +15,7 @@ path:
   - Onde esta o gargalo
 order: 10
 relationships:
-  - renderizacao-rede-e-cpu-sem-misturar-as-coisas
+  - rendering-network-and-cpu-without-mixing-them-up
 tags:
   - performance
   - bottlenecks

@@ -15,7 +15,7 @@ path:
   - Limites de confianca
 order: 10
 relationships:
-  - autenticacao-e-permissao-sem-confundir-as-duas
+  - auth-and-authorization-without-mixing-them-up
 tags:
   - security
   - trust

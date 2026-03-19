@@ -15,7 +15,7 @@ path:
   - Codigo Facil de Entender
 order: 10
 relationships:
-  - como-pensar-em-trade-offs-sem-fingir-certeza
+  - trade-offs-and-constraints-without-fake-certainty
 tags:
   - senior-thinking
   - readability

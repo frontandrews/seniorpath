@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { getGuideHrefFromEntryId } from '../lib/guide-links'
+import { getGuideHrefFromEntry } from '../lib/guide-links'
 import { getSiteCopy } from '../lib/site-copy'
 
 type Props = {
@@ -16,7 +16,7 @@ const {
   eyebrow,
   post,
 } = Astro.props
-const href = getGuideHrefFromEntryId(post.id)
+const href = getGuideHrefFromEntry(post)
 const copy = getSiteCopy(post.data.locale)
 ---
 
@@ -25,14 +25,17 @@ const copy = getSiteCopy(post.data.locale)
   data-guide-card-category={categoryLabel}
   data-guide-post={post.data.guideId}
 >
-  <div class="article-card__body">
-    {eyebrow ? <p class="article-card__eyebrow">{eyebrow}</p> : null}
-    <h3>
-      <a class="article-card__title-link" href={href}>{post.data.title}</a>
-    </h3>
-    <p class="article-card__summary">{post.data.description}</p>
-  </div>
-  <div class="article-card__footer">
-    <a class="button-link button-link--primary" href={href}>{copy.learn}</a>
-  </div>
+  <a class="article-card__link" href={href}>
+    <div class="article-card__body">
+      {eyebrow ? <p class="article-card__eyebrow">{eyebrow}</p> : null}
+      <h3 class="article-card__title">{post.data.title}</h3>
+      <p class="article-card__summary">{post.data.description}</p>
+    </div>
+    <div class="article-card__footer">
+      <span class="article-card__cta">
+        <span>{copy.learn}</span>
+        <span aria-hidden="true">→</span>
+      </span>
+    </div>
+  </a>
 </article>

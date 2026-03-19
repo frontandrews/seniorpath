@@ -1,0 +1,47 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+import ArticleCard from './ArticleCard.astro'
+import Breadcrumbs from './Breadcrumbs.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getLocalizedTopicLabel, getLocalizedTopicSummary, getTopicBreadcrumb } from '../lib/topic-taxonomy'
+import { getTopicHref } from '../lib/topic-links'
+import type { SiteLocale } from '../lib/site-copy'
+
+type Props = {
+  locale: SiteLocale
+  posts: CollectionEntry<'guides'>[]
+  topicId: string
+}
+
+const { locale, posts, topicId } = Astro.props
+const title = getLocalizedTopicLabel(topicId, locale)
+const description = getLocalizedTopicSummary(topicId, locale)
+const breadcrumbItems = getTopicBreadcrumb(topicId, locale)
+const selectionLabel = locale === 'pt-br' ? 'Escolha um guia' : 'Select a guide'
+---
+
+<BaseLayout
+  description={description}
+  englishHref={getTopicHref(topicId, 'en')}
+  portugueseHref={getTopicHref(topicId, 'pt-br')}
+  title={title}
+>
+  <section class="section section--compact">
+    <div class="panel page-toolbar page-toolbar--stacked">
+      <Breadcrumbs items={breadcrumbItems} />
+      <p class="section-eyebrow">{locale === 'pt-br' ? 'Topico transversal' : 'Cross-cutting topic'}</p>
+      <h1 class="section-heading section-heading--compact">{title}</h1>
+      <p class="page-toolbar__copy">{description}</p>
+    </div>
+  </section>
+
+  <section class="section section--compact">
+    <p class="section-eyebrow">{selectionLabel}</p>
+    <div class="panel-grid panel-grid--articles">
+      {posts.map((post) => (
+        <ArticleCard post={post} />
+      ))}
+    </div>
+  </section>
+</BaseLayout>

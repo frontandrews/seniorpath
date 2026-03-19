@@ -1,0 +1,77 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import type { PathBranch, PathPillar } from '@seniorpath/content'
+
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getGuideBranchHref, getGuidePillarHref } from '../lib/guide-links'
+import { getLocalizedBranchLabel, getLocalizedPillarLabel, getPillarBreadcrumb } from '../lib/guide-taxonomy'
+import { getSiteCopy, type SiteLocale } from '../lib/site-copy'
+import ArticleCard from './ArticleCard.astro'
+import Breadcrumbs from './Breadcrumbs.astro'
+
+type BranchSection = {
+  branch: PathBranch
+  posts: CollectionEntry<'guides'>[]
+}
+
+type Props = {
+  branchSections: BranchSection[]
+  locale: SiteLocale
+  pillar: PathPillar
+}
+
+const { branchSections, locale, pillar } = Astro.props
+const copy = getSiteCopy(locale)
+const title = getLocalizedPillarLabel(pillar, locale)
+const englishHref = getGuidePillarHref(pillar.id, 'en')
+const portugueseHref = getGuidePillarHref(pillar.id, 'pt-br')
+const description =
+  locale === 'pt-br'
+    ? `Guias e ramificacoes de ${title} para estudar com mais estrutura.`
+    : `Guides and branches for ${title} so you can study with more structure.`
+const breadcrumbItems = getPillarBreadcrumb(pillar, locale)
+---
+
+<BaseLayout
+  description={description}
+  englishHref={englishHref}
+  portugueseHref={portugueseHref}
+  title={title}
+>
+  <section class="section section--compact">
+    <div class="panel page-toolbar page-toolbar--stacked">
+      <Breadcrumbs items={breadcrumbItems} />
+      <p class="section-eyebrow">{copy.learn}</p>
+      <h1 class="section-heading section-heading--compact">{title}</h1>
+      <p class="page-toolbar__copy">{description}</p>
+    </div>
+  </section>
+
+  <section class="section section--compact">
+    <div class="stack-grid">
+      {branchSections.map((section) => {
+        const branchHref = getGuideBranchHref(pillar.id, section.branch.id, locale)
+        const branchLabel = getLocalizedBranchLabel(section.branch, locale)
+        const branchSummary = section.posts[0]?.data.summary ?? section.posts[0]?.data.description
+
+        return (
+          <section class="panel guide-group">
+            <div class="section-header">
+              <div>
+                <p class="section-eyebrow">
+                  {branchHref ? <a class="article-breadcrumbs__link" href={branchHref}>{branchLabel}</a> : branchLabel}
+                </p>
+                {branchSummary ? <p class="page-toolbar__copy">{branchSummary}</p> : null}
+              </div>
+            </div>
+            <div class="panel-grid panel-grid--articles">
+              {section.posts.map((post) => (
+                <ArticleCard post={post} />
+              ))}
+            </div>
+          </section>
+        )
+      })}
+    </div>
+  </section>
+</BaseLayout>

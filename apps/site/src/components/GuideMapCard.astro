@@ -1,6 +1,5 @@
 ---
 import { getAppHref } from '../lib/app-links'
-import { getGuideHrefFromEntryId } from '../lib/guide-links'
 import type { GuideMapItem } from '../lib/guide-map'
 import { getSiteCopy } from '../lib/site-copy'
 
@@ -19,7 +18,7 @@ const copy = getSiteCopy(item.routePath.startsWith('pt-br/') ? 'pt-br' : 'en')
   <h3>{item.title}</h3>
 
   <div class="meta-list">
-    <a class="button-link button-link--primary" href={getGuideHrefFromEntryId(item.routePath)}>{copy.learn}</a>
+    <a class="button-link button-link--primary" href={`/${item.routePath}`}>{copy.learn}</a>
     {primaryDeckId ? (
       <a class="button-link" href={getAppHref(`/decks/${primaryDeckId}`)}>{copy.article.practice}</a>
     ) : null}
@@ -29,7 +28,7 @@ const copy = getSiteCopy(item.routePath.startsWith('pt-br/') ? 'pt-br' : 'en')
     <div class="guide-map-card__connections">
       <div class="guide-map-card__connection-list">
         {item.connections.map((connection) => (
-          <a class="guide-connection" href={getGuideHrefFromEntryId(connection.routePath)}>
+          <a class="guide-connection" href={`/${connection.routePath}`}>
             <span>{connection.title}</span>
           </a>
         ))}

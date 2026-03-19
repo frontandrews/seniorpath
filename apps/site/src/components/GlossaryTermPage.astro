@@ -1,0 +1,68 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
+
+import Breadcrumbs from './Breadcrumbs.astro'
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { formatEditorialDate } from '../lib/format-date'
+import { getGlossaryHrefFromEntry, getGlossaryIndexHref } from '../lib/glossary-links'
+
+type Props = {
+  term: CollectionEntry<'glossary'>
+}
+
+const { term } = Astro.props
+const { Content } = await render(term)
+const allTerms = await getCollection('glossary')
+const alternateTerm = allTerms.find(
+  (entry) => entry.data.termId === term.data.termId && entry.data.locale !== term.data.locale,
+)
+const breadcrumbItems = [
+  {
+    href: getGlossaryIndexHref(term.data.locale),
+    label: term.data.locale === 'pt-br' ? 'Glossario' : 'Glossary',
+  },
+  {
+    href: null,
+    label: term.data.title,
+  },
+]
+const englishHref =
+  term.data.locale === 'en' ? getGlossaryHrefFromEntry(term) : alternateTerm ? getGlossaryHrefFromEntry(alternateTerm) : null
+const portugueseHref =
+  term.data.locale === 'pt-br'
+    ? getGlossaryHrefFromEntry(term)
+    : alternateTerm
+      ? getGlossaryHrefFromEntry(alternateTerm)
+      : null
+const dateLocale = term.data.locale === 'pt-br' ? 'pt-BR' : 'en-US'
+---
+
+<BaseLayout
+  description={term.data.description}
+  englishHref={englishHref}
+  portugueseHref={portugueseHref}
+  title={term.data.title}
+>
+  <article class="article-shell">
+    <header class="article-header">
+      <p class="article-kicker">{term.data.locale === 'pt-br' ? 'Glossario' : 'Glossary'}</p>
+      <Breadcrumbs items={breadcrumbItems} />
+      <h1 class="article-title">{term.data.title}</h1>
+      <p class="article-excerpt">{term.data.description}</p>
+      <p class="article-author-meta">{formatEditorialDate(term.data.pubDate, dateLocale)}</p>
+    </header>
+
+    <div class="article-prose">
+      <Content />
+    </div>
+
+    {term.data.tags.length > 0 ? (
+      <div class="meta-list article-tags article-tags--end">
+        {term.data.tags.map((tag) => (
+          <span class="badge">{tag}</span>
+        ))}
+      </div>
+    ) : null}
+  </article>
+</BaseLayout>

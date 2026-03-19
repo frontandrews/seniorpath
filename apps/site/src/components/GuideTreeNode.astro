@@ -33,7 +33,11 @@ const anchorId = `guide-node-${node.key.toLowerCase().replaceAll(/[^a-z0-9]+/g, 
 >
   <div class="guide-tree__branch">
     <div class="guide-tree__label-row" id={anchorId}>
-      <p class="guide-tree__label">{translatedLabel}</p>
+      {node.href ? (
+        <a class="guide-tree__label guide-tree__label-link" href={node.href}>{translatedLabel}</a>
+      ) : (
+        <p class="guide-tree__label">{translatedLabel}</p>
+      )}
     </div>
 
     {hasPosts ? (

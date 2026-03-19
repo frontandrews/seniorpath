@@ -30,6 +30,49 @@ const guides = defineCollection({
   }),
 })
 
+const glossary = defineCollection({
+  loader: glob({
+    base: './src/content/glossary',
+    pattern: '**/*.md',
+  }),
+  schema: z.object({
+    aliases: z.array(z.string().min(1)).default([]),
+    description: z.string().min(1),
+    locale: z.string().min(1).default('en'),
+    pubDate: z.coerce.date(),
+    status: z.enum(['active', 'archived']).default('active'),
+    summary: z.string().min(1),
+    tags: z.array(z.string()).default([]),
+    termId: z.string().min(1),
+    title: z.string().min(1),
+    updatedDate: z.coerce.date().optional(),
+  }),
+})
+
+const challenges = defineCollection({
+  loader: glob({
+    base: './src/content/challenges',
+    pattern: '**/*.md',
+  }),
+  schema: z.object({
+    branchId: z.string().min(1).optional(),
+    challengeId: z.string().min(1),
+    description: z.string().min(1),
+    difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
+    locale: z.string().min(1).default('en'),
+    pillarId: z.string().min(1).optional(),
+    pubDate: z.coerce.date(),
+    relatedGuideIds: z.array(z.string()).default([]),
+    status: z.enum(['active', 'archived']).default('active'),
+    summary: z.string().min(1),
+    tags: z.array(z.string()).default([]),
+    title: z.string().min(1),
+    updatedDate: z.coerce.date().optional(),
+  }),
+})
+
 export const collections = {
+  challenges,
+  glossary,
   guides,
 }

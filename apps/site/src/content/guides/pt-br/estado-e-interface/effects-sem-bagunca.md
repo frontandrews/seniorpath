@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - state-ownership-without-confusion
-  - o-que-roda-no-cliente-e-no-servidor
+  - server-and-client-thinking-without-confusion
 tags:
   - react
   - effects

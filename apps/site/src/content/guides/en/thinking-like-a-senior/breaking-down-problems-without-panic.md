@@ -16,6 +16,7 @@ path:
 order: 10
 relationships:
   - thinking-before-you-code-in-interviews
+  - trade-offs-and-constraints-without-fake-certainty
 tags:
   - senior-thinking
   - problem-solving

@@ -16,7 +16,7 @@ path:
 order: 10
 relationships:
   - scalable-api-scenarios-without-diagram-theatre
-  - cenarios-com-ia-em-producao
+  - ai-feature-scenarios-with-product-judgment
 tags:
   - systems
   - incidents

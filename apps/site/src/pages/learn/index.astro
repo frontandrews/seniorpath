@@ -11,7 +11,7 @@ import { getSiteCopy } from '../../lib/site-copy'
 const posts = sortGuides((await getCollection('guides')).filter(
   (post) => post.data.status !== 'archived' && post.data.locale === 'en',
 ))
-const guideTree = buildGuideTree(posts)
+const guideTree = buildGuideTree(posts, 'en')
 const filterTones = [
   { dark: '#24364f', light: '#dbeafe' },
   { dark: '#2d3358', light: '#dbe4ff' },

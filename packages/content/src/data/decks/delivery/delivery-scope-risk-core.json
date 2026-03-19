@@ -21,7 +21,7 @@
         "cut or phase scope before cutting quality"
       ],
       "learnMore": "A lot of delivery problems get worse because teams pretend all three variables can stay fixed. Stronger operators make the constraint visible early and force a real decision.\n\nThat does not mean being rigid. It means protecting the quality bar for what actually ships and moving the rest into a deliberate later phase instead of burying risk inside the implementation.",
-      "learnMoreGuideId": "scope-risk-and-quality",
+      "learnMoreGuideId": "estimation-and-risk-without-fake-certainty",
       "commonTraps": [
         "defaulting to overtime as the fix",
         "pretending quality cuts are temporary when they are likely to stick"

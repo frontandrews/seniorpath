@@ -15,7 +15,7 @@ path:
   - Falhas em producao
 order: 10
 relationships:
-  - logs-e-observabilidade-sem-ruido
+  - logs-and-observability-without-noise
 tags:
   - debugging
   - production

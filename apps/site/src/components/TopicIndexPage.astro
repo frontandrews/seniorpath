@@ -1,0 +1,60 @@
+---
+import type { TopicDefinition } from '@seniorpath/content'
+
+import BaseLayout from '../layouts/BaseLayout.astro'
+import { getTopicHref, getTopicIndexHref } from '../lib/topic-links'
+import { getLocalizedTopicLabel, getLocalizedTopicSummary } from '../lib/topic-taxonomy'
+import { getSiteCopy, type SiteLocale } from '../lib/site-copy'
+
+type TopicWithCount = {
+  count: number
+  topic: TopicDefinition
+}
+
+type Props = {
+  locale: SiteLocale
+  topics: TopicWithCount[]
+}
+
+const { locale, topics } = Astro.props
+const copy = getSiteCopy(locale)
+const selectionLabel = locale === 'pt-br' ? 'Escolha um topico' : 'Select a topic'
+---
+
+<BaseLayout
+  description={copy.topicIndex.copy}
+  englishHref={getTopicIndexHref('en')}
+  portugueseHref={getTopicIndexHref('pt-br')}
+  title={copy.topicIndex.title}
+>
+  <section class="section section--compact">
+    <div class="panel page-toolbar page-toolbar--stacked">
+      <p class="section-eyebrow">{copy.topicIndex.title}</p>
+      <h1 class="section-heading section-heading--compact">{copy.topicIndex.title}</h1>
+      <p class="page-toolbar__copy">{copy.topicIndex.copy}</p>
+    </div>
+  </section>
+
+  <section class="section section--compact">
+    <p class="section-eyebrow">{selectionLabel}</p>
+    <div class="panel-grid panel-grid--articles">
+      {topics.map(({ count, topic }) => (
+        <article class="panel article-card">
+          <a class="article-card__link" href={getTopicHref(topic.id, locale)}>
+            <div class="article-card__body">
+              <p class="article-card__eyebrow">{count} {locale === 'pt-br' ? 'guias' : 'guides'}</p>
+              <h3 class="article-card__title">{getLocalizedTopicLabel(topic.id, locale)}</h3>
+              <p class="article-card__summary">{getLocalizedTopicSummary(topic.id, locale)}</p>
+            </div>
+            <div class="article-card__footer">
+              <span class="article-card__cta">
+                <span>{selectionLabel}</span>
+                <span aria-hidden="true">→</span>
+              </span>
+            </div>
+          </a>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

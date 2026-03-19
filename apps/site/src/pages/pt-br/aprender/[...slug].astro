@@ -1,19 +1,24 @@
 ---
-import type { CollectionEntry } from 'astro:content'
-import { getCollection, render } from 'astro:content'
+import { getCollection } from 'astro:content'
 
-import BaseLayout from '../../../layouts/BaseLayout.astro'
-import { formatEditorialDate } from '../../../lib/format-date'
-import { getGuideHrefFromEntryId } from '../../../lib/guide-links'
-import { translateSiteLabel, translateSiteLabels } from '../../../lib/site-labels'
-import { sortGuides } from '../../../lib/guide-tree'
-import { getSiteCopy } from '../../../lib/site-copy'
+import GuideArticlePage from '../../../components/GuideArticlePage.astro'
+import { getGuideHrefFromEntry, getGuideLegacyHrefFromEntryId } from '../../../lib/guide-links'
 
 export async function getStaticPaths() {
   const posts = await getCollection('guides')
 
   return posts
-    .filter((post) => post.data.locale === 'pt-br')
+    .filter((post) => {
+      if (post.data.locale !== 'pt-br') {
+        return false
+      }
+
+      if (post.data.status === 'archived') {
+        return true
+      }
+
+      return getGuideLegacyHrefFromEntryId(post.id) !== getGuideHrefFromEntry(post)
+    })
     .map((post) => ({
       params: {
         slug: post.id.split('/').slice(1).join('/'),
@@ -24,134 +29,13 @@ export async function getStaticPaths() {
     }))
 }
 
-type Props = {
-  post: CollectionEntry<'guides'>
-}
-
 const { post } = Astro.props
-const { Content } = await render(post)
-const allGuideEntries = await getCollection('guides')
-const allPosts = sortGuides(
-  allGuideEntries.filter(
-    (entry) => entry.data.locale === post.data.locale && entry.data.status !== 'archived',
-  ),
-)
-const englishVersion = allGuideEntries.find(
-  (entry) => entry.data.locale === 'en' && entry.data.guideId === post.data.guideId,
-)
-const englishHref = englishVersion ? getGuideHrefFromEntryId(englishVersion.id) : null
-const parentPathKey = post.data.path.slice(0, -1).join('>')
-const connectedPosts = allPosts.filter((entry) => {
-  if (entry.data.guideId === post.data.guideId) {
-    return false
-  }
+const canonicalHref = getGuideHrefFromEntry(post)
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/'
 
-  return post.data.relationships.includes(entry.data.guideId)
-})
-const relatedPosts = allPosts
-  .filter((entry) => {
-    if (entry.data.guideId === post.data.guideId) {
-      return false
-    }
-
-    if (post.data.relationships.includes(entry.data.guideId)) {
-      return false
-    }
-
-    const sharesTopic = entry.data.topic && entry.data.topic === post.data.topic
-    const sharesTag = entry.data.tags.some((tag) => post.data.tags.includes(tag))
-
-    return Boolean(sharesTopic || sharesTag)
-  })
-  .slice(0, 2)
-const siblingPosts = allPosts
-  .filter((entry) => {
-    if (entry.id === post.id) {
-      return false
-    }
-
-    return entry.data.path.slice(0, -1).join('>') === parentPathKey
-  })
-  .slice(0, 3)
-const currentIndex = allPosts.findIndex((entry) => entry.data.guideId === post.data.guideId)
-const previousPost = currentIndex >= 0 ? allPosts[currentIndex + 1] ?? null : null
-const nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] ?? null : null
-const nextReads = [...new Map(
-  [nextPost, previousPost, ...connectedPosts, ...siblingPosts, ...relatedPosts]
-    .filter((entry): entry is NonNullable<typeof entry> => Boolean(entry))
-    .filter((entry) => entry.data.guideId !== post.data.guideId)
-    .map((entry) => [entry.data.guideId, entry]),
-).values()].slice(0, 3)
-const copy = getSiteCopy(post.data.locale)
-const translatedCategory = translateSiteLabel(post.data.category, post.data.locale)
-const translatedTopic = post.data.topic ? translateSiteLabel(post.data.topic, post.data.locale) : null
-const articleKicker = translatedTopic && translatedTopic !== translatedCategory
-  ? `${translatedCategory} / ${translatedTopic}`
-  : translatedCategory
-const articlePath = translateSiteLabels(
-  post.data.path[0] === post.data.category ? post.data.path.slice(1) : post.data.path,
-  post.data.locale,
-)
-const translatedTags = translateSiteLabels(post.data.tags, post.data.locale)
+if (post.data.status !== 'archived' && canonicalHref !== currentPath) {
+  return Astro.redirect(canonicalHref, 301)
+}
 ---
 
-<BaseLayout
-  description={post.data.description}
-  englishHref={englishHref}
-  title={post.data.title}
->
-  <article class="article-shell">
-    <header class="article-header">
-      <p class="article-kicker">{articleKicker}</p>
-      {articlePath.length > 0 ? <p class="article-path">{articlePath.join(' / ')}</p> : null}
-      <h1 class="article-title">{post.data.title}</h1>
-      <p class="article-excerpt">{post.data.description}</p>
-      <div class="article-author-row">
-        <img alt="Andrews Ribeiro" class="article-author-avatar" height="48" loading="lazy" src="/andrews.jpg" width="48" />
-        <div class="article-author-copy">
-          <p class="article-author-name">Andrews Ribeiro</p>
-          <p class="article-author-meta">
-            {formatEditorialDate(post.data.pubDate, 'pt-BR')}
-          </p>
-          {post.data.updatedDate ? (
-            <p class="article-author-meta article-author-meta--updated">
-              {copy.article.updatedPrefix} {formatEditorialDate(post.data.updatedDate, 'pt-BR', {
-                month: 'short',
-              })}
-            </p>
-          ) : null}
-        </div>
-      </div>
-    </header>
-
-    <div class="article-prose">
-      <Content />
-    </div>
-
-    {post.data.tags.length > 0 ? (
-      <div class="meta-list article-tags article-tags--end">
-        {translatedTags.map((tag) => (
-          <span class="badge">{tag}</span>
-        ))}
-      </div>
-    ) : null}
-
-    {nextReads.length > 0 ? (
-      <section class="article-section">
-        <div class="section-header">
-          <div>
-            <h2 class="section-heading section-heading--compact">{copy.article.nextReads}</h2>
-          </div>
-        </div>
-        <div class="panel-grid panel-grid--next-reads">
-          {nextReads.map((entry) => (
-            <a class="panel next-read-card" href={getGuideHrefFromEntryId(entry.id)}>
-              <h3>{entry.data.title}</h3>
-              <p class="article-excerpt">{entry.data.description}</p>
-            </a>
-          ))}
-        </div>
-      </section>
-    ) : null}
-  </article>
-</BaseLayout>
+<GuideArticlePage post={post} />

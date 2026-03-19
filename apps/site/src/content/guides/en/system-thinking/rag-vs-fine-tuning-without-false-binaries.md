@@ -1,19 +1,21 @@
 ---
 title: RAG vs Fine-Tuning Without False Binaries
-description: A practical way to explain retrieval and fine-tuning based on the problem you are solving, not on hype.
-summary: Separate knowledge access from behavior change before you pick the system shape.
+description: How to decide between retrieval and fine-tuning by looking at the actual failure mode instead of the hype cycle.
+summary: Before you pick the technique, find out whether the problem is missing context or bad behavior even with context.
 guideId: rag-vs-fine-tuning
 locale: en
-status: archived
-pubDate: 2026-03-17
+status: active
+pillarId: system-thinking
+branchId: ai-systems-and-retrieval
+pubDate: 2026-03-18
 category: System Thinking
-topic: AI Engineering
+topic: AI Systems and Retrieval
 path:
   - System Thinking
   - AI Systems and Retrieval
 order: 10
 relationships:
-  - scope-risk-and-quality
+  - api-and-service-design-with-clear-boundaries
 tags:
   - ai
   - rag
@@ -23,43 +25,71 @@ relatedDeckIds:
   - ai-engineering-rag-evals-core
 ---
 
-The weak version of this answer sounds like a tooling preference.
+## The problem
 
-The stronger version sounds like a systems decision.
+A lot of RAG versus fine-tuning discussions turn into tool tribalism.
 
-## Start with the failure mode
+It starts sounding like you need to choose a side before you even understand what kind of failure the system has.
 
-If the model mostly fails because it does not have the right context, that points toward retrieval.
+That makes the decision ideological instead of technical.
 
-If the model has the context but still behaves the wrong way again and again, that points more toward changing the model behavior itself.
+## Mental model
 
-That is the first split to make.
+The key split is not the technology label.
 
-## When RAG is the better answer
+It is the failure mode:
 
-RAG is usually the better default when:
+- the model does not have the right context at the right time
+- the model has context and still behaves badly in the same way
 
-- the knowledge changes often
-- the data is internal or proprietary
-- citations or traceability matter
-- you want a cheaper control point for iteration
+That split already improves the conversation.
 
-The main advantage is operational.
+## Breaking it down
 
-You can improve retrieval, chunking, ranking, or prompt composition without retraining a model every time the source material changes.
+Before choosing, ask:
 
-## When fine-tuning starts to pay off
+1. is the problem missing or stale knowledge?
+2. or is the behavior still wrong even with good context?
+3. do I need a control point that is easier to update and inspect?
+4. is the operational cost of fine-tuning justified here?
 
-Fine-tuning becomes more attractive when:
+Those questions move the decision toward the real system problem.
 
-- the model keeps failing in the same patterned way
-- you need stable output style or workflow behavior
-- prompt engineering and retrieval are no longer moving the needle enough
+## Simple example
 
-The cost is higher, so the reason needs to be stronger.
+Imagine an internal assistant that answers questions about company policy.
 
-## Strong framing
+If it fails because it did not receive the latest document, the problem looks much more like retrieval than fine-tuning.
 
-> I choose RAG when the main problem is access to the right knowledge at the right time. I choose fine-tuning when the model behavior itself needs to shift in a repeatable way. Retrieval is usually the faster and more inspectable control point, so I treat it as the default unless the failure pattern proves otherwise.
+Now imagine the model receives the right context and still replies in the wrong format or ignores important instructions over and over.
 
-That answer is short, concrete, and not ideological.
+That starts to look more like a behavior problem than a knowledge access problem.
+
+## Common mistakes
+
+- treating RAG and fine-tuning as if one cancels the other
+- reaching for fine-tuning too early without proving retrieval is already good
+- calling every error a context problem
+- ignoring the operational cost of evaluation, iteration, and maintenance
+
+## How a senior thinks
+
+A senior engineer starts from the observable failure:
+
+> If the problem is getting the right knowledge at the right time, I want retrieval first. If the problem is repeated behavior even with strong context, then changing the model behavior becomes more relevant.
+
+That keeps the answer grounded.
+
+## What the interviewer wants to see
+
+Interviewers usually want to know:
+
+- you can separate knowledge access from behavior change
+- you understand why retrieval is often the cheaper default
+- you know when a repeated behavior problem points past prompt and retrieval tuning
+
+That sounds much stronger than tool preference.
+
+> Retrieval and fine-tuning solve different problems. The failure mode should decide the first move.
+
+> If you cannot name the failure clearly, the architecture choice is still too early.
