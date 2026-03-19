@@ -1,5 +1,5 @@
 ---
-import type { GiscusConfig } from '../lib/giscus'
+import type { GiscusConfig } from '@/lib/giscus'
 
 type Props = {
   config: GiscusConfig
@@ -8,7 +8,7 @@ type Props = {
 const { config } = Astro.props
 ---
 
-<div class="giscus-comments">
+<div class="giscus-comments pt-1.5">
   <script
     async
     crossorigin="anonymous"

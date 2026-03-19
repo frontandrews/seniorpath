@@ -1,0 +1,127 @@
+:root {
+  color-scheme: dark;
+
+  --color-prettylights-syntax-comment: rgba(224, 224, 255, 0.5);
+  --color-prettylights-syntax-constant: #7fb8ff;
+  --color-prettylights-syntax-entity: #8fb4ff;
+  --color-prettylights-syntax-storage-modifier-import: #e0e0ff;
+  --color-prettylights-syntax-entity-tag: #7c7cff;
+  --color-prettylights-syntax-keyword: #a8b8ff;
+  --color-prettylights-syntax-string: #9bd3a8;
+  --color-prettylights-syntax-variable: #ffd580;
+  --color-prettylights-syntax-brackethighlighter-unmatched: #ff7b72;
+  --color-prettylights-syntax-invalid-illegal-text: #0b1120;
+  --color-prettylights-syntax-invalid-illegal-bg: #ff7b72;
+  --color-prettylights-syntax-carriage-return-text: #0b1120;
+  --color-prettylights-syntax-carriage-return-bg: #ff7b72;
+  --color-prettylights-syntax-string-regexp: #56d4dd;
+  --color-prettylights-syntax-markup-list: #f2cc60;
+  --color-prettylights-syntax-markup-heading: #a8b8ff;
+  --color-prettylights-syntax-markup-italic: #e0e0ff;
+  --color-prettylights-syntax-markup-bold: #e0e0ff;
+  --color-prettylights-syntax-markup-deleted-text: #ffd7d5;
+  --color-prettylights-syntax-markup-deleted-bg: #51202a;
+  --color-prettylights-syntax-markup-inserted-text: #c7ffd8;
+  --color-prettylights-syntax-markup-inserted-bg: #163a28;
+  --color-prettylights-syntax-markup-changed-text: #ffe7b8;
+  --color-prettylights-syntax-markup-changed-bg: #4c3a12;
+  --color-prettylights-syntax-markup-ignored-text: #e0e0ff;
+  --color-prettylights-syntax-markup-ignored-bg: #0f3460;
+  --color-prettylights-syntax-meta-diff-range: #c4b5fd;
+  --color-prettylights-syntax-brackethighlighter-angle: rgba(224, 224, 255, 0.7);
+  --color-prettylights-syntax-sublimelinter-gutter-mark: rgba(224, 224, 255, 0.45);
+  --color-prettylights-syntax-constant-other-reference-link: #9bd3a8;
+
+  --color-fg-default: #e0e0ff;
+  --color-fg-muted: rgba(224, 224, 255, 0.72);
+  --color-fg-subtle: rgba(224, 224, 255, 0.52);
+  --color-canvas-default: #0b1120;
+  --color-canvas-overlay: #16213e;
+  --color-canvas-inset: #0d1527;
+  --color-canvas-subtle: #111b33;
+  --color-border-default: rgba(124, 124, 255, 0.16);
+  --color-border-muted: rgba(124, 124, 255, 0.1);
+  --color-neutral-muted: rgba(124, 124, 255, 0.12);
+  --color-accent-fg: #a8b8ff;
+  --color-accent-emphasis: #7c7cff;
+  --color-accent-muted: rgba(124, 124, 255, 0.24);
+  --color-accent-subtle: rgba(124, 124, 255, 0.14);
+  --color-success-fg: #52b788;
+  --color-attention-fg: #f2cc60;
+  --color-danger-fg: #ff7b72;
+  --color-done-fg: #c4b5fd;
+
+  --color-btn-text: #e0e0ff;
+  --color-btn-bg: #16213e;
+  --color-btn-border: rgba(124, 124, 255, 0.16);
+  --color-btn-shadow: transparent;
+  --color-btn-inset-shadow: transparent;
+  --color-btn-hover-bg: #1a2848;
+  --color-btn-hover-border: rgba(124, 124, 255, 0.28);
+  --color-btn-active-bg: #13203b;
+  --color-btn-active-border: rgba(124, 124, 255, 0.2);
+  --color-btn-selected-bg: #13203b;
+  --color-btn-primary-text: #f5f7ff;
+  --color-btn-primary-bg: #0f3460;
+  --color-btn-primary-border: rgba(124, 124, 255, 0.32);
+  --color-btn-primary-shadow: transparent;
+  --color-btn-primary-inset-shadow: transparent;
+  --color-btn-primary-hover-bg: #14457b;
+  --color-btn-primary-hover-border: rgba(168, 184, 255, 0.38);
+  --color-btn-primary-selected-bg: #0d2f56;
+  --color-btn-primary-disabled-text: rgba(245, 247, 255, 0.7);
+  --color-btn-primary-disabled-bg: rgba(15, 52, 96, 0.6);
+  --color-btn-primary-disabled-border: transparent;
+  --color-btn-outline-text: #a8b8ff;
+  --color-btn-outline-hover-text: #f5f7ff;
+  --color-btn-outline-hover-bg: #1a2848;
+  --color-btn-outline-hover-border: rgba(124, 124, 255, 0.28);
+  --color-btn-outline-selected-text: #f5f7ff;
+  --color-btn-outline-selected-bg: #13203b;
+  --color-btn-outline-disabled-text: rgba(168, 184, 255, 0.45);
+  --color-btn-outline-disabled-bg: #16213e;
+  --color-btn-outline-disabled-border: rgba(124, 124, 255, 0.1);
+  --color-btn-danger-text: #ffb4ae;
+  --color-btn-danger-hover-text: #fff5f5;
+  --color-btn-danger-hover-bg: #5d1f2a;
+  --color-btn-danger-hover-border: rgba(255, 123, 114, 0.32);
+  --color-btn-danger-selected-text: #fff5f5;
+  --color-btn-danger-selected-bg: #4a1a23;
+  --color-btn-danger-disabled-text: rgba(255, 180, 174, 0.45);
+  --color-btn-danger-disabled-bg: #16213e;
+  --color-btn-danger-disabled-border: rgba(124, 124, 255, 0.1);
+
+  --color-input-bg: rgba(11, 17, 32, 0.78);
+  --color-input-border: rgba(124, 124, 255, 0.16);
+  --color-input-shadow: transparent;
+  --color-input-disabled-bg: rgba(22, 33, 62, 0.56);
+  --color-input-placeholder-text: rgba(224, 224, 255, 0.4);
+
+  --color-header-text: #e0e0ff;
+  --color-header-bg: #0b1120;
+  --color-header-divider: rgba(124, 124, 255, 0.14);
+  --color-header-logo: #a8b8ff;
+  --color-header-search-bg: rgba(11, 17, 32, 0.78);
+  --color-header-search-border: rgba(124, 124, 255, 0.16);
+}
+
+html,
+body {
+  background: #0b1120 !important;
+  color: #e0e0ff !important;
+  font-family:
+    "Helvetica Neue",
+    "SF Pro Display",
+    Arial,
+    Roboto,
+    system-ui,
+    sans-serif !important;
+}
+
+a {
+  color: #a8b8ff !important;
+}
+
+main {
+  background: #0b1120;
+}

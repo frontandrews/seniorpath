@@ -1,38 +1,61 @@
 ---
 import type { CollectionEntry } from 'astro:content'
-import { getGuideHrefFromEntry } from '../lib/guide-links'
+import { getGuideHrefFromEntry } from '@/lib/guide-links'
+import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
+import {
+  articleCardArticleVariants,
+  articleCardLinkVariants,
+  articleCardTitleVariants,
+  eyebrowVariants,
+} from '@/lib/ui-variants'
+import InlineArrowCta from '@/components/ui/InlineArrowCta.astro'
 
 type Props = {
   categoryLabel?: string
   className?: string
   eyebrow?: string
+  eyebrowVariant?: 'caps' | 'sentence'
   meta?: string
   post: CollectionEntry<'guides'>
   subtitle?: string
-  variant?: 'minimal' | 'rich'
+  variant?: 'linear' | 'minimal' | 'rich'
 }
 
 const {
   categoryLabel,
   className,
   eyebrow,
+  eyebrowVariant = 'caps',
   meta,
   post,
   subtitle = post.data.description,
   variant = 'minimal',
 } = Astro.props
 const href = getGuideHrefFromEntry(post)
+const ctaLabel = post.data.locale === 'pt-br' ? 'Ler mais' : 'Learn more'
 ---
 
 <article
-  class:list={['article-card', `article-card--${variant}`, className]}
+  class={cn(articleCardArticleVariants({ variant }), className)}
   data-guide-card-category={categoryLabel}
   data-guide-post={post.data.guideId}
 >
-  <a class="article-card__link" href={href}>
-    {eyebrow ? <p class="article-card__eyebrow">{eyebrow}</p> : null}
-    <h3 class="article-card__title">{post.data.title}</h3>
-    {variant === 'rich' && subtitle ? <p class="article-card__subtitle">{subtitle}</p> : null}
-    {variant === 'rich' && meta ? <p class="article-card__meta">{meta}</p> : null}
+  <a class={articleCardLinkVariants({ variant })} href={href}>
+    {eyebrow ? (
+      <p class={eyebrowVariants({ tone: eyebrowVariant })}>
+        {eyebrow}
+      </p>
+    ) : null}
+    <h3 class={articleCardTitleVariants({ variant })} data-card-title>
+      {post.data.title}
+    </h3>
+    {(variant === 'linear' || variant === 'rich') && subtitle ? (
+      <p class={ui.cardDescription}>{subtitle}</p>
+    ) : null}
+    {variant === 'linear' ? <InlineArrowCta label={ctaLabel} /> : null}
+    {variant === 'rich' && meta ? (
+      <p class={ui.cardMetaCaps}>{meta}</p>
+    ) : null}
   </a>
 </article>

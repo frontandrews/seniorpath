@@ -1,4 +1,4 @@
-import { getSiteLocale, type SiteLocale } from './site-copy'
+import { getSiteLocale, type SiteLocale } from '@/lib/site-copy'
 
 const PT_BR_LABELS: Record<string, string> = {
   'Thinking Like a Senior': 'Pensar como senior',

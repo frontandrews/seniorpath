@@ -1,5 +1,7 @@
 ---
-import type { GuideMapItem } from '../lib/guide-map'
+import type { GuideMapItem } from '@/lib/guide-map'
+import { ui } from '@/lib/ui'
+import LinkCard from '@/components/ui/LinkCard.astro'
 
 type Props = {
   item: GuideMapItem
@@ -8,20 +10,23 @@ type Props = {
 const { item } = Astro.props
 ---
 
-<article class="guide-map-card">
-  <p class="section-eyebrow">{item.path.join(' / ')}</p>
+<article class="grid h-full gap-3">
+  <p class={ui.eyebrow}>{item.path.join(' / ')}</p>
 
-  <a class="article-card__link" href={`/${item.routePath}`}>
-    <h3>{item.title}</h3>
-  </a>
+  <LinkCard
+    href={`/${item.routePath}`}
+    showArrow={false}
+    title={item.title}
+    titleClass="m-0 text-base font-semibold leading-[1.12]"
+    titleTag="h3"
+    variant="ghost"
+  />
 
   {item.connections.length > 0 ? (
-    <div class="guide-map-card__connections">
-      <div class="guide-map-card__connection-list">
+    <div class="mt-auto grid gap-2 border-t border-site-line pt-2">
+      <div class="grid gap-2">
         {item.connections.map((connection) => (
-          <a class="guide-connection" href={`/${connection.routePath}`}>
-            <span>{connection.title}</span>
-          </a>
+          <LinkCard href={`/${connection.routePath}`} showArrow={false} title={connection.title} titleTag="span" variant="compact" />
         ))}
       </div>
     </div>

@@ -1,10 +1,14 @@
 ---
 import type { TopicDefinition } from '@seniorpath/content'
 
-import BaseLayout from '../layouts/BaseLayout.astro'
-import { getTopicHref, getTopicIndexHref } from '../lib/topic-links'
-import { getLocalizedTopicLabel } from '../lib/topic-taxonomy'
-import { getSiteCopy, type SiteLocale } from '../lib/site-copy'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import PageHeader from '@/components/ui/PageHeader.astro'
+import SectionBlock from '@/components/ui/SectionBlock.astro'
+import LinkCard from '@/components/ui/LinkCard.astro'
+import { getTopicHref, getTopicIndexHref } from '@/lib/topic-links'
+import { getLocalizedTopicLabel } from '@/lib/topic-taxonomy'
+import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
 
 type TopicWithCount = {
   count: number
@@ -27,24 +31,20 @@ const selectionLabel = locale === 'pt-br' ? 'Escolha um topico' : 'Select a topi
   portugueseHref={getTopicIndexHref('pt-br')}
   title={copy.topicIndex.title}
 >
-  <section class="section section--compact">
-    <div class="panel page-toolbar page-toolbar--stacked">
-      <p class="section-eyebrow">{copy.topicIndex.title}</p>
-      <h1 class="section-heading section-heading--compact">{copy.topicIndex.title}</h1>
-      <p class="page-toolbar__copy">{copy.topicIndex.copy}</p>
-    </div>
-  </section>
+  <PageHeader description={copy.topicIndex.copy} title={copy.topicIndex.title} />
 
-  <section class="section section--compact">
-    <p class="section-eyebrow">{selectionLabel}</p>
-    <div class="panel-grid panel-grid--articles">
+  <SectionBlock bodyClass={ui.cardsGrid} eyebrow={selectionLabel}>
       {topics.map(({ topic }) => (
-        <article class="article-card">
-          <a class="article-card__link" href={getTopicHref(topic.id, locale)}>
-            <h3 class="article-card__title">{getLocalizedTopicLabel(topic.id, locale)}</h3>
-          </a>
+        <article class="group h-full">
+          <LinkCard
+            href={getTopicHref(topic.id, locale)}
+            showArrow={false}
+            title={getLocalizedTopicLabel(topic.id, locale)}
+            titleClass="m-0 text-base font-semibold leading-[1.32]"
+            titleTag="h3"
+            variant="ghost"
+          />
         </article>
       ))}
-    </div>
-  </section>
+  </SectionBlock>
 </BaseLayout>

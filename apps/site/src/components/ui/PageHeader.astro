@@ -1,0 +1,37 @@
+---
+import Breadcrumbs from '@/components/Breadcrumbs.astro'
+import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
+
+type BreadcrumbItem = {
+  href: string | null
+  label: string
+}
+
+type Props = {
+  breadcrumbs?: BreadcrumbItem[]
+  className?: string
+  description: string
+  sectionClass?: string
+  title: string
+}
+
+const {
+  breadcrumbs = [],
+  className = '',
+  description,
+  sectionClass = ui.compactSection,
+  title,
+} = Astro.props
+---
+
+<section class={sectionClass}>
+  <div class={cn(ui.toolbar, className)}>
+    <div class={ui.toolbarIntro}>
+      {breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
+      <h1 class={ui.headingCompact}>{title}</h1>
+      <p class={ui.bodyCopy}>{description}</p>
+      <slot />
+    </div>
+  </div>
+</section>

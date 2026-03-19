@@ -2,12 +2,14 @@
 import type { CollectionEntry } from 'astro:content'
 import type { PathBranch, PathPillar } from '@seniorpath/content'
 
-import BaseLayout from '../layouts/BaseLayout.astro'
-import { getGuideBranchHref, getGuidePillarHref } from '../lib/guide-links'
-import { getLocalizedBranchLabel, getLocalizedPillarLabel, getPillarBreadcrumb } from '../lib/guide-taxonomy'
-import { getSiteCopy, type SiteLocale } from '../lib/site-copy'
-import ArticleCard from './ArticleCard.astro'
-import Breadcrumbs from './Breadcrumbs.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { getGuideBranchHref, getGuidePillarHref } from '@/lib/guide-links'
+import { getLocalizedBranchLabel, getLocalizedPillarLabel, getPillarBreadcrumb } from '@/lib/guide-taxonomy'
+import type { SiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+import ArticleCard from '@/components/ArticleCard.astro'
+import PageHeader from '@/components/ui/PageHeader.astro'
+import PanelSection from '@/components/ui/PanelSection.astro'
 
 type BranchSection = {
   branch: PathBranch
@@ -21,7 +23,6 @@ type Props = {
 }
 
 const { branchSections, locale, pillar } = Astro.props
-const copy = getSiteCopy(locale)
 const title = getLocalizedPillarLabel(pillar, locale)
 const englishHref = getGuidePillarHref(pillar.id, 'en')
 const portugueseHref = getGuidePillarHref(pillar.id, 'pt-br')
@@ -38,38 +39,21 @@ const breadcrumbItems = getPillarBreadcrumb(pillar, locale)
   portugueseHref={portugueseHref}
   title={title}
 >
-  <section class="section section--compact">
-    <div class="panel page-toolbar page-toolbar--stacked">
-      <Breadcrumbs items={breadcrumbItems} />
-      <p class="section-eyebrow">{copy.learn}</p>
-      <h1 class="section-heading section-heading--compact">{title}</h1>
-      <p class="page-toolbar__copy">{description}</p>
-    </div>
-  </section>
+  <PageHeader breadcrumbs={breadcrumbItems} description={description} title={title} />
 
-  <section class="section section--compact">
-    <div class="stack-grid">
+  <section class={ui.compactSection}>
+    <div class={ui.stackGrid}>
       {branchSections.map((section) => {
         const branchHref = getGuideBranchHref(pillar.id, section.branch.id, locale)
         const branchLabel = getLocalizedBranchLabel(section.branch, locale)
         const branchSummary = section.posts[0]?.data.summary ?? section.posts[0]?.data.description
 
         return (
-          <section class="panel guide-group">
-            <div class="section-header">
-              <div>
-                <p class="section-eyebrow">
-                  {branchHref ? <a class="article-breadcrumbs__link" href={branchHref}>{branchLabel}</a> : branchLabel}
-                </p>
-                {branchSummary ? <p class="page-toolbar__copy">{branchSummary}</p> : null}
-              </div>
-            </div>
-            <div class="panel-grid panel-grid--articles">
+          <PanelSection bodyClass={ui.cardsGrid} description={branchSummary} href={branchHref ?? undefined} title={branchLabel}>
               {section.posts.map((post) => (
                 <ArticleCard post={post} />
               ))}
-            </div>
-          </section>
+          </PanelSection>
         )
       })}
     </div>

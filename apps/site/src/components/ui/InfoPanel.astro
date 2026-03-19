@@ -1,0 +1,16 @@
+---
+import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  body?: string
+  className?: string
+}
+
+const { body = '', className = '' } = Astro.props
+---
+
+<div class={cn(ui.panel, 'p-5', className)}>
+  {body ? <p class={ui.bodyCopy}>{body}</p> : null}
+  <slot />
+</div>

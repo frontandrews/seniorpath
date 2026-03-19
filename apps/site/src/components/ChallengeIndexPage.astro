@@ -1,7 +1,10 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'
-import { getChallengeIndexHref } from '../lib/challenge-links'
-import { getSiteCopy, type SiteLocale } from '../lib/site-copy'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { getChallengeIndexHref } from '@/lib/challenge-links'
+import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
+import CompactSection from '@/components/ui/CompactSection.astro'
+import InfoPanel from '@/components/ui/InfoPanel.astro'
+import PageHeader from '@/components/ui/PageHeader.astro'
 
 type Props = {
   locale: SiteLocale
@@ -17,21 +20,13 @@ const copy = getSiteCopy(locale)
   portugueseHref={getChallengeIndexHref('pt-br')}
   title={copy.challengeIndex.title}
 >
-  <section class="section section--compact">
-    <div class="panel page-toolbar page-toolbar--stacked">
-      <p class="section-eyebrow">{copy.challengeIndex.title}</p>
-      <h1 class="section-heading section-heading--compact">{copy.challengeIndex.title}</h1>
-      <p class="page-toolbar__copy">{copy.challengeIndex.copy}</p>
-    </div>
-  </section>
+  <PageHeader description={copy.challengeIndex.copy} title={copy.challengeIndex.title} />
 
-  <section class="section section--compact">
-    <div class="panel">
-      <p class="page-toolbar__copy">
-        {locale === 'pt-br'
-          ? 'A estrutura ja esta reservada para walkthroughs e problemas resolvidos. Ainda nao ha desafios publicados aqui.'
-          : 'The structure is reserved for walkthroughs and worked problems. No challenges are published here yet.'}
-      </p>
-    </div>
-  </section>
+  <CompactSection>
+    <InfoPanel
+      body={locale === 'pt-br'
+        ? 'A estrutura ja esta reservada para walkthroughs e problemas resolvidos. Ainda nao ha desafios publicados aqui.'
+        : 'The structure is reserved for walkthroughs and worked problems. No challenges are published here yet.'}
+    />
+  </CompactSection>
 </BaseLayout>

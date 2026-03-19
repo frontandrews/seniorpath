@@ -1,47 +1,37 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro'
+import StaticArticlePage from '@/components/ui/StaticArticlePage.astro'
+import { getTermsHref } from '@/lib/terms-links'
 ---
 
-<BaseLayout
+<StaticArticlePage
   description="Terms and conditions for using SeniorPath."
+  englishHref={getTermsHref('en')}
+  kicker="Legal"
+  portugueseHref={getTermsHref('pt-br')}
   title="Terms and Conditions"
 >
-  <section class="section">
-    <article class="article-shell">
-      <header class="article-header">
-        <p class="article-kicker">Legal</p>
-        <h1 class="article-title">Terms and Conditions</h1>
-        <p class="article-excerpt">
-          These terms govern access to the SeniorPath website, its editorial roadmaps, guides, topics, and glossary.
-        </p>
-      </header>
+  <h2>Use of the site</h2>
+  <p>
+    You may browse, read, and use SeniorPath for personal and professional learning purposes. You may not misuse
+    the service, interfere with its operation, or reproduce paid or proprietary material beyond what applicable
+    law allows.
+  </p>
 
-      <div class="article-prose">
-        <h2>Use of the site</h2>
-        <p>
-          You may browse, read, and use SeniorPath for personal and professional learning purposes. You may not misuse
-          the service, interfere with its operation, or reproduce paid or proprietary material beyond what applicable
-          law allows.
-        </p>
+  <h2>Content</h2>
+  <p>
+    The guides, maps, and reference material are provided for educational purposes. They reflect editorial
+    judgment and may evolve over time as content is updated or refined.
+  </p>
 
-        <h2>Content</h2>
-        <p>
-          The guides, maps, and reference material are provided for educational purposes. They reflect editorial
-          judgment and may evolve over time as content is updated or refined.
-        </p>
+  <h2>Availability</h2>
+  <p>
+    SeniorPath may change, suspend, or remove parts of the experience at any time, including content structure,
+    features, and navigation.
+  </p>
 
-        <h2>Availability</h2>
-        <p>
-          SeniorPath may change, suspend, or remove parts of the experience at any time, including content structure,
-          features, and navigation.
-        </p>
-
-        <h2>Liability</h2>
-        <p>
-          The service is provided on an as-is basis. SeniorPath is not liable for indirect damages, business loss, or
-          outcomes resulting from how content is interpreted or applied.
-        </p>
-      </div>
-    </article>
-  </section>
-</BaseLayout>
+  <h2>Liability</h2>
+  <p>
+    The service is provided on an as-is basis. SeniorPath is not liable for indirect damages, business loss, or
+    outcomes resulting from how content is interpreted or applied.
+  </p>
+</StaticArticlePage>

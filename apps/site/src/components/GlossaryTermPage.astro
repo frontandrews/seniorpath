@@ -2,10 +2,11 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 
-import Breadcrumbs from './Breadcrumbs.astro'
-import BaseLayout from '../layouts/BaseLayout.astro'
-import { formatEditorialDate } from '../lib/format-date'
-import { getGlossaryHrefFromEntry, getGlossaryIndexHref } from '../lib/glossary-links'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { formatEditorialDate } from '@/lib/format-date'
+import { getGlossaryHrefFromEntry, getGlossaryIndexHref } from '@/lib/glossary-links'
+import { ui } from '@/lib/ui'
+import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
 
 type Props = {
   term: CollectionEntry<'glossary'>
@@ -44,23 +45,22 @@ const dateLocale = term.data.locale === 'pt-br' ? 'pt-BR' : 'en-US'
   portugueseHref={portugueseHref}
   title={term.data.title}
 >
-  <article class="article-shell">
-    <header class="article-header">
-      <p class="article-kicker">{term.data.locale === 'pt-br' ? 'Glossario' : 'Glossary'}</p>
-      <Breadcrumbs items={breadcrumbItems} />
-      <h1 class="article-title">{term.data.title}</h1>
-      <p class="article-excerpt">{term.data.description}</p>
-      <p class="article-author-meta">{formatEditorialDate(term.data.pubDate, dateLocale)}</p>
-    </header>
+  <article class={ui.articleShell}>
+    <ContentArticleHeader
+      breadcrumbs={breadcrumbItems}
+      description={term.data.description}
+      meta={formatEditorialDate(term.data.pubDate, dateLocale)}
+      title={term.data.title}
+    />
 
     <div class="article-prose">
       <Content />
     </div>
 
     {term.data.tags.length > 0 ? (
-      <div class="meta-list article-tags article-tags--end">
+      <div class={ui.articleTagList}>
         {term.data.tags.map((tag) => (
-          <span class="badge">{tag}</span>
+          <span class={ui.badge}>{tag}</span>
         ))}
       </div>
     ) : null}

@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  description: string
+  englishHref?: string | null
+  kicker?: string
+  portugueseHref?: string | null
+  title: string
+}
+
+const {
+  description,
+  englishHref = null,
+  kicker,
+  portugueseHref = null,
+  title,
+} = Astro.props
+---
+
+<BaseLayout
+  description={description}
+  englishHref={englishHref}
+  portugueseHref={portugueseHref}
+  title={title}
+>
+  <section class={cn(ui.section)}>
+    <article class={cn(ui.articleShell)}>
+      <header class={cn(ui.articleHeader)}>
+        {kicker ? <p class={ui.articleKicker}>{kicker}</p> : null}
+        <h1 class={ui.articleTitle}>{title}</h1>
+        <p class={ui.articleExcerpt}>{description}</p>
+      </header>
+
+      <div class="article-prose">
+        <slot />
+      </div>
+    </article>
+  </section>
+</BaseLayout>

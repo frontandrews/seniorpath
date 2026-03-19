@@ -1,0 +1,18 @@
+export const uiLayout = {
+  articleHeader: 'mx-auto mb-7 max-w-[52rem] border-b border-article-rule pb-5',
+  articleSection: 'mx-auto mt-8 max-w-[52rem] border-t border-article-rule pt-8',
+  articleShell: 'mx-auto mt-5 w-full max-w-[52rem] pb-11',
+  articleTagList: 'mx-auto mt-4 flex max-w-[52rem] flex-wrap gap-2.5 border-t border-article-rule pt-4',
+  cardsGrid: 'grid gap-4 md:grid-cols-2',
+  compactSection: 'mx-auto mt-4 w-full max-w-[52rem]',
+  frame: 'mx-auto w-[min(72rem,calc(100vw-2rem))] md:w-[min(72rem,calc(100vw-3rem))]',
+  linearList: 'grid gap-0',
+  metaList: 'flex flex-wrap gap-2.5',
+  nextReadsGrid: 'grid gap-4 md:grid-cols-3',
+  pageShell: 'mx-auto min-h-screen max-w-[58rem] px-4 pb-16 md:px-6',
+  section: 'mt-6',
+  sectionHeader: 'mb-3 flex items-center justify-between gap-4',
+  stackGrid: 'grid gap-4',
+  titleCardList: 'grid gap-4',
+  toolbarIntro: 'flex flex-col items-start gap-1 text-left',
+} as const

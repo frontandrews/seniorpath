@@ -1,0 +1,46 @@
+---
+import ArrowRightIcon from '@/components/ui/icons/ArrowRightIcon.astro'
+import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
+import { linkCardHeaderVariants, linkCardVariants } from '@/lib/ui-variants'
+
+type Props = {
+  className?: string
+  description?: string
+  href: string
+  meta?: string
+  showArrow?: boolean
+  title: string
+  titleClass?: string
+  titleTag?: 'h2' | 'h3' | 'span'
+  variant?: 'compact' | 'ghost' | 'panel'
+}
+
+const {
+  className,
+  description,
+  href,
+  meta,
+  showArrow = true,
+  title,
+  titleClass,
+  titleTag = 'h2',
+  variant = 'panel',
+} = Astro.props
+
+const HeadingTag = titleTag
+---
+
+<a class={cn(linkCardVariants({ variant }), className)} href={href}>
+  <div class="grid gap-2">
+    <div class={linkCardHeaderVariants({ showArrow })}>
+      <HeadingTag class={cn(ui.linkCardTitle, titleClass)}>{title}</HeadingTag>
+      {showArrow ? (
+        <ArrowRightIcon className="size-4 shrink-0 text-site-ink-muted transition-colors duration-150 group-hover:text-site-link-hover group-focus-within:text-site-link-hover" />
+      ) : null}
+    </div>
+    {description ? <p class={ui.cardDescription}>{description}</p> : null}
+    {meta ? <p class={ui.cardMeta}>{meta}</p> : null}
+    <slot />
+  </div>
+</a>

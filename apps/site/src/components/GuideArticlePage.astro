@@ -2,24 +2,29 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 
-import BaseLayout from '../layouts/BaseLayout.astro'
-import { getGuideEditorialContext } from '../lib/editorial-roadmaps'
-import { formatEditorialDate } from '../lib/format-date'
-import { getGiscusConfig } from '../lib/giscus'
-import { getGuideHrefFromEntry } from '../lib/guide-links'
-import { getGuideBreadcrumb } from '../lib/guide-taxonomy'
-import { translateSiteLabels } from '../lib/site-labels'
-import { sortGuides } from '../lib/guide-tree'
-import { getLocalizedGuideTopics } from '../lib/topic-taxonomy'
-import { getSiteCopy } from '../lib/site-copy'
-import Breadcrumbs from './Breadcrumbs.astro'
-import GiscusComments from './GiscusComments.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { getGuideEditorialContext } from '@/lib/editorial-roadmaps'
+import { formatEditorialDate } from '@/lib/format-date'
+import { getGiscusConfig } from '@/lib/giscus'
+import { getGuideHrefFromEntry, getGuideIndexHref } from '@/lib/guide-links'
+import { getGuideBreadcrumb } from '@/lib/guide-taxonomy'
+import { translateSiteLabels } from '@/lib/site-labels'
+import { sortGuides } from '@/lib/guide-tree'
+import { getLocalizedGuideTopics } from '@/lib/topic-taxonomy'
+import { getSiteCopy } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+import GiscusComments from '@/components/GiscusComments.astro'
+import LinkCard from '@/components/ui/LinkCard.astro'
+import ArticleSection from '@/components/ui/ArticleSection.astro'
+import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
+import { cn } from '@/lib/cn'
 
 type Props = {
   post: CollectionEntry<'guides'>
 }
 
 const { post } = Astro.props
+const isArticle = post.data.kind === 'article'
 const { Content } = await render(post)
 const allGuideEntries = await getCollection('guides')
 const activePosts = sortGuides(
@@ -41,7 +46,7 @@ const portugueseHref =
     : portugueseVersion
       ? getGuideHrefFromEntry(portugueseVersion)
       : null
-const editorialContext = getGuideEditorialContext(post, allGuideEntries)
+const editorialContext = isArticle ? null : getGuideEditorialContext(post, allGuideEntries)
 const connectedPosts = activePosts.filter((entry) => {
   if (entry.data.guideId === post.data.guideId) {
     return false
@@ -82,10 +87,27 @@ const nextReads = [...new Map(
 ).values()].slice(0, 3)
 const copy = getSiteCopy(post.data.locale)
 const translatedTags = translateSiteLabels(post.data.tags, post.data.locale)
-const breadcrumbItems = getGuideBreadcrumb(post)
+const breadcrumbItems = isArticle
+  ? [
+      {
+        href: getGuideIndexHref(post.data.locale),
+        label: copy.learn,
+      },
+      {
+        href: null,
+        label: post.data.locale === 'pt-br' ? 'Artigo' : 'Article',
+      },
+    ]
+  : getGuideBreadcrumb(post)
 const linkedTopics = getLocalizedGuideTopics(post)
 const dateLocale = post.data.locale === 'pt-br' ? 'pt-BR' : 'en-US'
 const giscusConfig = getGiscusConfig(post.data.locale === 'pt-br' ? 'pt-br' : 'en')
+const formattedPubDate = formatEditorialDate(post.data.pubDate, dateLocale)
+const formattedUpdatedDate = post.data.updatedDate
+  ? formatEditorialDate(post.data.updatedDate, dateLocale, {
+      month: 'short',
+    })
+  : null
 ---
 
 <BaseLayout
@@ -94,97 +116,94 @@ const giscusConfig = getGiscusConfig(post.data.locale === 'pt-br' ? 'pt-br' : 'e
   portugueseHref={portugueseHref}
   title={post.data.title}
 >
-  <article class="article-shell">
-    <header class="article-header">
-      <Breadcrumbs items={breadcrumbItems} />
-      <h1 class="article-title">{post.data.title}</h1>
-      <p class="article-excerpt">{post.data.description}</p>
-      <div class="article-author-row">
-        <img alt="Andrews Ribeiro" class="article-author-avatar" height="48" loading="lazy" src="/andrews.jpg" width="48" />
-        <div class="article-author-copy">
-          <p class="article-author-name">Andrews Ribeiro</p>
-          <p class="article-author-meta">
-            {formatEditorialDate(post.data.pubDate, dateLocale)}
-          </p>
-          {post.data.updatedDate ? (
-            <p class="article-author-meta article-author-meta--updated">
-              {copy.article.updatedPrefix} {formatEditorialDate(post.data.updatedDate, dateLocale, {
-                month: 'short',
-              })}
+  <article class={ui.articleShell}>
+    <ContentArticleHeader
+      breadcrumbs={breadcrumbItems}
+      description={post.data.description}
+      title={post.data.title}
+    >
+      <div class="mt-4 flex items-center gap-3">
+        <img
+          alt="Andrews Ribeiro"
+          class="size-11 shrink-0 rounded-full border border-article-rule bg-article-surface object-cover"
+          height="48"
+          loading="lazy"
+          src="/andrews.jpg"
+          width="48"
+        />
+        <div class="grid gap-0.5">
+          <p class={ui.articleBylineName}>Andrews Ribeiro</p>
+          <p class={ui.articleMeta}>{formattedPubDate}</p>
+          {formattedUpdatedDate ? (
+            <p class={ui.articleMetaSubtle}>
+              {copy.article.updatedPrefix} {formattedUpdatedDate}
             </p>
           ) : null}
         </div>
       </div>
 
       {editorialContext ? (
-        <div class="article-roadmap-banner">
-          <div class="article-roadmap-banner__copy">
-            <p class="section-eyebrow">{copy.startHere.roadmapEyebrow}</p>
-            <h2 class="section-heading section-heading--compact">{editorialContext.roadmap.title}</h2>
-            <p class="page-toolbar__copy">
+        <div class="mt-5 grid gap-4 border-t border-article-rule pt-4">
+          <div class="grid gap-1">
+            <p class={ui.eyebrow}>{copy.startHere.roadmapEyebrow}</p>
+            <h2 class={ui.headingCompact}>{editorialContext.roadmap.title}</h2>
+            <p class={ui.bodyCopy}>
               {copy.startHere.stepLabel} {editorialContext.stepIndex} / {editorialContext.totalSteps}
             </p>
           </div>
-          <div class="article-roadmap-banner__actions">
-            <a class="article-roadmap-banner__link" href={editorialContext.roadmap.href}>
+          <div class="flex flex-wrap gap-3">
+            <a class={ui.actionLink} href={editorialContext.roadmap.href}>
               {copy.startHere.backToRoadmap}
             </a>
             {editorialContext.previousArticle ? (
-              <a class="article-roadmap-banner__link" href={editorialContext.previousArticle.href}>
+              <a class={ui.actionLink} href={editorialContext.previousArticle.href}>
                 {copy.startHere.previousArticle}
               </a>
             ) : null}
             {editorialContext.nextArticle ? (
-              <a class="article-roadmap-banner__link" href={editorialContext.nextArticle.href}>
+              <a class={ui.actionLink} href={editorialContext.nextArticle.href}>
                 {copy.startHere.nextArticle}
               </a>
             ) : null}
           </div>
         </div>
       ) : null}
-    </header>
+    </ContentArticleHeader>
 
     <div class="article-prose">
       <Content />
     </div>
 
     {linkedTopics.length > 0 || translatedTags.length > 0 ? (
-      <div class="meta-list article-tags article-tags--end">
+      <div class={ui.articleTagList}>
         {linkedTopics.map((topic) => (
-          <a class="badge badge--link" href={topic.href}>{topic.label}</a>
+          <a class={cn(ui.badge, ui.badgeLink)} href={topic.href}>{topic.label}</a>
         ))}
         {translatedTags.map((tag) => (
-          <span class="badge">{tag}</span>
+          <span class={ui.badge}>{tag}</span>
         ))}
       </div>
     ) : null}
 
     {giscusConfig ? (
-      <section class="article-section article-section--comments">
-        <div class="section-header">
-          <div>
-            <h2 class="section-heading section-heading--compact">{copy.article.comments}</h2>
-          </div>
-        </div>
+      <ArticleSection className="mt-[2.2rem]" title={copy.article.comments}>
         <GiscusComments config={giscusConfig} />
-      </section>
+      </ArticleSection>
     ) : null}
 
     {nextReads.length > 0 ? (
-      <section class="article-section">
-        <div class="section-header">
-          <div>
-            <h2 class="section-heading section-heading--compact">{copy.article.nextReads}</h2>
-          </div>
-        </div>
-        <div class="panel-grid panel-grid--next-reads">
+      <ArticleSection bodyClass={ui.nextReadsGrid} title={copy.article.nextReads}>
           {nextReads.map((entry) => (
-            <a class="next-read-card" href={getGuideHrefFromEntry(entry)}>
-              <h3>{entry.data.title}</h3>
-            </a>
+            <LinkCard
+              href={getGuideHrefFromEntry(entry)}
+              showArrow={false}
+              title={entry.data.title}
+              titleClass={ui.nextReadTitle}
+              titleTag="h3"
+              variant="compact"
+            />
           ))}
-        </div>
-      </section>
+      </ArticleSection>
     ) : null}
   </article>
 </BaseLayout>

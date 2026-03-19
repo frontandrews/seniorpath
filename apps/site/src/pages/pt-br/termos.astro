@@ -1,0 +1,37 @@
+---
+import StaticArticlePage from '@/components/ui/StaticArticlePage.astro'
+import { getTermsHref } from '@/lib/terms-links'
+---
+
+<StaticArticlePage
+  description="Termos e condicoes para uso do SeniorPath."
+  englishHref={getTermsHref('en')}
+  kicker="Legal"
+  portugueseHref={getTermsHref('pt-br')}
+  title="Termos e Condicoes"
+>
+  <h2>Uso do site</h2>
+  <p>
+    Voce pode navegar, ler e usar o SeniorPath para aprendizado pessoal e profissional. Nao pode usar o servico
+    de forma abusiva, interferir em sua operacao ou reproduzir material pago ou proprietario alem do que a lei
+    permitir.
+  </p>
+
+  <h2>Conteudo</h2>
+  <p>
+    Os guias, mapas e materiais de referencia sao oferecidos para fins educacionais. Eles refletem julgamento
+    editorial e podem evoluir ao longo do tempo conforme o conteudo e atualizado ou refinado.
+  </p>
+
+  <h2>Disponibilidade</h2>
+  <p>
+    O SeniorPath pode mudar, suspender ou remover partes da experiencia a qualquer momento, incluindo estrutura
+    de conteudo, funcionalidades e navegacao.
+  </p>
+
+  <h2>Responsabilidade</h2>
+  <p>
+    O servico e fornecido no estado em que se encontra. O SeniorPath nao se responsabiliza por danos indiretos,
+    perda de negocio ou resultados decorrentes da interpretacao ou aplicacao do conteudo.
+  </p>
+</StaticArticlePage>

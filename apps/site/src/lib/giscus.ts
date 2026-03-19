@@ -1,4 +1,4 @@
-import type { SiteLocale } from './site-copy'
+import type { SiteLocale } from '@/lib/site-copy'
 
 export type GiscusConfig = {
   category: string
@@ -24,6 +24,9 @@ export function getGiscusConfig(locale: SiteLocale): GiscusConfig | null {
     return null
   }
 
+  const customThemeUrl = 'https://seniorpath.pro/giscus-theme.css?v=1'
+  const configuredTheme = import.meta.env.PUBLIC_GISCUS_THEME
+
   return {
     category,
     categoryId,
@@ -35,6 +38,6 @@ export function getGiscusConfig(locale: SiteLocale): GiscusConfig | null {
     repo,
     repoId,
     strict: import.meta.env.PUBLIC_GISCUS_STRICT ?? '0',
-    theme: import.meta.env.PUBLIC_GISCUS_THEME ?? 'dark_dimmed',
+    theme: configuredTheme && configuredTheme !== 'app' ? configuredTheme : customThemeUrl,
   }
 }

@@ -1,0 +1,46 @@
+---
+import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  bodyClass?: string
+  className?: string
+  description?: string
+  descriptionClass?: string
+  sectionClass?: string
+  title: string
+  titleClass?: string
+  titleTag?: 'h2' | 'h3'
+}
+
+const {
+  bodyClass = '',
+  className = '',
+  description,
+  descriptionClass = ui.bodyCopy,
+  sectionClass = ui.articleSection,
+  title,
+  titleClass = ui.headingCompact,
+  titleTag = 'h2',
+} = Astro.props
+
+const HeadingTag = titleTag
+---
+
+<section class={cn(sectionClass, className)}>
+  <div class={ui.sectionHeader}>
+    <div class="grid gap-1">
+      <HeadingTag class={titleClass}>{title}</HeadingTag>
+      {description ? <p class={descriptionClass}>{description}</p> : null}
+      <slot name="header" />
+    </div>
+  </div>
+
+  {bodyClass ? (
+    <div class={bodyClass}>
+      <slot />
+    </div>
+  ) : (
+    <slot />
+  )}
+</section>

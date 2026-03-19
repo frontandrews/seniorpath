@@ -1,0 +1,54 @@
+---
+import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  bodyClass?: string
+  className?: string
+  description?: string
+  descriptionClass?: string
+  eyebrow?: string
+  eyebrowClass?: string
+  headerClass?: string
+  sectionClass?: string
+  title?: string
+  titleClass?: string
+  titleTag?: 'h2' | 'h3'
+}
+
+const {
+  bodyClass = '',
+  className = '',
+  description,
+  descriptionClass = ui.bodyCopy,
+  eyebrow,
+  eyebrowClass = ui.eyebrow,
+  headerClass = 'mb-3 grid gap-1.5 text-left',
+  sectionClass = ui.compactSection,
+  title,
+  titleClass = ui.headingCompact,
+  titleTag = 'h2',
+} = Astro.props
+
+const HeadingTag = titleTag
+const hasHeader = Boolean(eyebrow || title || description)
+---
+
+<section class={cn(sectionClass, className)}>
+  {hasHeader ? (
+    <div class={headerClass}>
+      {eyebrow ? <p class={eyebrowClass}>{eyebrow}</p> : null}
+      {title ? <HeadingTag class={titleClass}>{title}</HeadingTag> : null}
+      {description ? <p class={descriptionClass}>{description}</p> : null}
+      <slot name="header" />
+    </div>
+  ) : null}
+
+  {bodyClass ? (
+    <div class={bodyClass}>
+      <slot />
+    </div>
+  ) : (
+    <slot />
+  )}
+</section>

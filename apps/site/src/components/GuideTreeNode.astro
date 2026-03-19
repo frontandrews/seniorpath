@@ -1,8 +1,11 @@
 ---
-import ArticleCard from './ArticleCard.astro'
-import { getTranslatedSiteLabel } from '../lib/site-labels'
-import type { GuideTreeNode } from '../lib/guide-tree'
-import { getSiteCopy, type SiteLocale } from '../lib/site-copy'
+import ArticleCard from '@/components/ArticleCard.astro'
+import { cn } from '@/lib/cn'
+import { getTranslatedSiteLabel } from '@/lib/site-labels'
+import type { GuideTreeNode } from '@/lib/guide-tree'
+import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+import { guideTreeItemVariants, guideTreeLabelVariants } from '@/lib/ui-variants'
 
 type Props = {
   locale: SiteLocale
@@ -23,47 +26,59 @@ const flattenedPosts = shouldFlattenChildren
   ? visibleChildren.flatMap((child) => child.posts)
   : []
 const anchorId = `guide-node-${node.key.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')}`
+const depth = node.depth >= 2 ? 2 : (node.depth as 0 | 1 | 2)
 ---
 
 <li
-  class={`guide-tree__item guide-tree__item--depth-${node.depth}`}
+  class={guideTreeItemVariants({ depth })}
   data-guide-node={node.key}
   data-guide-node-label={node.label}
   data-guide-post-ids={node.postIds.join(',')}
 >
-  <div class="guide-tree__branch">
-    <div class="guide-tree__label-row" id={anchorId}>
+  <div class="grid gap-4">
+    <div class="flex flex-wrap items-center gap-2.5" id={anchorId}>
       {node.href ? (
-        <a class="guide-tree__label guide-tree__label-link" href={node.href}>{translatedLabel}</a>
+        <a
+          class={guideTreeLabelVariants({ depth, interactive: true })}
+          href={node.href}
+        >
+          {translatedLabel}
+        </a>
       ) : (
-        <p class="guide-tree__label">{translatedLabel}</p>
+        <p class={guideTreeLabelVariants({ depth })}>
+          {translatedLabel}
+        </p>
       )}
     </div>
 
     {hasPosts ? (
-      <div class="guide-tree__posts panel-grid panel-grid--articles">
+      <div class={ui.cardsGrid}>
         {node.posts.map((post) => (
-          <ArticleCard className="guide-tree__post" post={post} />
+          <ArticleCard post={post} />
         ))}
       </div>
     ) : null}
 
     {shouldFlattenChildren ? (
-      <div class="guide-tree__posts panel-grid panel-grid--articles">
+      <div class={ui.cardsGrid}>
         {flattenedPosts.map((post) => (
-          <ArticleCard className="guide-tree__post" post={post} />
+          <ArticleCard post={post} />
         ))}
       </div>
     ) : null}
 
     {visibleChildren.length > 0 && !shouldFlattenChildren ? (
-      <ul class={`guide-tree`}>
+      <ul class="m-0 grid list-none gap-5 p-0">
         {visibleChildren.map((child) => (
           <Astro.self locale={locale} node={child} />
         ))}
       </ul>
     ) : null}
 
-    {isEmptyLeaf ? <p class="guide-tree__placeholder">{copy.guideIndex.comingSoon}</p> : null}
+    {isEmptyLeaf ? (
+      <p class={cn('mt-1', ui.cardMetaCaps)}>
+        {copy.guideIndex.comingSoon}
+      </p>
+    ) : null}
   </div>
 </li>
