@@ -2,8 +2,7 @@
 import { getCollection } from 'astro:content'
 import { PATH_TO_SENIOR_PILLARS } from '@seniorpath/content'
 
-import GuidePillarPage from '../../../../components/GuidePillarPage.astro'
-import { sortGuides } from '../../../../lib/guide-tree'
+import { sortGuides } from '@/lib/guide-tree'
 
 export async function getStaticPaths() {
   const posts = (await getCollection('guides')).filter(
@@ -35,8 +34,5 @@ export async function getStaticPaths() {
     ]
   })
 }
-
-const { branchSections, pillar } = Astro.props
+return Astro.redirect(`/pt-br/artigos/${Astro.params.pillar}`, 301)
 ---
-
-<GuidePillarPage branchSections={branchSections} locale="pt-br" pillar={pillar} />

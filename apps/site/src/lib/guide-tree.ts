@@ -189,3 +189,25 @@ export function sortGuides(posts: CollectionEntry<'guides'>[]) {
     return left.data.title.localeCompare(right.data.title)
   })
 }
+
+export function getGuideRecencyDate(post: CollectionEntry<'guides'>) {
+  return post.data.updatedDate ?? post.data.pubDate
+}
+
+export function sortGuidesByRecency(posts: CollectionEntry<'guides'>[]) {
+  return [...posts].sort((left, right) => {
+    const dateDelta = getGuideRecencyDate(right).getTime() - getGuideRecencyDate(left).getTime()
+
+    if (dateDelta !== 0) {
+      return dateDelta
+    }
+
+    const pubDateDelta = right.data.pubDate.getTime() - left.data.pubDate.getTime()
+
+    if (pubDateDelta !== 0) {
+      return pubDateDelta
+    }
+
+    return left.data.title.localeCompare(right.data.title)
+  })
+}

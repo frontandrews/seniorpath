@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 
-import GlossaryTermPage from '../../components/GlossaryTermPage.astro'
+import GlossaryTermPage from '@/components/GlossaryTermPage.astro'
 
 export async function getStaticPaths() {
   const terms = await getCollection('glossary')

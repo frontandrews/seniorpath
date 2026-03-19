@@ -1,9 +1,9 @@
 import type { CollectionEntry } from 'astro:content'
 import { getPathPillarById, getTopicById, getTopicLabel, getTopicSummary, TOPIC_DEFINITIONS } from '@seniorpath/content'
 
-import { getSiteLocale, type SiteLocale } from './site-copy'
-import { getTopicHref, getTopicIndexHref } from './topic-links'
-import { sortGuides } from './guide-tree'
+import { getSiteLocale, type SiteLocale } from '@/lib/site-copy'
+import { getTopicHref, getTopicIndexHref } from '@/lib/topic-links'
+import { sortGuides } from '@/lib/guide-tree'
 
 type GuideEntry = CollectionEntry<'guides'>
 

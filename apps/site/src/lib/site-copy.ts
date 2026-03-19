@@ -26,10 +26,12 @@ type SiteCopy = {
     learn: string
     privacy: string
     practice: string
+    rss: string
     rights: string
     search: string
     startHere: string
     terms: string
+    tracks: string
     title: string
     topics: string
   }
@@ -70,12 +72,14 @@ type SiteCopy = {
   }
   learn: string
   layout: {
+    concepts: string
     glossary: string
     home: string
     practice: string
     search: string
     startHere: string
     themeToggle: string
+    tracks: string
     topics: string
   }
   search: {
@@ -114,13 +118,15 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       description: 'Guided editorial maps and clear guides for people who want to think better before they solve.',
       glossary: 'Glossary',
       home: 'Home',
-      learn: 'Path to Senior',
+      learn: 'Articles',
       privacy: 'Privacy policy',
       practice: 'Practice',
+      rss: 'RSS feed',
       rights: 'All rights reserved.',
       search: 'Search',
       startHere: 'Start Here',
       terms: 'Terms and conditions',
+      tracks: 'Tracks',
       title: 'SeniorPath',
       topics: 'Topics',
     },
@@ -129,17 +135,17 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
     },
     startHere: {
       articleLabel: 'Article',
-      backToRoadmap: 'Back to Start Here',
+      backToRoadmap: 'Back to trail',
       browseLibrary: 'Browse the library',
       conceptLabel: 'Concept',
       copy:
         'A guided editorial roadmap for how to think before you jump into solutions, interviews, or challenge-style problems.',
       glossary: 'Look up a term',
-      introEyebrow: 'Editorial roadmap',
+      introEyebrow: 'Trail',
       linearHeading: 'Follow the route in order',
       nextArticle: 'Next article',
       previousArticle: 'Previous article',
-      roadmapEyebrow: 'Start Here',
+      roadmapEyebrow: 'Trail',
       stepLabel: 'Step',
       supportCopy: 'When you want to browse more freely, use the library, topics, or glossary as support.',
       supportHeading: 'Keep exploring',
@@ -150,7 +156,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       comingSoon: 'Coming soon',
       copy: 'Direct explanations so you can actually understand the idea, without extra jargon.',
       filterLabel: 'Pick a topic',
-      title: 'Learn without the fluff',
+      title: 'Articles without the fluff',
     },
     challengeIndex: {
       copy: 'This section is reserved for future editorial walkthroughs and worked examples.',
@@ -160,14 +166,16 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       copy: 'Short reference entries for concepts that keep showing up across guides and interviews.',
       title: 'Glossary',
     },
-    learn: 'Learn',
+    learn: 'Articles',
     layout: {
+      concepts: 'Concepts',
       glossary: 'Glossary',
       home: 'Home',
       practice: 'Practice',
       search: 'Search',
       startHere: 'Start Here',
       themeToggle: 'Toggle theme',
+      tracks: 'Tracks',
       topics: 'Topics',
     },
     search: {
@@ -204,13 +212,15 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       description: 'Mapas editoriais guiados e guias claros para quem quer pensar melhor antes de resolver.',
       glossary: 'Glossario',
       home: 'Inicio',
-      learn: 'Caminho para Senior',
+      learn: 'Artigos',
       privacy: 'Politica de privacidade',
       practice: 'Praticar',
+      rss: 'Feed RSS',
       rights: 'Todos os direitos reservados.',
       search: 'Busca',
       startHere: 'Comece aqui',
       terms: 'Termos e condicoes',
+      tracks: 'Trilhas',
       title: 'SeniorPath',
       topics: 'Topicos',
     },
@@ -219,17 +229,17 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
     },
     startHere: {
       articleLabel: 'Artigo',
-      backToRoadmap: 'Voltar para Comece aqui',
+      backToRoadmap: 'Voltar para a trilha',
       browseLibrary: 'Explorar a biblioteca',
       conceptLabel: 'Conceito',
       copy:
         'Um roadmap editorial guiado para como pensar antes de pular para solucoes, entrevistas ou desafios de codigo.',
       glossary: 'Consultar um termo',
-      introEyebrow: 'Roadmap editorial',
+      introEyebrow: 'Trilha',
       linearHeading: 'Siga a rota em ordem',
       nextArticle: 'Proximo artigo',
       previousArticle: 'Artigo anterior',
-      roadmapEyebrow: 'Comece aqui',
+      roadmapEyebrow: 'Trilha',
       stepLabel: 'Etapa',
       supportCopy: 'Quando voce quiser explorar com mais liberdade, use a biblioteca, os topicos e o glossario como apoio.',
       supportHeading: 'Continue explorando',
@@ -240,7 +250,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       comingSoon: 'Em breve',
       copy: 'Explicacoes diretas para entender de verdade, sem jargao desnecessario.',
       filterLabel: 'Escolha um tema',
-      title: 'Aprenda sem enrolação',
+      title: 'Artigos sem enrolação',
     },
     challengeIndex: {
       copy: 'Esta secao fica reservada para walkthroughs editoriais e exemplos resolvidos no futuro.',
@@ -250,14 +260,16 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       copy: 'Entradas curtas de referencia para conceitos que aparecem o tempo todo em guias e entrevistas.',
       title: 'Glossario',
     },
-    learn: 'Aprender',
+    learn: 'Artigos',
     layout: {
+      concepts: 'Conceitos',
       glossary: 'Glossario',
       home: 'Inicio',
       practice: 'Praticar',
       search: 'Busca',
       startHere: 'Comece aqui',
       themeToggle: 'Alternar tema',
+      tracks: 'Trilhas',
       topics: 'Topicos',
     },
     search: {

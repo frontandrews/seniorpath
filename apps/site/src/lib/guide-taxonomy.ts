@@ -1,9 +1,9 @@
 import type { CollectionEntry } from 'astro:content'
 import { getGuideRoutePath, getPathBranchById, getPathPillarById, type PathBranch, type PathPillar } from '@seniorpath/content'
 
-import { getGuideIndexHref, getGuidePillarHref } from './guide-links'
-import { getSiteCopy, getSiteLocale, type SiteLocale } from './site-copy'
-import { translateSiteLabel } from './site-labels'
+import { getGuideIndexHref, getGuidePillarHref } from '@/lib/guide-links'
+import { getSiteCopy, getSiteLocale, type SiteLocale } from '@/lib/site-copy'
+import { translateSiteLabel } from '@/lib/site-labels'
 
 export type GuideEntry = CollectionEntry<'guides'>
 

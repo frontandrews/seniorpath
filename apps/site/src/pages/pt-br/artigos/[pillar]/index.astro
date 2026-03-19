@@ -2,11 +2,12 @@
 import { getCollection } from 'astro:content'
 import { PATH_TO_SENIOR_PILLARS } from '@seniorpath/content'
 
+import GuidePillarPage from '@/components/GuidePillarPage.astro'
 import { sortGuides } from '@/lib/guide-tree'
 
 export async function getStaticPaths() {
   const posts = (await getCollection('guides')).filter(
-    (post) => post.data.locale === 'en' && post.data.status !== 'archived',
+    (post) => post.data.locale === 'pt-br' && post.data.status !== 'archived',
   )
 
   return PATH_TO_SENIOR_PILLARS.flatMap((pillar) => {
@@ -19,7 +20,7 @@ export async function getStaticPaths() {
     return [
       {
         params: {
-          pillar: pillar.routeSegment.en,
+          pillar: pillar.routeSegment['pt-br'],
         },
         props: {
           branchSections: pillar.branches
@@ -34,5 +35,8 @@ export async function getStaticPaths() {
     ]
   })
 }
-return Astro.redirect(`/articles/${Astro.params.pillar}`, 301)
+
+const { branchSections, pillar } = Astro.props
 ---
+
+<GuidePillarPage branchSections={branchSections} locale="pt-br" pillar={pillar} />

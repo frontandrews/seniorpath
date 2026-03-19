@@ -1,11 +1,12 @@
 ---
 import { getCollection } from 'astro:content'
 
+import GuideArticlePage from '@/components/GuideArticlePage.astro'
 import { getGuideCanonicalParams } from '@/lib/guide-taxonomy'
 
 export async function getStaticPaths() {
   const posts = (await getCollection('guides')).filter(
-    (post) => post.data.locale === 'pt-br' && post.data.status !== 'archived',
+    (post) => post.data.locale === 'en' && post.data.status !== 'archived',
   )
 
   return posts.flatMap((post) => {
@@ -25,5 +26,8 @@ export async function getStaticPaths() {
     ]
   })
 }
-return Astro.redirect(`/pt-br/artigos/${Astro.params.pillar}/${Astro.params.slug}`, 301)
+
+const { post } = Astro.props
 ---
+
+<GuideArticlePage post={post} />

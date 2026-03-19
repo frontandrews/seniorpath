@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content'
+
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import FilterableDirectory from '@/components/FilterableDirectory.svelte'
+import CompactSection from '@/components/ui/CompactSection.astro'
+import PageHeader from '@/components/ui/PageHeader.astro'
+import { formatEditorialDate } from '@/lib/format-date'
+import { getGuideHrefFromEntry, getGuideIndexHref } from '@/lib/guide-links'
+import { getGuideTaxonomy, getLocalizedPillarLabel } from '@/lib/guide-taxonomy'
+import { sortGuidesByRecency } from '@/lib/guide-tree'
+import { getSiteCopy } from '@/lib/site-copy'
+import { siteStorageKeys } from '@/lib/storage-keys'
+
+const posts = sortGuidesByRecency((await getCollection('guides')).filter(
+  (post) => post.data.status !== 'archived' && post.data.locale === 'en',
+))
+const copy = getSiteCopy('en')
+const items = posts.map((post) => {
+  const { pillar } = getGuideTaxonomy(post)
+
+  return {
+    badgeLabel: post.data.kind === 'article' ? 'Article' : undefined,
+    completionId: post.data.kind === 'guide' ? post.data.guideId : undefined,
+    ctaLabel: 'Learn more',
+    description: post.data.description,
+    eyebrow: formatEditorialDate(post.data.pubDate, 'en-US'),
+    href: getGuideHrefFromEntry(post),
+    tags: [{ id: pillar?.id ?? 'other', label: pillar ? getLocalizedPillarLabel(pillar, 'en') : 'Other' }],
+    title: post.data.title,
+  }
+})
+---
+
+<BaseLayout
+  description="Direct explanations for people who want to understand how things work, not just memorize answers."
+  portugueseHref={getGuideIndexHref('pt-br')}
+  title={copy.guideIndex.title}
+>
+  <PageHeader description={copy.guideIndex.copy} title={copy.guideIndex.title} />
+
+  <CompactSection>
+    <FilterableDirectory
+      completionStorageKey={siteStorageKeys.completedGuides}
+      filterLabel={copy.guideIndex.filterLabel}
+      items={items}
+      client:load
+      kind="guide-rows"
+    />
+  </CompactSection>
+</BaseLayout>

@@ -1,7 +1,7 @@
 ---
 import { getCollection } from 'astro:content'
 
-import GlossaryIndexPage from '../../../components/GlossaryIndexPage.astro'
+import GlossaryIndexPage from '@/components/GlossaryIndexPage.astro'
 
 const terms = (await getCollection('glossary')).filter(
   (term) => term.data.locale === 'pt-br' && term.data.status !== 'archived',

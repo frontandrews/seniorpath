@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content'
 import { PATH_TO_SENIOR_PILLARS } from '@seniorpath/content'
 
+import GuidePillarPage from '@/components/GuidePillarPage.astro'
 import { sortGuides } from '@/lib/guide-tree'
 
 export async function getStaticPaths() {
@@ -34,5 +35,8 @@ export async function getStaticPaths() {
     ]
   })
 }
-return Astro.redirect(`/articles/${Astro.params.pillar}`, 301)
+
+const { branchSections, pillar } = Astro.props
 ---
+
+<GuidePillarPage branchSections={branchSections} locale="en" pillar={pillar} />

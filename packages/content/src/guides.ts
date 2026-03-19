@@ -11,8 +11,8 @@ export type GuideRegistryEntry = {
 }
 
 export const GUIDE_SECTION_BY_LOCALE = {
-  en: 'learn',
-  'pt-br': 'aprender',
+  en: 'articles',
+  'pt-br': 'artigos',
 } as const
 
 export type GuideLocale = keyof typeof GUIDE_SECTION_BY_LOCALE

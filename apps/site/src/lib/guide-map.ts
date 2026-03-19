@@ -1,7 +1,7 @@
 import type { CollectionEntry } from 'astro:content'
 import { getGuideLegacyRoutePathFromEntryId, getGuideRoutePath } from '@seniorpath/content'
 
-import { sortGuides } from './guide-tree'
+import { sortGuides } from '@/lib/guide-tree'
 
 export type GuideMapConnection = {
   category: string
