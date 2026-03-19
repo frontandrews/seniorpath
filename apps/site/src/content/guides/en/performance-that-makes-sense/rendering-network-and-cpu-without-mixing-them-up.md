@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: performance-that-makes-sense
 branchId: rendering-network-and-cpu
-pubDate: 2026-03-18
+pubDate: 2026-03-02
+updatedDate: 2026-03-06
 category: Performance That Makes Sense
 topic: Rendering, Network, and CPU
 path:

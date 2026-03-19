@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: state-and-ui-thinking
 branchId: state-ownership
-pubDate: 2026-03-18
+pubDate: 2026-03-11
+updatedDate: 2026-03-15
 category: Estado e interface
 topic: Estado
 path:

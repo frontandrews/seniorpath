@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: system-thinking
 branchId: api-and-service-design
-pubDate: 2026-03-18
+pubDate: 2026-02-07
+updatedDate: 2026-02-11
 category: System Thinking
 topic: API and Service Design
 path:

@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: execution-and-communication
 branchId: ticket-and-task-thinking
-pubDate: 2026-03-18
+pubDate: 2026-03-15
+updatedDate: 2026-03-19
 category: Execucao e comunicacao
 topic: Tickets e tarefas
 path:

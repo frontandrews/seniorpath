@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: security-thinking
 branchId: auth-and-authorization
-pubDate: 2026-03-18
+pubDate: 2026-02-09
+updatedDate: 2026-02-13
 category: Security Thinking
 topic: Auth and Authorization
 path:

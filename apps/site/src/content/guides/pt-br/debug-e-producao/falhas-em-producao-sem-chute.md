@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: debugging-and-production-thinking
 branchId: production-failures
-pubDate: 2026-03-18
+pubDate: 2026-02-26
+updatedDate: 2026-03-02
 category: Debug e producao
 topic: Falhas em producao
 path:

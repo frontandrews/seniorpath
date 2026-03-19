@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: runtime-and-execution
 branchId: event-loop-and-order
-pubDate: 2026-03-18
+pubDate: 2026-03-13
+updatedDate: 2026-03-17
 category: Como o codigo roda
 topic: Event Loop
 path:

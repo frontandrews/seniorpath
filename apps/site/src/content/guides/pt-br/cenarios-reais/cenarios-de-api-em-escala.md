@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: real-world-scenarios
 branchId: scalable-api-scenarios
-pubDate: 2026-03-18
+pubDate: 2026-03-06
+updatedDate: 2026-03-10
 category: Cenarios reais
 topic: Cenarios de API em escala
 path:

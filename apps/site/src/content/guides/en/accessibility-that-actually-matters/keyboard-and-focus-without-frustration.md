@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: accessibility-that-actually-matters
 branchId: keyboard-and-focus
-pubDate: 2026-03-18
+pubDate: 2026-02-21
+updatedDate: 2026-02-25
 category: Accessibility That Actually Matters
 topic: Keyboard and Focus
 path:

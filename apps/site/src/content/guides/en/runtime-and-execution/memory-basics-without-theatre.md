@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: runtime-and-execution
 branchId: memory-basics
-pubDate: 2026-03-18
+pubDate: 2026-02-24
+updatedDate: 2026-02-28
 category: Runtime & Execution
 topic: Memory Basics
 path:

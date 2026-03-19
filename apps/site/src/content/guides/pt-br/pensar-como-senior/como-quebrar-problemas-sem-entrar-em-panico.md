@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: thinking-like-a-senior
 branchId: problem-breakdown
-pubDate: 2026-03-17
+pubDate: 2026-02-12
+updatedDate: 2026-02-16
 category: Pensar Como Senior
 topic: Resolução de Problemas
 path:

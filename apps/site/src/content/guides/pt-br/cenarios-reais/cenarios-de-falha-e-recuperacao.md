@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: real-world-scenarios
 branchId: failure-and-recovery-scenarios
-pubDate: 2026-03-18
+pubDate: 2026-02-20
+updatedDate: 2026-02-24
 category: Cenarios reais
 topic: Cenarios de falha e recuperacao
 path:

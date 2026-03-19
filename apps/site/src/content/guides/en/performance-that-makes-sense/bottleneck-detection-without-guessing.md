@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: performance-that-makes-sense
 branchId: bottleneck-detection
-pubDate: 2026-03-18
+pubDate: 2026-02-11
+updatedDate: 2026-02-15
 category: Performance That Makes Sense
 topic: Bottleneck Detection
 path:

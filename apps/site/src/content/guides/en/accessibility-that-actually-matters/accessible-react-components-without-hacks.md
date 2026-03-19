@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: accessibility-that-actually-matters
 branchId: accessible-react-components
-pubDate: 2026-03-18
+pubDate: 2026-02-05
+updatedDate: 2026-02-09
 category: Accessibility That Actually Matters
 topic: Accessible React Components
 path:

@@ -5,7 +5,8 @@ summary: Good status updates are simple, structured, and explicit about what cha
 guideId: status-updates
 locale: en
 status: archived
-pubDate: 2026-03-17
+pubDate: 2026-03-12
+updatedDate: 2026-03-16
 category: Execution & Communication
 topic: English for Tech
 path:

@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: system-thinking
 branchId: scalability-and-bottlenecks
-pubDate: 2026-03-18
+pubDate: 2026-03-05
+updatedDate: 2026-03-09
 category: Sistemas na pratica
 topic: Escala e gargalos
 path:

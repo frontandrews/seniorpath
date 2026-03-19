@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: data-and-persistence
 branchId: sql-vs-nosql
-pubDate: 2026-03-18
+pubDate: 2026-03-10
+updatedDate: 2026-03-14
 category: Dados e armazenamento
 topic: SQL vs NoSQL
 path:

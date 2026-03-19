@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: security-thinking
 branchId: input-and-api-safety
-pubDate: 2026-03-18
+pubDate: 2026-03-04
+updatedDate: 2026-03-08
 category: Security Thinking
 topic: Input and API Safety
 path:

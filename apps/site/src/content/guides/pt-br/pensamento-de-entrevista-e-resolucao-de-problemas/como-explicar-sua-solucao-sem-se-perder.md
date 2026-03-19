@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: problem-solving-and-interview-thinking
 branchId: communicating-solutions
-pubDate: 2026-03-18
+pubDate: 2026-02-19
+updatedDate: 2026-02-23
 category: Resolução de Problemas & Pensamento de Entrevista
 topic: Como Explicar sua Solucao
 path:

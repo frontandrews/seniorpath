@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: problem-solving-and-interview-thinking
 branchId: pattern-recognition
-pubDate: 2026-03-18
+pubDate: 2026-03-01
+updatedDate: 2026-03-05
 category: Problem Solving & Interview Thinking
 topic: Pattern Recognition
 path:

@@ -7,7 +7,8 @@ locale: pt-br
 status: active
 pillarId: system-thinking
 branchId: ai-systems-and-retrieval
-pubDate: 2026-03-18
+pubDate: 2026-02-27
+updatedDate: 2026-03-03
 category: Sistemas na pratica
 topic: IA, busca e contexto
 path:

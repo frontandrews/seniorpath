@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: thinking-like-a-senior
 branchId: trade-offs-and-constraints
-pubDate: 2026-03-18
+pubDate: 2026-03-16
+updatedDate: 2026-03-19
 category: Thinking Like a Senior
 topic: Trade-offs and Constraints
 path:

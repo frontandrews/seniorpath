@@ -7,7 +7,8 @@ locale: en
 status: active
 pillarId: patterns-that-actually-matter
 branchId: composition-vs-abstraction
-pubDate: 2026-03-18
+pubDate: 2026-02-15
+updatedDate: 2026-02-19
 category: Patterns That Actually Matter
 topic: Composition vs Abstraction
 path:
