@@ -1,0 +1,205 @@
+---
+import type { CollectionEntry } from 'astro:content'
+import { getCollection, render } from 'astro:content'
+import ArrowLeft from '@lucide/astro/icons/arrow-left'
+import ArrowRight from '@lucide/astro/icons/arrow-right'
+import ChevronLeft from '@lucide/astro/icons/chevron-left'
+import ChevronRight from '@lucide/astro/icons/chevron-right'
+
+import FilterableDirectory from '@/components/FilterableDirectory.svelte'
+import ArticleSection from '@/components/ui/ArticleSection.astro'
+import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { getChallengeLanguageLabel, getChallengeLevelLabel, sortChallenges } from '@/lib/challenge-meta'
+import { getChallengeHrefFromEntry, getChallengeIndexHref } from '@/lib/challenge-links'
+import { cn } from '@/lib/cn'
+import { getGuideHrefFromEntry } from '@/lib/guide-links'
+import { getSiteCopy, getSiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  challenge: CollectionEntry<'challenges'>
+}
+
+const { challenge } = Astro.props
+const { Content } = await render(challenge)
+const locale = getSiteLocale(challenge.data.locale)
+const copy = getSiteCopy(locale)
+const allChallenges = await getCollection('challenges')
+const activeChallenges = sortChallenges(
+  allChallenges.filter(
+    (entry) => entry.data.locale === challenge.data.locale && entry.data.status !== 'archived',
+  ),
+)
+const englishVersion = allChallenges.find(
+  (entry) => entry.data.locale === 'en' && entry.data.challengeId === challenge.data.challengeId && entry.data.status !== 'archived',
+)
+const portugueseVersion = allChallenges.find(
+  (entry) => entry.data.locale === 'pt-br' && entry.data.challengeId === challenge.data.challengeId && entry.data.status !== 'archived',
+)
+const englishHref =
+  challenge.data.locale === 'en'
+    ? getChallengeHrefFromEntry(challenge)
+    : englishVersion
+      ? getChallengeHrefFromEntry(englishVersion)
+      : getChallengeIndexHref('en')
+const portugueseHref =
+  challenge.data.locale === 'pt-br'
+    ? getChallengeHrefFromEntry(challenge)
+    : portugueseVersion
+      ? getChallengeHrefFromEntry(portugueseVersion)
+      : getChallengeIndexHref('pt-br')
+const currentChallengeIndex = activeChallenges.findIndex((entry) => entry.id === challenge.id)
+const previousChallenge = currentChallengeIndex > 0 ? activeChallenges[currentChallengeIndex - 1] : null
+const nextChallenge =
+  currentChallengeIndex >= 0 && currentChallengeIndex < activeChallenges.length - 1
+    ? activeChallenges[currentChallengeIndex + 1]
+    : null
+const allGuides = await getCollection('guides')
+const relatedGuides = allGuides.filter(
+  (entry) =>
+    entry.data.locale === challenge.data.locale &&
+    entry.data.status !== 'archived' &&
+    challenge.data.relatedGuideIds.includes(entry.data.guideId),
+)
+const explicitRelatedChallenges = challenge.data.relatedChallengeIds.flatMap((challengeId) => {
+  const relatedEntry = activeChallenges.find((entry) => entry.data.challengeId === challengeId)
+
+  return relatedEntry ? [relatedEntry] : []
+})
+const fallbackRelatedChallenges = activeChallenges.filter(
+  (entry) =>
+    entry.data.challengeId !== challenge.data.challengeId &&
+    (entry.data.type === challenge.data.type || entry.data.level === challenge.data.level),
+)
+const relatedChallenges = [...explicitRelatedChallenges, ...fallbackRelatedChallenges].filter(
+  (entry, index, items) =>
+    entry.data.challengeId !== challenge.data.challengeId &&
+    items.findIndex((candidate) => candidate.data.challengeId === entry.data.challengeId) === index,
+).slice(0, 3)
+const levelLabel = getChallengeLevelLabel(challenge.data.level, locale)
+const solutionLanguageLabel = getChallengeLanguageLabel(challenge.data.solutionLanguage)
+const detailMeta = `${copy.challenge.estimatedTime}: ${challenge.data.estimatedMinutes} min • ${copy.challenge.solutionLanguage}: ${solutionLanguageLabel}`
+const complexityTimeLabel = locale === 'pt-br' ? 'Tempo' : 'Time'
+const complexitySpaceLabel = locale === 'pt-br' ? 'Espaco' : 'Space'
+const relatedGuideItems = relatedGuides.map((entry) => ({
+  href: getGuideHrefFromEntry(entry),
+  tags: [],
+  title: entry.data.title,
+}))
+const relatedChallengeItems = relatedChallenges.map((entry) => ({
+  href: getChallengeHrefFromEntry(entry),
+  tags: [],
+  title: entry.data.title,
+}))
+---
+
+<BaseLayout
+  contentWidth="wide"
+  description={challenge.data.description}
+  englishHref={englishHref}
+  portugueseHref={portugueseHref}
+  title={challenge.data.title}
+>
+  <article class="w-full pb-11">
+    <ContentArticleHeader
+      createdMeta={`${challenge.data.typeLabel} • ${levelLabel}`}
+      description={challenge.data.description}
+      meta={detailMeta}
+      title={challenge.data.title}
+    />
+
+    <div class="mx-auto grid max-w-[56rem] gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+      {challenge.data.whatToNotice.length > 0 ? (
+        <section class={cn(ui.panel, 'grid gap-3 p-5')}>
+          <p class={ui.eyebrow}>{copy.challenge.whatToNotice}</p>
+          <ul class="grid gap-2 pl-5 text-[0.98rem] leading-7 text-site-ink-soft">
+            {challenge.data.whatToNotice.map((item) => (
+              <li>{item}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <div class="grid gap-4">
+        {challenge.data.commonMistakes.length > 0 ? (
+          <section class={cn(ui.panel, 'grid gap-3 p-5')}>
+            <p class={ui.eyebrow}>{copy.challenge.commonMistakes}</p>
+            <ul class="grid gap-2 pl-5 text-[0.98rem] leading-7 text-site-ink-soft">
+              {challenge.data.commonMistakes.map((item) => (
+                <li>{item}</li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+
+        {challenge.data.complexity ? (
+          <section class={cn(ui.panel, 'grid gap-3 p-5')}>
+            <p class={ui.eyebrow}>{copy.challenge.complexity}</p>
+            <div class="grid gap-2 text-[0.98rem] leading-7 text-site-ink-soft">
+              <p class="m-0">
+                <strong>{complexityTimeLabel}:</strong> {challenge.data.complexity.time}
+              </p>
+              <p class="m-0">
+                <strong>{complexitySpaceLabel}:</strong> {challenge.data.complexity.space}
+              </p>
+            </div>
+          </section>
+        ) : null}
+      </div>
+    </div>
+
+    <div class="mx-auto mt-8 max-w-[56rem]">
+      <div class="article-prose">
+        <Content />
+      </div>
+    </div>
+
+    {relatedChallengeItems.length > 0 ? (
+      <ArticleSection bodyClass="mt-4" title={copy.challenge.relatedChallenges}>
+        <FilterableDirectory items={relatedChallengeItems} kind="title-cards" />
+      </ArticleSection>
+    ) : null}
+
+    {relatedGuideItems.length > 0 ? (
+      <ArticleSection bodyClass="mt-4" title={copy.challenge.relatedArticles}>
+        <FilterableDirectory items={relatedGuideItems} kind="title-cards" />
+      </ArticleSection>
+    ) : null}
+
+    {previousChallenge || nextChallenge ? (
+      <section class={cn(ui.articleSection, 'grid gap-4 md:grid-cols-2 md:items-stretch')}>
+        {nextChallenge ? (
+          <a
+            class="flex h-full items-center justify-between gap-3 rounded-[var(--radius-xs)] px-3 py-2 text-inherit transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none md:order-3"
+            href={getChallengeHrefFromEntry(nextChallenge)}
+          >
+            <span class="grid gap-1 content-start text-left md:ml-auto md:justify-items-end md:text-right">
+              <span class={cn(ui.eyebrowSentence, 'inline-flex items-center gap-1.5 leading-none md:justify-self-end')}>
+                <span class="leading-none">{copy.challenge.nextChallenge}</span>
+                <ArrowRight aria-hidden="true" class="size-3.5 shrink-0 md:hidden" />
+              </span>
+              <span class={ui.linkCardTitle}>{nextChallenge.data.title}</span>
+            </span>
+            <ChevronRight aria-hidden="true" class="hidden size-6 shrink-0 text-article-body md:block" />
+          </a>
+        ) : <div class="md:order-3" />}
+        {previousChallenge ? (
+          <a
+            class="flex h-full items-center gap-3 rounded-[var(--radius-xs)] px-3 py-2 text-left text-inherit transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none md:order-1"
+            href={getChallengeHrefFromEntry(previousChallenge)}
+          >
+            <ChevronLeft aria-hidden="true" class="hidden size-6 shrink-0 text-article-body md:block" />
+            <span class="grid gap-1 content-start">
+              <span class={cn(ui.eyebrowSentence, 'inline-flex items-center gap-1.5 leading-none')}>
+                <ArrowLeft aria-hidden="true" class="size-3.5 shrink-0 md:hidden" />
+                <span class="leading-none">{copy.challenge.previousChallenge}</span>
+              </span>
+              <span class={ui.linkCardTitle}>{previousChallenge.data.title}</span>
+            </span>
+          </a>
+        ) : <div class="md:order-1" />}
+      </section>
+    ) : null}
+  </article>
+</BaseLayout>

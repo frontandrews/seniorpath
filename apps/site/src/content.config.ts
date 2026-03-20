@@ -84,18 +84,32 @@ const challenges = defineCollection({
   }),
   schema: z.object({
     branchId: z.string().min(1).optional(),
+    commonMistakes: z.array(z.string()).default([]),
     challengeId: z.string().min(1),
+    complexity: z
+      .object({
+        space: z.string().min(1),
+        time: z.string().min(1),
+      })
+      .optional(),
     description: z.string().min(1),
-    difficulty: z.enum(['easy', 'medium', 'hard']).default('medium'),
+    estimatedMinutes: z.number().int().positive().default(20),
+    level: z.enum(['beginner', 'intermediate', 'advanced']).default('intermediate'),
     locale: z.string().min(1).default('en'),
+    order: z.number().int().nonnegative().default(100),
     pillarId: z.string().min(1).optional(),
     pubDate: z.coerce.date(),
+    relatedChallengeIds: z.array(z.string().min(1)).default([]),
     relatedGuideIds: z.array(z.string()).default([]),
+    solutionLanguage: z.enum(['javascript', 'typescript', 'python']).default('typescript'),
     status: z.enum(['active', 'archived']).default('active'),
     summary: z.string().min(1),
     tags: z.array(z.string()).default([]),
     title: z.string().min(1),
+    type: z.string().min(1),
+    typeLabel: z.string().min(1),
     updatedDate: z.coerce.date().optional(),
+    whatToNotice: z.array(z.string()).default([]),
   }),
 })
 

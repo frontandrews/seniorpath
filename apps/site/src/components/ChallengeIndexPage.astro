@@ -1,32 +1,83 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro'
-import { getChallengeIndexHref } from '@/lib/challenge-links'
-import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
-import CompactSection from '@/components/ui/CompactSection.astro'
+import type { CollectionEntry } from 'astro:content'
+import PuzzleIcon from '@lucide/astro/icons/puzzle'
+
+import FilterableDirectory from '@/components/FilterableDirectory.svelte'
+import DirectoryIndexShell from '@/components/ui/DirectoryIndexShell.astro'
 import InfoPanel from '@/components/ui/InfoPanel.astro'
-import PageHeader from '@/components/ui/PageHeader.astro'
+import { getChallengeLevelLabel, sortChallenges } from '@/lib/challenge-meta'
+import { getChallengeHrefFromEntry, getChallengeIndexHref } from '@/lib/challenge-links'
+import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 
 type Props = {
+  challenges: CollectionEntry<'challenges'>[]
   locale: SiteLocale
 }
 
-const { locale } = Astro.props
+const { challenges, locale } = Astro.props
 const copy = getSiteCopy(locale)
+const sortedChallenges = sortChallenges(challenges)
+const levelFilters = ['beginner', 'intermediate', 'advanced']
+  .filter((level) => sortedChallenges.some((challenge) => challenge.data.level === level))
+  .map((level) => ({
+    id: `level:${level}`,
+    label: getChallengeLevelLabel(level as 'beginner' | 'intermediate' | 'advanced', locale),
+  }))
+const typeFilters = Array.from(
+  new Map(
+    sortedChallenges.map((challenge) => [
+      challenge.data.type,
+      {
+        id: `type:${challenge.data.type}`,
+        label: challenge.data.typeLabel,
+      },
+    ]),
+  ).values(),
+)
+const availableFilters = [...levelFilters, ...typeFilters]
+const items = sortedChallenges.map((challenge) => {
+  const levelLabel = getChallengeLevelLabel(challenge.data.level, locale)
+
+  return {
+    ctaLabel: copy.challenge.readChallenge,
+    description: challenge.data.description,
+    eyebrow: `${challenge.data.typeLabel} • ${levelLabel} • ${challenge.data.estimatedMinutes} min`,
+    href: getChallengeHrefFromEntry(challenge),
+    tags: [
+      {
+        id: `level:${challenge.data.level}`,
+        label: levelLabel,
+      },
+      {
+        id: `type:${challenge.data.type}`,
+        label: challenge.data.typeLabel,
+      },
+    ],
+    title: challenge.data.title,
+  }
+})
 ---
 
-<BaseLayout
+<DirectoryIndexShell
   description={copy.challengeIndex.copy}
   englishHref={getChallengeIndexHref('en')}
+  icon={PuzzleIcon}
+  iconLabel={copy.challengeIndex.title}
   portugueseHref={getChallengeIndexHref('pt-br')}
   title={copy.challengeIndex.title}
 >
-  <PageHeader description={copy.challengeIndex.copy} title={copy.challengeIndex.title} />
-
-  <CompactSection>
-    <InfoPanel
-      body={locale === 'pt-br'
-        ? 'A estrutura ja esta reservada para walkthroughs e problemas resolvidos. Ainda nao ha desafios publicados aqui.'
-        : 'The structure is reserved for walkthroughs and worked problems. No challenges are published here yet.'}
+  {items.length > 0 ? (
+    <FilterableDirectory
+      allItemsLabel={copy.challengeIndex.allItems}
+      availableFilters={availableFilters}
+      filterLabel={copy.challengeIndex.filterLabel}
+      fewerFiltersLabel={copy.challengeIndex.showLess}
+      items={items}
+      client:load
+      kind="guide-rows"
+      moreFiltersLabel={copy.challengeIndex.more}
     />
-  </CompactSection>
-</BaseLayout>
+  ) : (
+    <InfoPanel body={copy.challengeIndex.emptyState} />
+  )}
+</DirectoryIndexShell>

@@ -6,11 +6,13 @@ import BrainIcon from '@lucide/astro/icons/brain'
 import ChevronDownIcon from '@lucide/astro/icons/chevron-down'
 import MenuIcon from '@lucide/astro/icons/menu'
 import NewspaperIcon from '@lucide/astro/icons/newspaper'
+import PuzzleIcon from '@lucide/astro/icons/puzzle'
 import RouteIcon from '@lucide/astro/icons/route'
 import TagsIcon from '@lucide/astro/icons/tags'
 import XIcon from '@lucide/astro/icons/x'
 import { getArticlesIndexHref } from '@/lib/articles-links'
 import BrandIcon from '@/components/ui/icons/BrandIcon.astro'
+import { getChallengeIndexHref } from '@/lib/challenge-links'
 import SearchLauncher from '@/components/SearchLauncher.astro'
 import { cn } from '@/lib/cn'
 import { getConceptsHref } from '@/lib/concepts-links'
@@ -48,7 +50,7 @@ const portugueseGuideIndexHref = portugueseHref ?? getGuideIndexHref('pt-br')
 const homeHref = guideLocale === 'pt-br' ? '/pt-br' : '/'
 const tracksHref = getTracksHref(guideLocale)
 const conceptsHref = getConceptsHref(guideLocale)
-const learnHref = getGuideIndexHref(guideLocale)
+const challengesHref = getChallengeIndexHref(guideLocale)
 const topicsHref = getTopicIndexHref(guideLocale)
 const glossaryHref = getGlossaryIndexHref(guideLocale)
 const termsHref = getTermsHref(guideLocale)
@@ -57,9 +59,11 @@ const currentYear = new Date().getFullYear()
 const alternateLocale = guideLocale === 'pt-br' ? 'en' : 'pt-br'
 const localeRedirectHref = guideLocale === 'pt-br' ? englishGuideIndexHref : portugueseGuideIndexHref
 const currentLocaleCode = guideLocale === 'pt-br' ? 'PT' : 'EN'
+const challengesBadgeLabel = guideLocale === 'pt-br' ? 'Novo' : 'New'
 const articlesHref = getArticlesIndexHref(guideLocale)
 const isTracksPage = pathname === tracksHref || pathname.startsWith(`${tracksHref}/`)
 const isConceptsPage = pathname === conceptsHref || pathname.startsWith(`${conceptsHref}/`)
+const isChallengesPage = pathname === challengesHref || pathname.startsWith(`${challengesHref}/`)
 const isTopicsPage = pathname === topicsHref || pathname.startsWith(`${topicsHref}/`)
 const isGlossaryPage = pathname === glossaryHref || pathname.startsWith(`${glossaryHref}/`)
 const isArticlesPage = pathname === homeHref || pathname === articlesHref
@@ -85,6 +89,10 @@ const desktopExploreLinkClass =
   'flex items-center gap-2.5 rounded-[var(--radius-sm)] px-3 py-3 text-[0.95rem] font-medium text-site-ink transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none min-[64rem]:gap-3 min-[64rem]:px-3.5 min-[64rem]:py-3.5 min-[64rem]:text-[1.04rem]'
 const desktopLocaleTriggerClass =
   'inline-flex min-h-9 cursor-pointer list-none items-center justify-center gap-1 rounded-[var(--radius-sm)] border border-site-line bg-site-panel px-2.5 py-2 text-[0.78rem] font-semibold tracking-[0.08em] text-site-ink transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none min-[64rem]:min-h-10 min-[64rem]:gap-1.5 min-[64rem]:px-3 min-[64rem]:text-[0.86rem] [&::-webkit-details-marker]:hidden'
+const desktopChallengesLinkClass =
+  'inline-flex min-h-9 items-center justify-center gap-2 rounded-full px-1 py-2 text-[0.92rem] font-medium text-site-ink transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none min-[64rem]:min-h-10 min-[64rem]:px-2 min-[64rem]:text-[1rem]'
+const desktopChallengesBadgeClass =
+  'inline-flex items-center rounded-full bg-black px-2 py-[0.18rem] text-[0.54rem] font-black uppercase tracking-[0.18em] text-yellow-300'
 const pageShellClass =
   contentWidth === 'wide'
     ? 'mx-auto min-h-screen max-w-[72rem] px-4 pb-16 md:px-6 min-[64rem]:max-w-[80rem]'
@@ -125,12 +133,20 @@ const pageShellClass =
           </a>
           <div class="flex items-center gap-2">
             <div class="hidden min-[56rem]:flex min-[56rem]:items-center min-[56rem]:gap-2">
+              <a class={cn(desktopChallengesLinkClass, isChallengesPage && 'text-site-link-hover')} href={challengesHref}>
+                <span>{copy.challengeIndex.title}</span>
+                <span class={desktopChallengesBadgeClass}>{challengesBadgeLabel}</span>
+              </a>
               <details class="relative">
                 <summary class={desktopDropdownTriggerClass}>
                   <span>{copy.header.explore}</span>
                   <ChevronDownIcon class="size-4" />
                 </summary>
                 <div class={desktopDropdownMenuClass}>
+                  <a class={cn(desktopExploreLinkClass, isChallengesPage && mobileNavActiveClass)} href={challengesHref}>
+                    <PuzzleIcon class="size-4 shrink-0 text-site-ink-muted" />
+                    {copy.challengeIndex.title}
+                  </a>
                   <a class={cn(desktopExploreLinkClass, isGlossaryPage && mobileNavActiveClass)} href={glossaryHref}>
                     <BookTextIcon class="size-4 shrink-0 text-site-ink-muted" />
                     {copy.layout.glossary}
@@ -204,6 +220,9 @@ const pageShellClass =
               <a class={cn(mobileNavLinkClass, isArticlesPage && mobileNavActiveClass)} href={articlesHref}>
                 {copy.layout.articles}
               </a>
+              <a class={cn(mobileNavLinkClass, isChallengesPage && mobileNavActiveClass)} href={challengesHref}>
+                {copy.challengeIndex.title}
+              </a>
               <a class={cn(mobileNavLinkClass, isGlossaryPage && mobileNavActiveClass)} href={glossaryHref}>
                 {copy.layout.glossary}
               </a>
@@ -262,6 +281,7 @@ const pageShellClass =
           </div>
           <div class="grid content-start gap-3">
             <div class="grid gap-[0.85rem]">
+              <a class={ui.footerLink} href={challengesHref}>{copy.challengeIndex.title}</a>
               <a class={ui.footerLink} href={topicsHref}>{copy.footer.topics}</a>
               <a class={ui.footerLink} href={glossaryHref}>{copy.footer.glossary}</a>
               <a class={ui.footerLink} href={conceptsHref}>{copy.layout.concepts}</a>

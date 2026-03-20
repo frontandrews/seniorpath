@@ -63,8 +63,27 @@ type SiteCopy = {
     title: string
   }
   challengeIndex: {
+    allItems: string
     copy: string
+    emptyState: string
+    filterLabel: string
+    more: string
+    showLess: string
     title: string
+  }
+  challenge: {
+    commonMistakes: string
+    complexity: string
+    estimatedTime: string
+    levelLabel: string
+    nextChallenge: string
+    previousChallenge: string
+    readChallenge: string
+    relatedChallenges: string
+    relatedArticles: string
+    solutionLanguage: string
+    typeLabel: string
+    whatToNotice: string
   }
   glossaryIndex: {
     copy: string
@@ -230,8 +249,27 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       title: 'Articles without the fluff',
     },
     challengeIndex: {
-      copy: 'This section is reserved for future editorial walkthroughs and worked examples.',
+      allItems: 'All',
+      copy: 'Step-by-step explanations to help you learn how to solve coding tests and pass live coding interviews.',
+      emptyState: 'No challenges have been published here yet.',
+      filterLabel: 'Filter by type or level',
+      more: 'more',
+      showLess: 'Show less',
       title: 'Challenges',
+    },
+    challenge: {
+      commonMistakes: 'Common mistakes',
+      complexity: 'Final complexity',
+      estimatedTime: 'Estimated time',
+      levelLabel: 'Level',
+      nextChallenge: 'Next challenge',
+      previousChallenge: 'Previous challenge',
+      readChallenge: 'Open challenge',
+      relatedChallenges: 'Related challenges',
+      relatedArticles: 'Related articles',
+      solutionLanguage: 'Solution language',
+      typeLabel: 'Type',
+      whatToNotice: 'What to notice before coding',
     },
     glossaryIndex: {
       copy: 'Short reference entries for concepts that keep showing up across guides and interviews.',
@@ -360,8 +398,27 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       title: 'Artigos sem enrolação',
     },
     challengeIndex: {
-      copy: 'Esta secao fica reservada para walkthroughs editoriais e exemplos resolvidos no futuro.',
+      allItems: 'Tudo',
+      copy: 'Passo a passo explicado para voce aprender a resolver testes e passar nas entrevistas de live coding.',
+      emptyState: 'Ainda nao ha desafios publicados aqui.',
+      filterLabel: 'Filtrar por tipo ou nivel',
+      more: 'mais',
+      showLess: 'Mostrar menos',
       title: 'Desafios',
+    },
+    challenge: {
+      commonMistakes: 'Erros comuns',
+      complexity: 'Complexidade final',
+      estimatedTime: 'Tempo estimado',
+      levelLabel: 'Nivel',
+      nextChallenge: 'Proximo desafio',
+      previousChallenge: 'Desafio anterior',
+      readChallenge: 'Abrir desafio',
+      relatedChallenges: 'Desafios relacionados',
+      relatedArticles: 'Artigos relacionados',
+      solutionLanguage: 'Linguagem da solucao',
+      typeLabel: 'Tipo',
+      whatToNotice: 'O que perceber antes de codar',
     },
     glossaryIndex: {
       copy: 'Entradas curtas de referencia para conceitos que aparecem o tempo todo em guias e entrevistas.',
