@@ -16,32 +16,32 @@ relatedGuideIds:
   - javascript-event-loop
 ---
 
-## O que e
+## O que é
 
-O event loop coordena quando o trabalho enfileirado pode rodar depois que o trabalho sincronico atual acaba.
+O event loop é o controlador de tráfego do JavaScript. Ele decide quando o trabalho assíncrono que estava na fila finalmentre ganha sua vez de rodar, mas sempre esperando que o código síncrono atual termine primeiro.
 
-E por isso que promises, timers e callbacks nao executam todos no mesmo momento em que aparecem no codigo.
+É por isso que promises, timers e callbacks não executam como mágica no mesmo milissegundo em que você os escreve.
 
 ## Quando importa
 
-Isso importa quando voce esta debugando ordem de execucao, bugs assincronos ou perguntas de entrevista sobre JavaScript.
+Isso importa no momento em que você precisa debugar uma ordem de execução bizarra, lidar com race conditions, ou quando enfrenta aquelas clássicas perguntas de entrevista sobre a saída de cinco `setTimeout`s soltos pelo código.
 
-Sem separar stack, fila e agendamento, o comportamento parece aleatorio.
+Sem separar na cabeça o que é a call stack, a fila de callbacks e o loop de eventos, o comportamento do JavaScript simplesmente parece mágica caótica.
 
 ## Erro comum
 
-Um erro comum e falar apenas "codigo assincrono roda depois" sem explicar o que significa esse "depois".
+Um erro muito comum é decorar a frase "código assíncrono roda depois" sem entender o que esse "depois" significa na engine.
 
-Isso nao ajuda nem a debugar nem a explicar direito.
+"Depois" não quer dizer "numa thread paralela em background". Quer dizer "ele vai esperar pacientemente numa fila até que a thread principal esteja completamente vazia e sem nada pra fazer".
 
 ## Exemplo curto
 
-Se voce faz `console.log('A')`, agenda um callback de promise e depois faz `console.log('B')`, os logs sincronicos terminam primeiro.
+Se você faz um `console.log('A')`, agenda o callback de uma promise resolvida, e logo depois faz um `console.log('B')`, o código síncrono sempre termina primeiro. Você verá 'A' e depois 'B'.
 
-So depois a callback enfileirada ganha vez.
+Só depois que a stack principal estiver inteiramente limpa é que o event loop olha para a fila de microtasks e diz: "Beleza, agora podemos rodar o callback dessa Promise".
 
 ## Por que isso ajuda
 
-Quando voce pensa em ordem de execucao em vez de so olhar a sintaxe, varios bugs ficam muito mais explicaveis.
+Quando você para de apenas olhar para a sintaxe e começa a visualizar o mecanismo de execução por baixo dos panos, vários bugs irritantes ficam dolorosamente óbvios de explicar.
 
-Esse e o ganho real do conceito.
+Esse é o verdadeiro poder de entender o conceito: você deixa de chutar o que o código vai fazer e passa a saber exatamente como a engine funciona.

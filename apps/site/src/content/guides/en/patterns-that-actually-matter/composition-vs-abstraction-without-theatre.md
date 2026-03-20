@@ -28,78 +28,78 @@ relatedDeckIds: []
 
 ## The problem
 
-Much abstraction is born too early.
+Most bad abstractions in a codebase were born far too early.
 
-The team sees two similar parts, creates a generic layer to "avoid repetition," and soon the code looks smarter than it looks clear.
+An engineer spots two slightly similar blocks of code, aggressively creates a massive generic layer to "stay DRY," and very quickly the code looks ten times smarter than it is clear.
 
-At first it seems elegant. Later, every change requires understanding an internal API that almost nobody wanted to have.
+At first, the abstraction feels brilliantly elegant. Three months later, a simple feature request requires reverse-engineering an internal API that absolutely nobody asked for.
 
 ## Mental model
 
-Good abstraction reduces mental load.
+A fantastic abstraction violently reduces your mental load.
 
-Bad abstraction hides an important difference behind a pretty interface.
+A disastrous abstraction just lazily hides critical business variations behind a shiny, undocumented interface.
 
-That is why, before abstracting, it is worth asking:
+Before you ever hit "extract component", it is mandatory to ask yourself:
 
-> Am I simplifying the reading or only hiding variation too early?
+> "Am I actually making this code drastically easier to read, or am I just hiding variation before the pattern has even matured?"
 
-Many times, simple composition solves it better.
+More often than not, simply composing small, dumb pieces solves the problem infinitely better than a massive generic wrapper.
 
 ## Breaking it down
 
-A simple way to decide is this:
+A highly pragmatic, senior way to make this decision is this:
 
-1. see whether the parts really change together
-2. confirm whether the variation is already clear enough
-3. test whether simple composition is still readable
-4. abstract only when the new layer really reduces duplication and doubt
+1. Verify if the duplicated parts conceptually *must* change together for the business to survive.
+2. Confirm if the current slightly-duplicated variation is actually readable enough as is.
+3. Test if simply composing the UI (building blocks) is cleaner than parameterizing it (passing 15 props).
+4. Only authorize the abstraction when the new layer mathematically destroys massive duplication and eliminates doubt.
 
-That avoids creating an internal tool for a problem that has not even matured yet.
+This mindset physically prevents you from inventing a complex internal framework for a problem you don't even fully understand yet.
 
 ## Simple example
 
-Imagine three UI cards with small variations in title, CTA, and visual block.
+Imagine building three different UI cards that share a border, but have entirely different titles, buttons, and visual blocks.
 
-A rushed response would be to create a `SuperCard` with dozens of props to cover every case.
+A rushed, junior reflex is to build a massive `<SuperCard />` component demanding 12 different optional boolean props to cover every bizarre edge case.
 
-A better response may be:
+A senior, hardened response ignores the urge to abstract:
 
-- keep a base container
-- compose smaller parts
-- leave each variant explicit where the difference really matters
+- build a dead-simple `<CardContainer>` for the border
+- compose the unique titles and buttons directly as `children` inside the specific pages
+- leave the exact variations blindingly explicit directly where the difference matters
 
-In this case, composition preserves clarity without forcing everyone to learn a premature abstraction.
+By leveraging simple composition, you preserve extreme clarity without forcing the entire team to memorize a premature, fragile abstraction.
 
 ## Common mistakes
 
-- abstracting at the first repetition
-- treating any duplication as a defect
-- hiding different rules behind the same interface
-- creating a generic component that accepts everything and explains little
+- panic-abstracting the exact second you type the same line of code twice
+- treating literally any form of repetition as a career-ending architectural defect
+- dangerously hiding two completely different business rules behind the exact same generic function name
+- creating a "God Component" that accepts infinitely scalable props but explains absolutely nothing about its intent
 
 ## How a senior thinks
 
-A strong senior does not abstract to look sophisticated.
+A strong senior engineer does not aggressively abstract just to prove they just read a book on design patterns.
 
-They abstract to reduce future friction.
+They abstract strictly to reduce the agonizing friction of future changes.
 
-That usually sounds like this:
+That mindset usually sounds like this:
 
-> If this new layer does not make the intent clearer and the change cheaper, maybe it does not need to exist yet.
+> "If introducing this new layer doesn't make the business intent painfully obvious and future features significantly cheaper to build, then I am not merging this abstraction today."
 
-That question usually avoids a lot of excessive design.
+Rigorously asking that question prevents an unbelievable amount of free, unforced architectural complexity.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity quickly:
+In architectural or senior frontend interviews, this topic reveals your true mileage instantly:
 
-- you know how to distinguish acceptable repetition from bad repetition
-- you understand when simple composition is better than generalization
-- you think about readability and evolution, not only about "dry code"
+- you can articulately distinguish between "acceptable, honest repetition" and "dangerous, buggy duplication"
+- you deeply understand exactly when dumb composition defeats generalized abstraction
+- you prioritize the next developer's reading comprehension over your own desire to write "perfectly DRY" code
 
-People who do this well look like someone who uses patterns as tools, not as trophies.
+Engineers who nail this question look like veterans who use patterns as surgical tools, not as decorative trophies.
 
-> Not every repetition asks for abstraction. Some ask for patience so the problem can show up better.
+> Not every duplicated line of code is screaming for an abstraction. Some code just requires the patience to let the real problem fully reveal itself.
 
-> If the new layer needs more explanation than the old code, maybe it still has not helped.
+> If your new layered abstraction requires more documentation to explain than the old duplicated code did, you completely failed the refactor.

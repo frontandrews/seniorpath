@@ -28,76 +28,76 @@ relatedDeckIds: []
 
 ## The problem
 
-Many frontend architectures become strange because the team mixes client and server work without a clear criterion.
+Frontend architectures often collapse into chaos because the team mixes client and server responsibilities without any clear, defensible criteria.
 
-Soon there is fetch in the wrong place, sensitive data going to the browser without need, and a client component doing work that could arrive ready.
+Suddenly, there are network fetches happening deep inside nested buttons, sensitive business secrets leaking to the browser, and client components aggressively recalculating work that the server could have just sent ready.
 
-The result is usually more complexity, more loading, and less clarity.
+The inevitable result is a slower, much more fragile, and exhausting codebase.
 
 ## Mental model
 
-Client and server are not only different places.
+The client and the server aren't just different physical locations.
 
-They have different responsibilities.
+They have fundamentally different strengths and responsibilities.
 
-In a simple way:
+Simply put:
 
-- the server is good for fetching data, validating rules, protecting secrets, and assembling the response
-- the client is good for interaction, local state, user events, and immediate interface updates
+- The server exists to furiously fetch data, validate hard rules, protect secrets, and assemble the heavy truth.
+- The client exists to handle immediate user interaction, manage localized state, capture clicks, and deliver snappy UI feedback.
 
-When that division becomes clear, many decisions get easier.
+When that division of labor is respected, architecture decisions practically make themselves.
 
 ## Breaking it down
 
-Before deciding where something runs, try to answer:
+Before deciding where a piece of logic runs, ruthlessly answer:
 
-1. does this need a secret, permission, or direct backend access?
-2. does this depend on click, typing, or immediate interaction?
-3. can this arrive ready to reduce work in the browser?
-4. does this logic really need to stay exposed on the client?
+1. Does this logic require an API secret, a direct database connection, or strict permission checks?
+2. Does this logic directly depend on a user's click, typing, or immediate visual feedback?
+3. Could this heavy data transformation just happen on the backend so the browser does zero work?
+4. Does this business rule actually need to be exposed in the client's JavaScript bundle?
 
-These questions avoid a lot of unnecessary mixing.
+These questions stop you from recklessly mixing environments.
 
 ## Simple example
 
-Imagine a page that shows orders and lets the user filter by status.
+Imagine a complex dashboard page that shows recent orders and lets the user quickly filter them by status.
 
-A reasonable split would be:
+A clean, senior split looks like this:
 
-- the server fetches the orders and returns the initial data
-- the client controls the selected filter and the screen interaction
+- The server securely fetches all recent orders from the database, formats the dates, and sends down a clean initial payload.
+- The client component receives that list, holds the `selectedFilter` state, and instantly updates the screen when the user interacts.
 
-The common mistake would be putting all fetching, transformation, and access rules on the client just because "we are already in the component."
+The disastrous mistake is forcing the client to do all the heavy lifting: fetching raw rows, formatting messy dates, and applying complex business logic just because "we were already writing code in React."
 
-That increases browser cost and blurs responsibilities.
+That lazily increases the browser's CPU cost and completely blurs the boundary of who owns what.
 
 ## Common mistakes
 
-- sending to the client work that could arrive resolved from the server
-- putting secrets or sensitive logic close to the interface
-- treating any interactive component as if everything needed to be client-side
-- deciding by the convenience of the current file, not by the real responsibility
+- forcing the client's browser to do data transformations that the server could have resolved instantly
+- casually putting API keys or sensitive domain logic perilously close to the user's interface
+- treating a highly interactive React app as an excuse to make the client do absolutely everything
+- deciding where code lives based on the convenience of the file you currently have open, rather than architectural responsibility
 
 ## How a senior thinks
 
-A strong senior does not ask first "which file do I write this in?"
+A strong senior engineer doesn't start by asking "which file should I put this function in?"
 
 They ask:
 
-> Which side should own this responsibility so the interface stays simpler and safer?
+> "Which side of the network should permanently own this responsibility so the interface stays as dumb, fast, and secure as possible?"
 
-That question improves performance, maintenance, and clarity at the same time.
+That single question violently improves performance, security, and maintainability all at once.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity very quickly:
+In frontend system design interviews, articulating this shows immediate maturity:
 
-- you understand that client and server have different roles
-- you know how to justify why something should live on one side and not the other
-- you think about security, simplicity, and rendering cost
+- you deeply understand that the client and server act as a team with totally different roles
+- you can aggressively justify why a block of logic belongs on one side and not the other
+- you prioritize user security, network simplicity, and minimizing browser rendering costs
 
-People who do this well give the image of someone who knows how to design interfaces beyond the isolated component.
+Candidates who do this well look like architects who design interfaces, not just developers who write components.
 
-> The client exists to interact. The server exists to prepare and protect what the interface needs.
+> The client exists to interact. The server exists to prepare and protect the truth.
 
-> If everything ended up on the client for convenience, the architecture probably lost its criterion along the way.
+> If everything ended up on the client purely for convenience, your architecture lost its discipline months ago.

@@ -29,74 +29,66 @@ relatedDeckIds: []
 
 ## O problema
 
-Quando uma tela fica lenta, e comum chamar tudo de "problema de performance" como se fosse uma categoria unica.
+## O problema
 
-So que rede lenta, renderizacao pesada e CPU ocupada geram sintomas parecidos com causas bem diferentes.
+Quando uma página da web começa a se arrastar, a frase mais perigosa que alguém pode dizer na reunião é: "Precisamos otimizar a performance do *front-end*".
 
-Se voce mistura essas coisas, a chance de otimizar no lugar errado sobe muito.
+"Performance" não é um botão mágico que você aperta. Existem naturezas completamente distintas de atrasos, que se comportam e afetam o sistema de maneira única.
+
+Agrupar falta de internet na rua com processamento matemático de tabelas pesadas gera soluções idênticas para problemas sem nenhuma ligação. O time coloca *loading spinners* modernos na tela e não melhora nem em zero milissegundos o quadro de quem o utiliza.
 
 ## Modelo mental
 
-Um jeito util de pensar e separar tres fontes comuns de atraso:
+Problemas de desempenho visual no navegador devem ser classificados mecanicamente em três naturezas específicas e separadas:
 
-- rede: o dado demora para chegar
-- CPU: o trabalho computacional demora para terminar
-- renderizacao: o browser demora para transformar estado em interface
+1. **Rede:** A interface não consegue seguir porque empacou esperando respostas de servidores fora da máquina atual. 
+2. **CPU:** O navegador recebeu os pacotes todos em mãos na velocidade ideal, mas as funções complexas locais no cliente sobrecarregam o processamento celular humano em mãos (álgebra, parse, formatação longa).
+3. **Renderização:** A camada de dado está toda formatada perfeitamente no cliente, mas os elementos DOM sofrem pra reconstruir as tintas da janela inteira nos pixels em repetições invisíveis exageradas locais do *framework*.
 
-Essas categorias se cruzam, mas nao sao a mesma coisa.
+Ao entender o formato original correto, o erro prático perde a força.
 
 ## Quebrando o problema
 
-Uma forma simples de diagnosticar melhor e esta:
+A régua de diagnóstico para qualquer desenvolvedor que se depara com a tela sofrendo lentidão extrema é separar em blocos:
 
-1. veja se a espera esta antes ou depois do dado chegar
-2. descubra se o browser esta gastando tempo computando demais
-3. confira se a interface esta repintando ou recalculando mais do que deveria
-4. ataque o tipo certo de lentidao, nao o nome generico "performance"
+1. **Abra o Network:** Verifique se o pacote na viagem tem um fluxo demorado superior a dezenas de megabytes. Se demorou lá, altere lá na base da API e apague os *hooks* da tela.
+2. **Abra o *Profiler* ou Monitor:** A memória subiu ao teto em poucos re-renders ou travou enquanto formata dezenas de matrizes de objetos? A rede está isenta de culpa.
+3. **Inspecione Componentes:** Use o *React DevTools* puro. Olhe as faixas vermelhas do rastro local visual. As caixas de *inputs* renderizaram mais quarenta vezes numa única letra sem justificativa cruzada aparente hoje cedo local aqui? 
 
-Isso reduz muito o risco de ajuste cosmetico.
+É simples.
 
 ## Exemplo simples
 
-Imagine uma pagina de busca que parece lenta.
+Avalie o carregamento do botão invisível "comprar agora". Ele clica, e 1.5 segundos se passam congelados em tela cinza e morta sem retorno algum.
 
-Tres cenarios diferentes podem existir:
+A culpa recairia no navegador do celular, mas após separar do lado certo da esteira:
+A API leva incríveis dois inteiros segundos para confirmar seletivamente as promoções ocultas de estoque local fechado do servidor remoto do cartão do armazém da esquina lateral (Adjectives stopping).
 
-- a API demora 2 segundos para responder
-- a resposta chega rapido, mas um filtro pesado bloqueia CPU no cliente
-- o dado chega e o filtro e leve, mas a interface re-renderiza componentes demais
+A API leva muito tempo devido à latência com o armazém.
 
-Para o usuario, os tres casos podem soar como "a tela esta lenta".
-
-Para quem vai corrigir, sao tres problemas diferentes.
+Tentar reduzir os nós do componente de interface com CSS mais leve é não resolver absolutamente nada prático do seu funil original da dor financeira do negócio.
 
 ## Erros comuns
 
-- chamar qualquer atraso de renderizacao
-- memoizar componente quando o problema e rede
-- reduzir payload quando o gargalo e calculo local
-- otimizar sem separar qual recurso esta realmente sofrendo
+- A equipe de *front-end* ignorar que não controla a perda de pacotes na conexão 3G de um usuário no trânsito.
+- A equipe carregar quinhentos itens simultâneos do banco de dados na memória do navegador e jogar a culpa da lentidão no framewok de interface.
+- Substituir bibliotecas visuais inteiras tentando deixar a tela mais leve, quando a medição real mostraria que o atraso vem 100% da resposta demorada da API.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte primeiro classifica o tipo de lentidao.
+Para a engenharia que gere projetos maduros, essas divisões determinam quem da corporação precisa ser cobrado.
 
-Normalmente isso soa assim:
+Um engenheiro júnior levanta da mesa reclamando do React, apontando que a re-renderização está pesada demais e travando a tela.
 
-> Antes de decidir a otimização, eu quero separar se a espera esta no dado chegando, no trabalho sendo processado ou na interface sendo desenhada.
+Um engenheiro sênior isola o problema pacientemente e reporta:
 
-Essa classificacao deixa a conversa muito mais precisa.
+> "O fluxo do lado do cliente está desenhando rápido. O tempo original está sendo perdido no servidor remoto do parceiro de pagamentos, que consome inteiro 70% da espera do usuário. Antes desse contrato ser revisto pelo time de *backend*, otimizar imagens da nossa interface não vai adiantar nada hoje."
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade rapido:
+A banca examinadora em testes técnicos simula telas lentas em situações de pressão apenas para testar seus instintos básicos:
 
-- voce sabe que performance nao e um bloco unico
-- voce consegue separar sintomas parecidos por causa diferente
-- voce escolhe a resposta tecnica mais coerente com o recurso afetado
+- Você vai atirar pedras no código e sugerir *hooks* de otimização no React sem sequer pedir uma métrica do tempo da resposta da API primeiro?
+- A banca aprova quem entende que categorias diferentes exigem remédios diferentes. Rede lenta exige cache e compressão. CPU lenta exige mover o cálculo pesado para fora do navegador. Repintura excessiva no DOM exige controle de estado.
 
-Quem faz isso bem parece alguem que melhora produto com diagnostico real, nao com chute bem intencionado.
-
-> Tela lenta nao e diagnostico. E so sintoma.
-
-> Se voce nao separou rede, CPU e renderizacao, ainda esta cedo para escolher a otimização.
+> "A grande engenharia técnica corta os problemas nas juntas certas. Se você trata toda lentidão como um problema genérico de interface, você vai receitar o remédio errado para a doença certa."

@@ -30,73 +30,73 @@ relatedDeckIds:
 
 ## The problem
 
-Many conversations about RAG and fine-tuning become a tool dispute.
+Conversations about RAG (Retrieval-Augmented Generation) and Fine-Tuning usually devolve into a bitter tool dispute.
 
-It starts to look like you need to choose a side before even understanding what failure the system has.
+Teams act as if they need to choose a side before even investigating what is actually causing their AI system to fail.
 
-That makes the decision more ideological than technical.
+That turns an engineering decision into an ideological debate.
 
 ## Mental model
 
-The main point is not comparing names.
+The main point is never about comparing product names or buzzwords.
 
-The main point is separating two kinds of problems:
+The main point is rigidly separating two fundamentally different kinds of AI failure:
 
-- the model does not have the right context at the right time
-- the model has context, but still behaves badly in the same way
+- the model fails because it simply does not have the right facts at the right time
+- the model has the right facts, but still behaves aggressively poorly in its reasoning or formatting
 
-That split already improves the conversation a lot.
+Making that split clarifies the conversation almost instantly.
 
 ## Breaking it down
 
-Before choosing, try to answer:
+Before choosing a technique, force the team to answer:
 
-1. does the failure come from missing or outdated knowledge?
-2. or is the problem repeated behavior even with good context?
-3. do I need a layer that is easier to update and inspect?
-4. does the operational cost of fine-tuning make sense here?
+1. Does the failure stem from missing, proprietary, or rapidly changing knowledge?
+2. Or is the failure a repeated behavioral mistake (like tone, style, or JSON formatting) even when the context is perfect?
+3. Does the system desperately need a knowledge layer that is instantly updatable and easy to inspect?
+4. Does the harsh operational cost and extreme latency of fine-tuning make financial sense here?
 
-These questions pull the decision toward the real failure, not fashion.
+These questions tether the architectural decision to the real failure, not AI fashion.
 
 ## Simple example
 
-Imagine an internal assistant that answers questions about company policy.
+Imagine an internal HR assistant that answers questions about company vacation policies.
 
-If it gets things wrong because it did not receive the most recent document, the problem looks much more like retrieval than fine-tuning.
+If it confidently lies to an employee because it didn't read the newly updated 2026 handbook, the problem is entirely about *retrieval*. You need RAG to fetch the new document.
 
-Now imagine a flow in which the model does receive the right context, but still keeps answering in the wrong format or repeatedly ignores important instructions.
+Now imagine a flow where the model *does* receive the absolute perfect context, but still stubbornly answers in a sarcastic tone or refuses to output valid JSON.
 
-Then the conversation may start to point toward behavior adjustment, not only toward search.
+Then the conversation completely shifts toward adjusting *behavior*—which is where Fine-Tuning or better prompt engineering shines.
 
-The important thing is noticing that the type of failure changed.
+The crucial skill is noticing that the *type* of failure is different.
 
 ## Common mistakes
 
-- treating RAG and fine-tuning as if one canceled the other
-- reaching for fine-tuning too early without proving retrieval is already good
-- calling every error a "lack of context"
-- ignoring the cost of operation, evaluation, and iteration
+- treating RAG and Fine-Tuning as if they are mutually exclusive competitors
+- aggressively jumping into fine-tuning before mathematically proving your retrieval pipeline is actually working
+- lazily calling every single AI hallucination a "lack of context"
+- completely ignoring the massive operational cost of evaluating and maintaining fine-tuned models
 
 ## How a senior thinks
 
-A strong senior starts from the observable failure.
+A strong senior engineer always starts relentlessly from the observable failure.
 
 That usually sounds like this:
 
-> If the system fails because it does not access the right knowledge, I improve retrieval first. If it fails even with the correct context, I start discussing behavior change.
+> "If the system is failing because it doesn't know the facts, I will ruthlessly optimize retrieval first. If it fails to behave properly *despite* having the correct context, then we start discussing behavior changes like fine-tuning."
 
-That organizes the decision in a much more useful way.
+That mindset organizes AI engineering into a predictable, useful workflow.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity quickly:
+In AI system design interviews, this framing shows immediate maturity:
 
-- you know how to distinguish knowledge access from model behavior
-- you choose the cheapest and most inspectable control point first
-- you think about iteration and operational cost
+- you clearly distinguish between "knowledge access" and "inherent model behavior"
+- you strategically choose the cheapest, fastest, and most inspectable control point first (RAG)
+- you obsess over iteration speed and long-term operational costs
 
-People who do this well look like someone who designs AI systems with judgment, not buzzwords.
+Candidates who do this well look like engineers who build AI products with judgment, not hype.
 
-> Before choosing the technique, find out which failure you are trying to fix.
+> Before picking the technique, precisely identify the exact failure you are trying to fix.
 
-> If the model has not even received the right context yet, discussing fine-tuning may still be too early.
+> If the model isn't even receiving the right context yet, talking about fine-tuning is violently premature.

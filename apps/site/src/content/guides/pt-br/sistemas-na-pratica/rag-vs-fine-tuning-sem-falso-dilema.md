@@ -30,73 +30,50 @@ relatedDeckIds:
 
 ## O problema
 
-Muita conversa sobre RAG e fine-tuning vira disputa de ferramenta.
+## O problema
 
-Parece que voce precisa escolher um lado antes mesmo de entender qual falha o sistema tem.
-
-Com isso, a decisao fica mais ideologica do que tecnica.
+Discussão sobre IA vira disputa comercial.
+Não se entende a falha da arquitetura.
+Decisões seguem a moda, não o erro real.
 
 ## Modelo mental
 
-O ponto principal nao e comparar nomes.
+Avalie a tecnologia validando falhas.
 
-O ponto principal e separar dois tipos de problema:
+- Falha 1: O modelo não recebe dados para responder.
+- Falha 2: O modelo recebe dados, mas age errado.
 
-- o modelo nao tem o contexto certo na hora certa
-- o modelo tem contexto, mas continua se comportando mal do mesmo jeito
-
-Essa divisao ja melhora muito a conversa.
+O diagnóstico define o orçamento.
 
 ## Quebrando o problema
 
-Antes de escolher, tente responder:
+Use três questões para aprovar modelos:
+1. O robô acessa todos os dados?
+2. Os dados mudam sempre?
+3. Há dinheiro para treinar sempre?
 
-1. a falha vem de conhecimento faltando ou desatualizado?
-2. ou o problema e comportamento repetido mesmo com contexto bom?
-3. eu preciso de uma camada mais facil de atualizar e inspecionar?
-4. o custo operacional de fine-tuning faz sentido aqui?
-
-Essas perguntas puxam a decisao para a falha real, nao para moda.
+A ordem evita apostas.
 
 ## Exemplo simples
 
-Imagine um assistente interno que responde perguntas sobre politica da empresa.
+Avalie um suporte em lojas.
+O aplicativo erra limites de garantia. Os dados mudaram. O sistema não precisa de retreino. Adicione a política atual via RAG.
 
-Se ele erra porque nao recebeu o documento mais recente, o problema parece muito mais de retrieval do que de fine-tuning.
-
-Agora imagine um fluxo em que o modelo ate recebe o contexto certo, mas continua respondendo no formato errado ou ignorando instrucoes importantes de forma recorrente.
-
-A conversa entao pode comecar a apontar para ajuste de comportamento, e nao so para busca.
-
-O importante e perceber que o tipo de falha mudou.
+Se o bot age errado ou é agressivo, o ajuste de parâmetros resolve. Use fine-tuning com dados restritos.
 
 ## Erros comuns
 
-- tratar RAG e fine-tuning como se um anulasse o outro
-- puxar fine-tuning cedo demais sem provar que retrieval ja esta bom
-- chamar qualquer erro de "falta de contexto"
-- ignorar custo de operacao, avaliacao e iteracao
+- Retreinar o modelo quando o problema é acesso a dados.
+- Usar RAG quando o problema é comportamento.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte comeca pela falha observavel.
+O coordenador descarta marketing e direciona soluções.
 
-Normalmente isso soa assim:
-
-> Se o sistema falha porque nao acessa o conhecimento certo, eu melhoro retrieval primeiro. Se ele falha mesmo com o contexto correto, eu comeco a discutir mudanca de comportamento.
-
-Isso organiza a decisao de um jeito muito mais util.
+> "Não vamos treinar se a falha é por dados desatualizados. Insira dados novos na arquitetura."
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade rapido:
-
-- voce sabe distinguir acesso a conhecimento de comportamento do modelo
-- voce escolhe o ponto de controle mais barato e mais inspecionavel primeiro
-- voce pensa em iteracao e custo operacional
-
-Quem faz isso bem parece alguem que projeta sistema de IA com criterio, nao com buzzword.
-
-> Antes de escolher a tecnica, descubra qual falha voce esta tentando corrigir.
-
-> Se o modelo nem recebeu o contexto certo ainda, discutir fine-tuning pode estar cedo demais.
+Projetos sólidos exigem controle de falhas.
+- O candidato prioriza retreino em massa quando a situação exige atualização de dados?
+- Engenharia prioriza acesso. Treinar modelos não corrige falta de fatos.

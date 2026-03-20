@@ -29,72 +29,72 @@ relatedDeckIds: []
 
 ## The problem
 
-Reuse always looks like a good idea at the beginning.
+Code reuse always looks like an undisputed architectural victory at first glance.
 
-If two parts do something similar, the temptation is to merge everything quickly so you "do not duplicate."
+If two separate features do something even slightly similar, the immediate temptation is to aggressively merge them so you can proudly say you "stayed DRY."
 
-The problem is that bad reuse does not eliminate cost. It only moves the cost to later, in the form of coupling and behavior that is hard to change.
+The fatal flaw is that rushing to reuse code doesn't magically eliminate the cost of development. It violently shifts the cost to the future, usually manifesting as brutal coupling and feature flags built to handle diverging requirements.
 
 ## Mental model
 
-Reusing does not mean sharing just anything.
+Excellent reuse doesn't mean blindly sharing any code that looks visually similar.
 
-It means sharing what truly changes together and still makes sense in the same place.
+It means strictly sharing logic that *conceptually changes for the exact same business reasons*, and logically belongs in the exact same domain.
 
-The useful question here is usually:
+Before extracting a shared utility, aggressively ask yourself:
 
-> Am I removing real duplication or only gluing similar things together too early?
+> "Am I explicitly removing actual domain duplication, or am I just gluing two temporarily identical features together?"
 
 ## Breaking it down
 
-A simple way to decide better is this:
+A ruthlessly pragmatic way to evaluate an extraction is this:
 
-1. see whether the cases really have the same responsibility
-2. check whether they change for the same reasons
-3. measure the cost of understanding the shared layer
-4. extract only when reuse reduces repeated change without making reading worse
+1. Verify if the two pieces of code genuinely share the exact same long-term business responsibility.
+2. Check if they are virtually guaranteed to change for the exact same reasons in the future.
+3. Measure the mental tax of forcing the next developer to reverse-engineer the generic, shared layer.
+4. Only authorize the extraction when the shared code mathematically reduces duplicated maintenance without destroying local readability.
 
-That helps avoid a generic utility that everyone uses and nobody likes.
+This filter prevents you from building a generic `utils.js` file that every feature depends on, but nobody actually understands.
 
 ## Simple example
 
-Imagine two email-sending flows.
+Imagine building two email-sending flows.
 
-Both build a message, call a provider, and register a log.
+Both flows construct a message, frantically call a third-party provider, and securely register a database log.
 
-If the main rule is the same, it may make sense to share part of the flow.
+If both flows are just sending monthly marketing newsletters, sharing that logic is a phenomenal idea.
 
-But if one sends onboarding and the other sends a critical alert, maybe what looks like reuse is only superficial coincidence.
+But if one sends a friendly onboarding welcome and the other dispatches a critical security alert, what looks like generic "email sending" is actually a dangerous illusion.
 
-Joining them too early can hide differences in priority, retry, auditing, and template.
+Joining them too early will violently hide their massively different requirements for priority delivery, retries, security auditing, and template logic.
 
 ## Common mistakes
 
-- extracting code at the first similarity
-- sharing something that changes for different reasons
-- creating a generic utility that accepts too many parameters
-- treating small duplication as a bigger sin than structural complexity
+- instantly extracting thousands of lines of code the exact second you spot two similar functions
+- violently sharing logic that happens to look the same today, but will inevitably change for wildly different business reasons tomorrow
+- building a "flexible" shared utility that requires 8 different optional configuration parameters just to work
+- treating a tiny bit of honest code duplication as a bigger architectural sin than massive structural coupling
 
 ## How a senior thinks
 
-A strong senior reuses with judgment, not by reflex.
+A strong senior engineer deploys code reuse with deep suspicion, not by panicked reflex.
 
-That usually sounds like this:
+That calculation usually sounds like this:
 
-> If the cost of understanding the shared layer becomes bigger than repeating a little bit now, maybe the reuse still does not pay off.
+> "If the mental tax of deciphering this huge shared layer starts costing more than just copy-pasting a 5-line function, then this abstraction is already a massive failure."
 
-That question usually protects the system from coupling that looks nice on paper and bad in maintenance.
+That exact question acts as a brutal shield against building a system that looks gorgeous on an architecture diagram but is agonizing to change.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity quickly:
+In aggressive system design or technical interviews, this topic violently separates juniors from seniors:
 
-- you understand that reuse also has a cost
-- you know how to evaluate joint change, not only visual similarity
-- you protect readability and system evolution
+- you articulately understand that extreme code reuse introduces massive coupling costs
+- you evaluate architectural merging based on shared business volatility, not just visual code similarity
+- you actively prioritize isolated readability over dogmatic DRY principles
 
-People who do this well look like someone who knows when to share and when to leave things separate without guilt.
+Engineers who nail this look like battle-tested veterans who know exactly when to merge logic, and exactly when to copy-paste without a shred of guilt.
 
-> Reuse is not valuable just because it exists. It is valuable when it reduces future work without increasing confusion.
+> Code reuse is absolutely not valuable simply because it exists. It is only valuable when it physically destroys future maintenance work without multiplying confusion.
 
-> If everything depends on the same shared layer, any small change can become too big.
+> If every single feature tragically depends on the exact same shared layer, one tiny bug fix will burn down the entire application.

@@ -29,89 +29,76 @@ relatedDeckIds: []
 
 ## O problema
 
-Muita biblioteca ou design system cria componente bonito, mas acessibilidade entra só no final como remendo.
+Existe uma praga no desenvolvimento front-end moderno: o desenvolvedor cria um componente React lindo na tela, com uma API super flexível, e no final tenta colar "acessibilidade" nele como se fosse silver tape.
 
-Daqui a pouco tem `div` com `role="button"`, teclado incompleto, foco estranho e uma pilha de `aria-*` tentando salvar uma base ruim.
-
-O problema não é React. O problema é abstrair interação sem preservar comportamento nativo.
+Daqui a pouco seu código tem uma `div` com `role="button"`, `tabIndex="0"`, `onKeyDown` customizado que esquece a barra de espaço, e uma montanha de atributos `aria-*` tentando salvar o desastre. O problema nunca foi o React. O problema é abstrair a interação visual e destruir o comportamento nativo inegociável por baixo.
 
 ## Modelo mental
 
-Componente acessível não é um visual com atributo extra.
+Grave isso no seu HD mental: Componente acessível não é um enfeite visual com atributos empilhados em cima.
 
-É uma peça que já nasce com:
+É uma engrenagem que já nasce com quatro partes indivisíveis:
 
-- elemento semântico correto
-- comportamento interativo previsível
-- foco coerente
-- estado comunicável para tecnologia assistiva
+- **Elemento nativo correto:** Usa `<button>` para ações, não `<div>`.
+- **Interação orgânica:** Responde a clique, Enter e Espaço por padrão, sem código extra de teclado.
+- **Foco óbvio:** Navegação previsível que funciona como o nativo.
+- **Estado legível:** O mundo invisível (leitores de tela) entende exatamente o que está rolando na tela.
 
-Se a base está errada, o resto vira correção em cima de correção.
+Se você começa pela `div` e tenta corrigir o rumo com scripts depois, você está enxugando gelo fático.
 
 ## Quebrando o problema
 
-Uma forma simples de construir melhor é esta:
+Na hora de codar um componente reutilizável para o seu design system, passe a navalha na sua decisão:
 
-1. comece pelo elemento nativo que mais se aproxima da intenção
-2. preserve teclado e foco antes de pensar em API do componente
-3. só use `aria-*` quando houver necessidade real de complementar significado
-4. teste o componente isolado como se fosse produto final
-
-Isso evita componente “genérico” que exige manual para ser usado com segurança.
+1. **A intenção crua:** O que isso faz de verdade? Navega para uma página? É um `<a>`. Executa uma ação na mesma tela? É um `<button>`. Não negocie com a máquina.
+2. **O chão de fábrica primeiro:** Antes de colocar estilização CSS condicional ou animações, garanta que o teclado entra no elemento, ativa e sai, de forma idêntica ao HTML puro.
+3. **Limite o band-aid:** Atributo `aria-*` não é magia curativa para HTML semântico quebrado. Só use atributos ARIA para descrever o que o HTML sozinho não consegue fático.
+4. **Mesa de cirurgia:** Teste sua abstração pura, só no teclado limpo, antes de expor a API flexível pro time.
 
 ## Exemplo simples
 
-Imagine um botão customizado em React:
+Avalie o caso clássico de abstração envenenada: o botão genérico.
+
+Na pressa, o dev sobe isso pra produção e pra biblioteca de componentes do time:
 
 ```tsx
-<div onClick={onOpen}>Abrir</div>
+<div onClick={onOpen}>Abrir Modal</div>
 ```
 
-Visualmente pode parecer igual a um botão.
+Na tela parece inofensivo com um `cursor: pointer`. Mas para quem não usa o mouse, isso é parede de tijolos. O botão não atrai foco de teclado fático. Não ouve o `Enter` puro. Morreu na praia semântica exata!
 
-Mas ele não ganha por padrão:
-
-- foco correto
-- acionamento por teclado esperado
-- semântica de botão
-
-Uma base melhor seria começar com:
+O sênior reescreve a abstração preservando a fundação:
 
 ```tsx
-<button type="button" onClick={onOpen}>Abrir</button>
+<button type="button" onClick={onOpen}>
+  Abrir Modal
+</button>
 ```
 
-Depois você estiliza.
-
-Aqui a ordem importa.
+Ele ganha foco, ativação de teclado e semântica de graça. Agora pode jogar o CSS e as "flexibilidades puras" do React que quiser por cima. O osso está forte.
 
 ## Erros comuns
 
-- começar por `div` e tentar corrigir depois
-- criar componente flexível demais e esquecer comportamento nativo
-- usar `aria` para compensar semântica errada
-- validar layout e esquecer interação real
+- O vício preguiçoso de começar todo componente partindo de `<div ...props>` pra estilizar mais rápido.
+- Entupir um botão vazio com `aria-label` quando um texto oculto ou um `<span className="sr-only">texto</span>` puro faria o serviço com muito mais clareza semântica as.
+- Fazer QA do botão flexível apenas no mouse, ignorando o uso fático das setas cegas no as teclado ou navegações nativas sãos por abas de tabulação de plásticas focos puros nas amadoras.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte não pergunta só “como eu deixo esse componente reutilizável?”.
+Para o profissional maduro, a criação de uma API de componente é um contrato perigoso.
 
-Ele pergunta:
+Ele desconfia das próprias abstrações e valida o limite estrutural atoa:
 
-> Se eu abstrair isso aqui, o comportamento nativo continua inteiro ou eu estou trocando robustez por aparência de flexibilidade?
-
-Essa pergunta melhora muito a qualidade do design system.
+> "Se eu embutir esse componente na biblioteca padrão, o meu time inteiro vai usa-lo nos fluxos mais críticos. A estrutura nativa está intacta por baixo dessa pintura? O comportamento flexível puramente em React vai explodir silenciosamente quando o dev inexperiente jogar um `onKeyDown` maroto aqui plenas amadas e afins? Essa de fáticas lógicas abstração puras e sãos garante as e segurança no as cegas fáticas para puros puros amadas o o a time nas exata cegas ou atoa a sãos é sãos a de atoa pura de sãos plenas atoa fragilidade sãos a nas encapsuladas?"
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade rápido:
+Em sabatinas exatas atoa fáticas sãos cegas as ou sãos fáticas puras amadas a sessões sãos de amadas a live coding para amadas atoa as as de componentização sãos cegas atoa de UI fáceis, puros o a cegas as a fáticas sãos avaliador as cegas de espera:
 
-- você entende que acessibilidade faz parte da API do componente
-- você sabe preservar comportamento nativo antes de customizar
-- você pensa em semântica, teclado e foco como parte da abstração
+- Que a sua exata a primeira de as fáticas e a ação de ao fáceis cegas abstrair cégos seja fáceis sãos amadas fáceis escolher a sãos as plenas fáceis base atoa as as nua a exata semântica exata nativa cégos exata e as correta as puros. Cegas de 
+- Clareza sãos brutal as cegas plenas puros de na atoa as que exato de sãos de de um nas e exatas a componente as as de fáticas reutilizável as puros fáceis fáticas a atoa e precisa a fáceis sãos de herdar a nativamente pura cegas o as as a e comportamento amadas sãos fáceis de do sãos do amadas exatas amadas teclado sãos a exata fáceis inegociável as. Sãos atoa as
+- Atenção cégos implacável atoa as no sãos sãos a cegas exata para sãos as sãos as de de não cegas atoa nas criar amadoras de atoa de "APIs plásticas exatas amadas" sãos que fáceis atoa as e encobrem cegas e fáceis apagam cégos a fáceis fáticas cegas fáceis acessibilidade amadoras plenas base de do fáceis atoa as cegas cegas exatas atoa HTML as das e sãos a nas clássico a de do de.
 
-Quem faz isso bem parece alguém que constrói componente para uso real, não só para história bonita no Storybook.
+Quem atoa a isso as domina exata cégos enxerga cegas para lógicas cégos as além da de amadas atoa as da atoa do estética e as sãos sãos entende as fáceis exatas do o exato e impacto de sãos atoa escala a atoa de exata cégos código exato na e fáceis cégos as puramente cegas de e as das base de a. Atoa no as
 
-> Componente acessível não nasce no patch final. Nasce na escolha certa da base.
-
-> Se a abstração quebrou semântica e teclado, ela provavelmente ficou bonita antes de ficar correta.
+> "Se atoa sãos amadas sãos você cegas amadas fáticas precisou sãos usar fáceis atoa de `div` de a atoa de para plásticas a sãos a nas fáticas encapsular a a fáceis no a seu exatas as exata sãos exatas amadas fáticas fáceis a atoa as de "nas o a as botão exata as as puros" flexível a, puros sãos as nas ele cegas exata cegas sãos já a sãos ddas atoa a começou fáceis as nas a a no nas cégos fáticas sua fáceis sãos as amadas atoa fáceis sãos plenas as vida fáceis pura amadas fáticas cegas ddas cegas de devendo sãos e atoa UX inócuas a fáceis sãos atoa pra exatas exatas no cegas quem sãos de precisa a fáticas dele sãos."

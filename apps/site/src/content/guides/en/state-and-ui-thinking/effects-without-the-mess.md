@@ -29,40 +29,39 @@ relatedDeckIds: []
 
 ## The problem
 
-An effect becomes a mess when it starts being used as a tool to fix anything strange in the screen.
+A \`useEffect\` turns into an absolute nightmare when developers start using it as a duct-tape tool to fix anything behaving strangely on the screen.
 
-Suddenly there is `useEffect` to derive state, synchronize a value that did not even need to exist, and patch execution order.
+Suddenly, you have effects doing everything: deriving state, manually synchronizing variables that shouldn't even exist, and desperately trying to patch render execution orders.
 
-The code may work for a while, but it becomes hard to predict when something runs and why it runs.
+The code might technically work today, but it quickly becomes impossible to predict *when* something runs and *why* it ran.
 
 ## Mental model
 
-An effect does not exist to control render.
+An effect does not exist to control the React render cycle.
 
-An effect exists to synchronize the interface with something outside:
+An effect exists strictly to step outside of React and synchronize the interface with the external world:
 
-- network
-- timer
-- listener
-- imperative DOM
-- external integration
+- making a network request
+- starting a \`setInterval\` timer
+- attaching a global window listener
+- imperatively mutating a third-party DOM library
 
-If the logic can happen during rendering or in a user event, it probably does not need to be in an effect.
+If the logic can be predictably calculated during a normal render pass or cleanly handled inside a direct button click handler, it absolutely does not belong in an effect.
 
 ## Breaking it down
 
-Before creating an effect, try to answer:
+Before blindly typing \`useEffect\`, violently cross-examine your code:
 
-1. which external system am I synchronizing with?
-2. could this be calculated during render?
-3. should this happen because of a specific interaction?
-4. is the cleanup clear when this effect stops being valid?
+1. What exact external, non-React system am I trying to synchronize with?
+2. Could I just mathematically calculate this value during the standard render cycle?
+3. Should this action only fire because the user specifically clicked a button?
+4. Is the cleanup function completely obvious for when this component unmounts?
 
-These questions eliminate a lot of unnecessary effects.
+Answering these honestly will eliminate 80% of unnecessary, buggy effects.
 
 ## Simple example
 
-Imagine this case:
+Look at this painfully common trap:
 
 ```tsx
 const [filteredUsers, setFilteredUsers] = useState<User[]>([])
@@ -72,45 +71,45 @@ useEffect(() => {
 }, [users, search])
 ```
 
-This looks normal, but `filteredUsers` is derived from `users` and `search`.
+It looks harmless, but `filteredUsers` is entirely derived from `users` and `search`.
 
-In other words: this effect is serving to keep a piece of state synchronized that did not even need to exist.
+By doing this, you are explicitly forcing React into an unnecessary second render pass just to keep a piece of invented state manually synchronized.
 
-A better version is to calculate it directly:
+The senior, predictable version simply calculates it on the fly:
 
 ```tsx
 const filteredUsers = users.filter((user) => user.name.includes(search))
 ```
 
-Now reading gets better and one unnecessary synchronization point disappears.
+Now the code is vastly easier to read, and a totally unnecessary re-render disappears.
 
 ## Common mistakes
 
-- using an effect to derive state
-- putting event logic inside an effect without need
-- depending on an effect to "fix" render order
-- forgetting cleanup in timer, listener, or subscription
+- aggressively using effects to derive or mirror state
+- shoving user event logic (like submitting a form) inside an effect instead of the `onClick` handler
+- relying on an effect's dependency array to magically "fix" broken render orders
+- recklessly forgetting the cleanup function in timers, subscriptions, or event listeners
 
 ## How a senior thinks
 
-A strong senior does not ask only "which dependency goes in the array?"
+A strong senior UI engineer doesn't stare at an effect asking "what dependencies am I missing in this array?"
 
 They ask:
 
-> Am I synchronizing with something external, or only trying to compensate for bad state modeling?
+> "Am I actually synchronizing this component with an external system, or am I just using an effect to compensate for messy state modeling?"
 
-That question usually cuts half of the effects before they are even born.
+Asking that question destroys half the effects in a codebase before they are ever committed.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows a lot of maturity:
+In React interviews, how you handle side-effects screams your exact seniority level:
 
-- you understand what an effect is for
-- you know how to differentiate external synchronization from internal derivation
-- you think about cleanup and predictability
+- you fundamentally comprehend what an effect is actually designed for
+- you can ruthlessly separate external synchronization from internal data derivation
+- you obsess over predictability, cleanup duties, and avoiding chain-reaction renders
 
-People who do this well look like someone who builds interfaces with less surprise and fewer timing bugs.
+Engineers who articulate this build interfaces that feel rock-solid and don't suffer from mysterious timing bugs.
 
-> A good effect brings the screen closer to the outside world. A bad effect tries to patch modeling holes.
+> A good effect bridges the gap between your component and the outside world. A bad effect just tries to patch holes in your state architecture.
 
-> If there is no external system involved, maybe the effect does not need to exist.
+> If there is no external system involved, you probably don't need an effect.

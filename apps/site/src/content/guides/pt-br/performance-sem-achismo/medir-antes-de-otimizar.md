@@ -28,76 +28,70 @@ relatedDeckIds: []
 
 ## O problema
 
-Muita otimização nasce de desconforto, não de evidência.
+Muita otimização nasce de um incômodo visual, não de uma evidência real.
 
-A tela parece pesada, a API parece lenta, o componente parece renderizar demais.
+A tela parece lenta, a API parece demorar, o componente parece pesado. Sem medir primeiro, a equipe confia na intuição e reage alterando o código cegamente.
 
-Sem medir, tudo isso pode soar plausível e ainda assim estar errado.
+O resultado comum é adicionar complexidade no lugar errado, criando um código mais difícil de manter para resolver um problema que talvez nem fosse o gargalo verdadeiro.
 
 ## Modelo mental
 
-Otimizar bem não é sair melhorando qualquer coisa que pareça suspeita.
+Otimização profissional não é reflexo. É investigação.
 
-É confirmar onde está o custo, quanto ele pesa e se a mudança realmente altera o resultado.
+Melhorar a performance significa provar onde o custo está, qual o tamanho dele e se a alteração de fato gera um ganho prático para o usuário. 
 
-A pergunta útil aqui costuma ser:
+A regra mecânica é simples:
 
-> O que eu consigo provar sobre essa lentidão antes de mexer no código?
+> "O que eu consigo provar com números sobre essa lentidão antes de alterar a primeira linha de código?"
+
+Se você não tem o número, toda mudança é apenas um chute.
 
 ## Quebrando o problema
 
-Uma forma simples de medir melhor é esta:
+A abordagem de quem atua com maturidade exige passos de medição antes da ação:
 
-1. escolha um fluxo específico
-2. defina qual métrica importa ali
-3. capture a linha de base antes da mudança
-4. compare o depois com o antes
+1. **Isole o fluxo principal:** Escolha exatamente qual ação do usuário está sendo avaliada.
+2. **Defina a métrica de sucesso:** O que importa aqui é o tempo de resposta da API, a renderização inicial ou o consumo de memória?
+3. **Capture o cenário atual:** Registre o tempo exato que o sistema leva antes de você mexer em qualquer coisa.
+4. **Aplique e compare:** Faça a alteração arquitetural e meça de novo. 
 
-Sem isso, “parece melhor” vira critério de decisão.
+Se a métrica não melhorou substancialmente, você reverte a mudança. Complexidade sem ganho de performance é prejuízo.
 
 ## Exemplo simples
 
-Imagine um componente de lista que parece lento.
+Imagine um componente de lista de clientes que demora para aparecer na tela.
 
-Uma resposta apressada seria adicionar memoização em tudo.
+A atitude precipitada de um desenvolvedor júnior seria sair adicionando `useMemo` e `useCallback` em todos os filtros e listas filhas do componente.
 
-Uma resposta melhor seria:
+A atitude investigativa de um engenheiro sênior seria:
 
-- medir tempo de render
-- ver quantas vezes o componente realmente re-renderiza
-- comparar antes e depois da mudança
+- Medir no *Profiler* o tempo real de renderização da lista.
+- Descobrir quantas vezes o componente de fato renderizou de novo.
+- Identificar se a espera maior era do banco de dados trazendo a lista pesada ou do navegador tentando desenhar.
 
-Se a métrica quase não muda, talvez a otimização tenha criado complexidade sem ganho real.
+Se a lentidão vinha do banco, poluir o código React com *hooks* de otimização foi um esforço completamente inútil.
 
 ## Erros comuns
 
-- otimizar antes de ter linha de base
-- confiar só na sensação local
-- comemorar micro melhora irrelevante para o usuário
-- manter complexidade nova mesmo quando o ganho foi mínimo
+- Otimizar partes do sistema apenas porque ouviu falar que "isso deixa mais rápido", sem ter uma linha de base documentada.
+- Confiar exclusivamente na própria percepção de velocidade na máquina de desenvolvimento local (ignorando o celular 3G do usuário real).
+- Comemorar ganhos de 5 milissegundos que não afetam em nada a experiência humana na ponta, mas que custaram a clareza do código inteiro.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte não trata otimização como reflexo.
+Um desenvolvedor maduro encara a otimização de performance como um laboratório fechado. 
 
-Ele trata como experimento.
+Ele não sai criando soluções da própria cabeça. O diálogo natural dele antes de agir soa como:
 
-Normalmente isso soa assim:
+> "Antes de mudar a estrutura desse estado, preciso medir o tempo atual da resposta. Só assim poderemos justificar no *pull request* se a nova complexidade do código se pagou."
 
-> Antes de mexer, eu quero medir o estado atual. Depois eu comparo para ver se a mudança realmente valeu o custo.
-
-Essa postura protege o sistema e a equipe de complexidade inútil.
+Essa atitude metódica protege o time inteiro de trabalhar atoa no código alheio.
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade rápido:
+Na mesa de entrevista, o avaliador joga uma arquitetura lenta na sua frente. Ele quer avaliar seus instintos primários e a sua paciência.
 
-- você sabe distinguir suspeita de evidência
-- você pensa em métrica e impacto
-- você entende que otimização também tem custo de manutenção
+- Você vai sair disparando técnicas decoradas e dicas de otimização genéricas antes de pedir mais dados?
+- Ou você vai frear o ímpeto e pedir informações de rastreamento de tempo para focar apenas no que mais está doendo?
 
-Quem faz isso bem parece alguém que melhora performance sem transformar o código em ritual.
-
-> O que não foi medido costuma virar opinião com cara de engenharia.
-
-> Se você não comparou antes e depois, ainda não sabe se otimizou ou só mexeu.
+> "O que não foi devidamente medido vira apenas argumento de intuição. Se você aplicou uma técnica, mas não soube comparar numericamente o antes e o depois da aplicação, você ainda não sabe se consertou algo."

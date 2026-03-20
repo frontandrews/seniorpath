@@ -19,30 +19,30 @@ relatedGuideIds:
 
 ## What it is
 
-Idempotency means being able to repeat the same operation without generating a new side effect every time.
+Idempotency means that you can repeat the same operation multiple times, but the core effect only happens once.
 
-That matters when a client, worker, or external integration may resend the same intent.
+This saves your system when a client double-clicks a submit button, a worker restarts mid-job, or an external API resends a webhook because it thought the first one failed.
 
 ## When it matters
 
-It matters in payments, webhooks, jobs, and any flow where retry is normal behavior.
+It matters in payments, webhooks, asynchronous jobs, and any flow where retrying is a normal part of production life.
 
-Without it, a retry can create a duplicate order, duplicate email, or inconsistent state.
+Without idempotency, a simple retry could create duplicate charges, send the same email twice, or silently corrupt your database state.
 
 ## Common mistake
 
-The common mistake is treating every retry as a new command.
+The common mistake is treating every incoming request as a brand new intention.
 
-That usually works until the first timeout or partial error.
+This works perfectly until the first network timeout. Since the client wasn't sure if the previous attempt succeeded, it tries again. If the backend doesn't recognize the second request as the exact same intent, it duplicates the work.
 
 ## Short example
 
-If `POST /orders` is resent after a timeout, the system may need an idempotency key to recognize that the intent is the same.
+When a client sends a `POST /orders`, they include an idempotency key (like a unique UUID for that checkout attempt).
 
-That way the second request returns the same result instead of creating another order.
+If the connection drops and the client sends the exact same request again, the backend sees the duplicate key. It recognizes the order was already processed during the first attempt and simply returns the success response again, safely ignoring the duplicate attempt.
 
 ## Why it helps
 
-Idempotency makes failure handling calmer.
+Idempotency makes failure handling much calmer in distributed systems.
 
-Retry stops looking like a dangerous guess and becomes planned behavior.
+When you know you can safely repeat operations, retrying a failed request stops feeling like a dangerous guess and becomes a reliable, planned behavior.

@@ -30,79 +30,79 @@ relatedDeckIds:
 
 ## The problem
 
-Many interfaces become confusing because the team starts storing state before deciding whether that value really needs to exist as state.
+Many front-end interfaces become disastrously confusing because teams start storing state everywhere before validating whether that value even needs to exist.
 
-Soon the same data appears in two places, one screen depends on another to stay coherent, and the bug looks "random."
+Soon, the exact same data appears in three different places, one screen silently depends on another to stay coherent, and users start reporting "random" bugs.
 
-Most of the time, the problem is not React. The problem is poorly resolved ownership.
+Most of the time, the problem isn't React or Vue. The problem is a chaotic lack of state ownership.
 
 ## Mental model
 
-Good state is state with a clear owner.
+Good state is state with a brutally clear owner.
 
-If a value can be calculated from something else, maybe it does not need to be stored again.
+If a UI value can be mathematically calculated from something else, it probably shouldn't be stored in memory twice.
 
-If two different parts of the interface depend on the same value, someone needs to be the source of truth.
+If two entirely different parts of the screen depend on the exact same value, someone explicit needs to be declared the single source of truth.
 
 ## Breaking it down
 
-When you look at a value in the UI, try to answer:
+Whenever you look at a value in the UI, force yourself to answer:
 
-1. does this need to change with user interaction?
-2. can this be calculated from props or from other state?
-3. who should be the source of truth?
-4. does this value need to be shared, or can it stay local?
+1. Does this actually change over time due to user interaction or network requests?
+2. Could I easily calculate this on the fly from props or existing state?
+3. Who is the absolute, unquestionable source of truth for this value?
+4. Does this value really need to be shared globally, or can it be fiercely protected locally?
 
-These questions avoid a lot of invented state with no need.
+Asking these questions aggressively prevents the creation of invented, unnecessary state.
 
 ## Simple example
 
-Imagine a user list and a search field.
+Imagine a page with a user list and a search field.
 
-A bad approach would be storing:
+A messy, junior approach stores three things:
 
 - `users`
-- `search`
+- `searchQuery`
 - `filteredUsers`
 
-The problem is that `filteredUsers` can be derived from `users` and `search`.
+The fatal flaw is that `filteredUsers` is essentially a lie—it's just a derived computation of `users` combined with `searchQuery`.
 
-A better approach would be storing only:
+A senior, durable approach stores only two things:
 
 - `users`
-- `search`
+- `searchQuery`
 
-And calculating `filteredUsers` during rendering.
+And simply calculates the filtered list as a normal variable during the render cycle.
 
-That way you reduce unnecessary synchronization and lower the chance of stale data.
+By doing that, you instantly eliminate the need for manual synchronization and drastically lower the chance of showing stale data to the user.
 
 ## Common mistakes
 
-- storing state that could be derived
-- creating two sources of truth for the same value
-- lifting state too early without real need
-- spreading shared state without defining ownership
+- storing state that could trivially be derived during render
+- creating two conflicting sources of truth for the exact same conceptual value
+- lifting state up to global stores or parent components way too early
+- spreading shared state across the app without defining a clear owner
 
 ## How a senior thinks
 
-A strong senior does not ask first "where do I put this state?"
+A strong senior front-end engineer doesn't immediately ask "where do I put this \`useState\`?"
 
 They ask:
 
-> Does this value really need to exist as state, or can I derive it from somewhere else?
+> "Does this value actually need to exist as state at all, or can I just derive it from the truth I already have?"
 
-That question usually simplifies the screen before any refactor.
+Answering that question usually simplifies the component heavily before you even write the first line of code.
 
 ## What the interviewer wants to see
 
-In interviews, this usually reveals a lot of maturity:
+In front-end architecture interviews, this mindset reveals massive operational maturity:
 
-- you know how to differentiate real state from a derived value
-- you understand source of truth
-- you know how to justify why something should be local or shared
+- you aggressively differentiate core truth from derived values
+- you deeply respect the concept of a "single source of truth"
+- you can articulately justify why a piece of state must be local or global
 
-People who do this well give the impression of building interfaces with fewer bugs and less friction.
+Engineers who do this well project the image of someone who builds UI with fewer silent bugs and vastly less maintenance friction.
 
-> Too much state looks like flexibility at the beginning and bad maintenance soon after.
+> Storing too much state looks like helpful flexibility on day one, and becomes a synchronization nightmare on day ten.
 
-> If you do not know who owns the value, the state is probably still not modeled well.
+> If you don't know exactly who owns the value, your state is not modeled well yet.

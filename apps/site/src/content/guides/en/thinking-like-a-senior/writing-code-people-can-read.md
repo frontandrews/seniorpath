@@ -28,36 +28,36 @@ relatedDeckIds: []
 
 ## The problem
 
-Some code works, passes tests, and still makes everyone slower.
+Massive amounts of code technically work, pass all unit tests, and yet somehow make every single engineer on the team drastically slower.
 
-Not because the logic is hard.
+This doesn't happen because the business logic is too heavy.
 
-But because every name demands interpretation, every function mixes responsibilities, and every abstraction seems to ask for more context than it gives back.
+It happens because every variable name demands exhausting interpretation, every function aggressively mixes three different responsibilities, and every "elegant" abstraction violently demands more context than it actually provides.
 
 ## Mental model
 
-Code is not only instruction for the machine.
+Source code is absolutely not just robotic instructions meant for a machine.
 
-Code is also an explanation for the next person who will read, review, or change it.
+Code is fundamentally a written explanation meant for the exhausted human being who is going to read, review, or debug it at 2 AM.
 
-If you need to stop at every line to decode the intent, the problem is not lack of intelligence. The code is demanding too much context.
+If you have to mentally pause at every single line just to decode the author's hidden intent, you are not lacking intelligence. The code is simply demanding violently too much context.
 
 ## Breaking it down
 
-A simple way to write better is this:
+A deeply rigorous, senior protocol for writing code people can actually survive reading is this:
 
-1. choose names that explain intent, not implementation
-2. keep a function focused on one visible responsibility
-3. keep code that changes together close together
-4. extract abstraction only when it really simplifies reading
+1. fiercely choose names that describe the exact business intent, completely ignoring the underlying implementation
+2. militantly restrict a function to one singular, blindingly obvious responsibility
+3. aggressively group code blocks that change together physically close to each other in the file
+4. only ever extract an abstraction when it mathematically simplifies the reading process
 
-The goal is not to make everything short.
+The goal is absolutely not to write the fewest possible lines of code.
 
-The goal is to make it clear enough that another person can continue without guessing.
+The objective is to make the logic so agonizingly clear that a new engineer can continue the work without guessing.
 
 ## Simple example
 
-Imagine this code:
+Imagine encountering this block of code:
 
 ```ts
 function p(u) {
@@ -65,11 +65,11 @@ function p(u) {
 }
 ```
 
-It works.
+Mechanically, it works instantly.
 
-But you need to discover what `p`, `u`, `a`, and `n` mean before you can trust what is happening.
+But humanly, you have to violently reverse-engineer what `p`, `u`, `a`, and `n` mean before you can ever safely modify it.
 
-A better version would be:
+An unapologetic, senior version immediately demands this:
 
 ```ts
 function getActiveUserNames(users: User[]) {
@@ -77,39 +77,39 @@ function getActiveUserNames(users: User[]) {
 }
 ```
 
-Now the reading is almost immediate.
+The reading comprehension is instantaneous.
 
-You did not gain only beauty. You gained speed of understanding.
+You didn't just gain cosmetic beauty. You gained aggressive execution speed for the entire team.
 
 ## Common mistakes
 
-- using names that are too short to seem elegant
-- breaking everything into small functions that hide the main line
-- creating abstraction too early
-- prioritizing "dry code" when reading would get worse
+- using violently short variable names just to make the code look statistically "cleaner"
+- defensively shattering a simple flow into ten tiny functions that require jumping around the file to understand
+- desperately creating massive conceptual abstractions days before they are actually needed
+- treating "DRY" (Don't Repeat Yourself) as a religion, even when removing the duplication actively makes the code harder to read
 
 ## How a senior thinks
 
-A strong senior does not write to impress.
+A strong senior engineer absolutely never writes code to prove how smart they are.
 
-They write to reduce friction.
+They write code specifically to destroy friction for the next person.
 
-That usually sounds like this:
+That operational standard sounds exactly like this:
 
-> If I come back here in three months, will I still understand quickly what this block does and why it exists?
+> "If I abandon this feature and come back in exactly three months, will I be able to instantly understand what this block does, or will I have to painfully reconstruct the context?"
 
-That question usually improves names, structure, and level of abstraction almost by itself.
+That single, arrogant check automatically upgrades names, structural flows, and abstraction boundaries.
 
 ## What the interviewer wants to see
 
-In interviews, this appears in a simple way:
+In aggressive code-pairing interviews, this discipline separates the professionals from the hobbyists:
 
-- do your names help or get in the way?
-- does your solution have a main line that is easy to follow?
-- do you know when to extract a function and when to keep it together?
+- do your variable names actively assist the interviewer, or violently get in their way?
+- does your core logic tell a linear story that is incredibly easy to trace?
+- do you explicitly know exactly when to extract a helper function versus keeping the logic inline?
 
-People who write readable code usually look more mature than people trying to sound sophisticated.
+Developers who write aggressively readable code project massive maturity, completely overpowering the candidates trying to sound highly sophisticated.
 
-> Good code is not the code that looks clever. It is the code that stays clear when another person touches it.
+> World-class code is absolutely never the code that looks the most clever. It is the code that stubbornly remains clear when another human touches it.
 
-> If reading got harder after the abstraction, maybe it did not help.
+> If the code became mathematically harder to read after you added your "clever" abstraction, the abstraction failed.

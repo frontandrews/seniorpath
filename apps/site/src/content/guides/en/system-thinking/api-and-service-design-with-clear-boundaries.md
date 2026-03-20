@@ -29,86 +29,86 @@ relatedDeckIds: []
 
 ## The problem
 
-Many APIs start simple and become confusing because the boundaries were never truly decided.
+Many APIs start out brilliantly simple but quickly devolve into confusing spaghetti because the boundaries were never truly respected.
 
-Soon the controller validates, the service formats the response, the repository applies business rules, and everything seems to work until the first bigger change.
+Soon, the controller is doing data validation, the service is formatting HTTP responses, the repository is enforcing business rules, and it all "works"—until you need to make the first major change.
 
-The problem is not only folder organization. The problem is mixed responsibility.
+The root problem isn't folder organization. The root problem is completely mixed responsibilities.
 
 ## Mental model
 
-A good boundary is a boundary that reduces doubt.
+A strong architectural boundary is one that aggressively reduces doubt.
 
-When someone looks at one part of the system, it should be clear:
+When another engineer opens any part of the system, it should be immediately obvious:
 
-- who receives the input
-- who applies the rule
-- who talks to infrastructure
-- who returns the response
+- who receives and validates the input
+- who applies the core business logic
+- who talks to the database or external APIs
+- who wraps up the final response
 
-If those layers mix too much, the system loses predictability.
+If these layers bleed into each other, the system loses all predictability.
 
 ## Breaking it down
 
-A simple way to think about API and service is this:
+A pragmatic way to enforce clear API and service boundaries is this:
 
-1. the route receives and validates the request
-2. the service coordinates the business rule
-3. the access layer talks to the database or external dependency
-4. the response comes back in a coherent shape for the consumer
+1. the HTTP route/controller exclusively handles receiving and validating the request payload
+2. the service layer exclusively coordinates the deep business rules
+3. the access layer (repository) exclusively abstracts the database or external dependency
+4. the response is formatted cleanly before returning to the consumer
 
-It does not need to become textbook architecture.
+This doesn't need to be dogmatic "Clean Architecture."
 
-It only needs to prevent any place from doing anything.
+It just needs to be strict enough to prevent any random file from doing everything at once.
 
 ## Simple example
 
-Imagine an endpoint for creating an order.
+Imagine an endpoint for creating a new checkout order.
 
-A messy version may:
+A messy, junior version might:
 
-- validate input in the controller
-- query stock directly in the controller
-- calculate total in a loose helper
-- save to the database in several different places
+- validate the cart payload straight in the controller
+- manually query the stock database from the controller
+- calculate the final price in a floating helper file
+- save to the database in three different places intermixed with logic
 
-A better version concentrates the rule in one service:
+A senior, boundary-respected version concentrates the rule safely:
 
-- the route validates input and calls `createOrder`
-- the service checks stock, calculates the total, and decides the flow
-- the repository only persists
+- the route controller validates the schema and passes it to `createOrder`
+- the service layer checks stock, calculates the total, and dictates the flow
+- the repository only takes the final robust object and persists it
 
-Now it is clearer where to change things when the rule changes.
+Now, when the pricing logic changes, you know exactly where to go without touching HTTP or SQL code.
 
 ## Common mistakes
 
-- leaving business rules spread across controller, service, and repository
-- creating too many layers without real responsibility
-- designing the service around the entity name instead of the business flow
-- coupling the API response to internal implementation detail
+- letting core business rules bleed across the controller, service, and repository randomly
+- creating 5 different wrapper layers without any actual distinct responsibility
+- designing a service around a noun (e.g., `UserService`) instead of a business flow (e.g., `UserOnboarding`)
+- tightly coupling the API's JSON response to the database's internal table structure
 
 ## How a senior thinks
 
-A strong senior does not think about layers only as a pattern.
+A strong senior doesn't add layers just to satisfy a design pattern.
 
-They think about maintenance friction.
+They add boundaries to reduce maintenance friction.
 
 That usually sounds like this:
 
-> I want the main rule to live in a predictable place and for infrastructure to be able to change without spreading impact across the whole application.
+> "I want the core business rule to live in one highly predictable place, and I want the infrastructure to be explicitly separated so it can change without blowing up the whole application."
 
-That sentence usually leads to a much better architecture than "let us do clean architecture just because."
+That mindset leads to a vastly superior architecture than saying "let's use DDD just because."
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity quickly:
+In technical interviews, this mindset shows immediate maturity:
 
-- you understand responsibility and boundary
-- you know how to separate business rules from transport and persistence detail
-- you think about future change without overengineering
+- you deeply understand the difference between a responsibility and a boundary
+- you know how to aggressively separate business rules from HTTP transport metrics and SQL queries
+- you plan for future changes without falling into premature overengineering
 
-People who do this well give the image of someone who can keep the system readable as it grows.
+Engineers who articulate this well project the image of someone who keeps a system readable and maintainable over years of growth.
 
-> A good API is not the one with more layers. It is the one that makes clear where each decision lives.
+> A good API isn't the one with the most architectural layers. It is the one that makes it blindingly obvious where every decision lives.
 
-> If every change crosses the whole system, the boundary is still not doing its job.
+> If a minor feature change requires editing files across the entire stack, your boundaries are failing.

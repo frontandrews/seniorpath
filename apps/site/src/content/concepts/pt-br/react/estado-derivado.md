@@ -16,32 +16,32 @@ relatedGuideIds:
   - state-ownership-without-confusion
 ---
 
-## O que e
+## O que é
 
-Estado derivado e um valor que voce consegue calcular a partir de outros valores que ja existem.
+Estado derivado é qualquer valor que você consegue calcular no meio da renderização, só olhando para outras variáveis que já existem (como props ou outro state).
 
-Se `visibleItems` pode ser calculado a partir de `items` e `query`, isso normalmente e estado derivado.
+Se você já tem uma lista de `items` e um termo de `query`, a lista filtrada `visibleItems` é um estado derivado. Você não precisa guardá-la em um novo estado; basta calculá-la na hora.
 
 ## Quando importa
 
-Isso importa quando um componente comeca a espelhar props em state ou guardar duas fontes de verdade ao mesmo tempo.
+Isso importa muito quando um componente começa a copiar valores de `props` para dentro do seu próprio `state`, ou quando tenta manter duas fontes de verdade sincronizadas ao mesmo tempo.
 
-E assim que varios bugs de interface começam.
+É exatamente aí que a maioria dos bugs silenciosos de interface começa a nascer.
 
 ## Erro comum
 
-O erro comum e salvar uma segunda copia so porque parece mais pratico.
+O erro mais comum é criar um `useEffect` para atualizar uma segunda cópia do estado sempre que a fonte original muda, só porque isso "parece mais seguro" ou otimizado.
 
-Depois voce precisa sincronizar os dois lados manualmente.
+Ao fazer isso, você cria um problema de sincronização manual: agora o seu componente tem dois valores que deveriam significar a mesma coisa, mas que podem ficar fora de sintonia durante o ciclo do React.
 
 ## Exemplo curto
 
-Se uma tela guarda `items`, `query` e `visibleItems` no state, o terceiro valor pode ser desnecessario.
+Se uma tela tem os estados `items` e `query`, criar um terceiro estado `visibleItems` (junto com um `useEffect` para mantê-lo atualizado) é quase sempre um erro.
 
-Em muitos casos, `visibleItems` deveria ser calculado durante o render.
+Em vez disso, `visibleItems` deveria ser apenas uma constante calculada direto no corpo do componente (ou com um `useMemo`, se o cálculo for muito pesado).
 
 ## Por que isso ajuda
 
-Quanto menos lugares tentam possuir a mesma verdade, mais facil fica entender o componente.
+Quanto menos partes do código tentarem ser as donas da verdade, mais previsível o componente se torna.
 
-Isso reduz stale UI e update path desnecessario.
+Isso elimina o risco de mostrar dados velhos na tela ("stale UI") e evita que o React faça renderizações extras que ninguém pediu.

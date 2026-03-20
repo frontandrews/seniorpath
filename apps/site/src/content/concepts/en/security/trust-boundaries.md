@@ -19,30 +19,30 @@ relatedGuideIds:
 
 ## What it is
 
-A trust boundary is the point where you should stop assuming that something is safe by default.
+A trust boundary is the invisible line in your architecture where you must stop assuming that data, identity, or requests are safe by default.
 
-That can happen between browser and server, service and database, internal system and vendor, or regular user and admin.
+It is the exact moment where control passes from a less trusted zone (like the open internet or a third-party vendor) to a more trusted zone (like your internal backend).
 
 ## When it matters
 
-It matters whenever data crosses systems, permission changes, or input arrives from outside the current context.
+It matters whenever data crosses between systems, when user permissions change, or whenever input arrives from outside of your current execution context.
 
-If you ignore that boundary, you usually ignore validation and authorization together with it.
+If you ignore where this boundary lies, you will inevitably skip crucial data validation and authorization checks, opening the door to vulnerabilities.
 
 ## Common mistake
 
-The common mistake is treating "internal" as automatically trustworthy.
+The most dangerous mistake is treating everything labeled "internal" as automatically trustworthy.
 
-An internal system can also be wrong, outdated, or misconfigured.
+Internal networks, microservices, and databases can be misconfigured, compromised, or sent malicious data from another internal service. Trusting them blindly is architecture by wishful thinking.
 
 ## Short example
 
-If one service says a user is admin, another service still needs to decide what that means inside its own rules.
+If an authentication service sends a token saying a user is an "admin", your billing service still needs to actively verify what "admin" actually means within its own domain rules.
 
-Trusting the label blindly can turn into a permission bug.
+If the billing service just blindly trusts the label without checking the boundary, a minor bug in the auth service suddenly becomes a critical permission escalation in billing.
 
 ## Why it helps
 
-This concept makes security more concrete.
+Thinking in trust boundaries makes the vague fear of "security" incredibly concrete.
 
-Instead of vague fear, you get a better question: where does trust change here, and which checks belong at that edge?
+Instead of worrying everywhere, you ask a focused, engineering question: "Where exactly does the trust level change here, and what security checks explicitly belong at that edge?"

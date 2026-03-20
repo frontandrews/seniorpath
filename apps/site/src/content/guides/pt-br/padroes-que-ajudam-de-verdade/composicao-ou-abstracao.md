@@ -28,78 +28,73 @@ relatedDeckIds: []
 
 ## O problema
 
-Muita abstracao nasce cedo demais.
+Uma das maiores pragas na base de código é a abstração que nasceu semanas cedo demais, financiada apenas por vaidade ou dogma teórico.
 
-O time vê duas partes parecidas, cria uma camada generica para "evitar repeticao" e logo o codigo fica mais esperto do que claro.
+O time nota nervosamente duas lógicas minúsculas remotamente parecidas nas views e num susto de fanatismo levanta camadas super genéricas só "para evitar repetição (DRY)". E pronto. Logo o código limpo virou uma "obra prima flexível", mas completamente opaca e ininteligível.
 
-No começo parece elegante. Depois, qualquer mudanca exige entender uma API interna que quase ninguem queria ter.
+E o que era simples na clareza do começo, em três sprints se transforma pesadamente num código engessado onde qualquer manutenção exige horas decifrando uma API interna de lixo que ninguém precisava.
 
 ## Modelo mental
 
-Abstracao boa reduz carga mental.
+Abstração magistral verdadeira tem um único papel inabalável: a missão de enxugar e eliminar a carga mental da sua equipe na leitura.
 
-Abstracao ruim esconde diferenca importante atras de uma interface bonita.
+A péssima e covarde faz o contrário: ela dissimula na cara das views as diferenças lógicas vitais que existem e esconde nas profundezas de uma única lógica amarrada o que necessitava de clareza explícita.
 
-Por isso, antes de abstrair, vale perguntar:
+Ao invés de sacar a arma exata em abstrair num dogma, grave o mantra sênior:
 
-> Eu estou simplificando a leitura ou so escondendo variacao cedo demais?
+> "Essa nova fatia genial por acaso elimina fardos cognitivos do futuro na manutenção, ou acabei apenas por engessar diferenças comportamentais reais num falso pacotinho fechado cedo das dores reais?"
 
-Muitas vezes, composicao simples resolve melhor.
+Muitas vezes inegociáveis as vitórias, a simplicidade de manter a cópia com composição exposta ganha de longe as dores plenas.
 
 ## Quebrando o problema
 
-Uma forma simples de decidir e esta:
+Na vida diária, use rigor prático para o design das estruturas na hora de fundar lógicas:
 
-1. veja se as partes realmente mudam juntas
-2. confirme se a variacao ja esta clara o bastante
-3. teste se a composicao simples ainda fica legivel
-4. so abstraia quando a nova camada realmente reduzir duplicacao e duvida
+1. examine faticamente nos usos se aquelas puras funcionalidades sofrem os mesmos gatilhos lógicos para evoluções; elas realmente mudam juntas?
+2. garanta que o potencial de grande divergência final real e isoladas as funções já apareceu com solidez óbvia antes.
+3. não ignore as dores: experimente testar visualmente manter a simples junção de elementos em pequenos pedaços (a composição pura) como o teste ali sem forçar as regras. Permanece legível?
+4. execute a criação de exclusivas genéricas apenas numa regra blindada se a eliminação da duplicação matar por completa no fluxo os erros das raízes nas defesas.
 
-Isso evita criar ferramenta interna para um problema que ainda nem amadureceu.
+Essa cautela sênior mata na origem as aberrações que chamamos de bibliotecas gigantes utilitárias que na interface exigem 900 parâmetros para trocar a margem de um botão.
 
 ## Exemplo simples
 
-Imagine tres cards de interface com pequenas variacoes de titulo, CTA e bloco visual.
+Avalie um cenário no desenvolvimento com componentes onde você possui 3 variantes num painel com pequenas lógicas e títulos nos cards variando.
 
-Uma resposta apressada seria criar um `SuperCard` com dezenas de props para cobrir todos os casos.
+As ingenuidades de afobados ou o "não dupliques" seriam forçar as regras e despejar na tela um super megazord de código um `SuperCard` com incríveis 32 propriedades ou `props` para prever todas e infinitas regras e alucinações as variações nos usos. O caos ali e falso.
 
-Uma resposta melhor pode ser:
+O sênior fático com vivência recua, e usa puras composições ali expostas sem deslumbre de vaidades de API genérica. Aplica na limpeza das raízes puras a exata blindagem:
+- empacota de base um simples container de visual.
+- constrói as pecinhas em focais isolados exatas. O título num componente. O rodapé noutro.
+- nos usos permite acoplá-las independentes e limpas as lógicas da fáticas de interfaces com os controles evidentes cegas as diferenças vitais. Cada variante exibe sua óbvia razão!
 
-- manter um container base
-- compor partes menores
-- deixar cada variante explicita onde a diferenca realmente importa
-
-Nesse caso, a composicao preserva clareza sem obrigar todo mundo a aprender uma abstracao precoce.
+A composição lógica aqui vence com inquestionáveis simplicidades! Não amarra nenhum desenvolvedor no futuro em ler manuais para atuar nas manutenções. As dores vidas são resolvidas por código explícito.
 
 ## Erros comuns
 
-- abstrair na primeira repeticao
-- tratar qualquer duplicacao como defeito
-- esconder regra diferente atras da mesma interface
-- criar componente generico que aceita tudo e explica pouco
+- Apanhar o vício tolo e engatilhar as abstrações puramente ao enxergar a mesmíssima linhas numa única a primeira vez. As repetições curtas não exigem APIs complexas.
+- Rotular infantilmente qualquer repetição de view como um pecado capital do desenvolvimento. Cópias parciais em caso não ofende as garantias.
+- O crime de esconder de propósito as essências vitais díspares de diferentes funções numa abstração nula.
+- A "interface de inventar 'O tudo'": utilitários soltos que prometem engolir qualquer tráfego e que não te explicam lógicas claras sobre nada em tela de fatos!
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte nao abstrai para parecer sofisticado.
+O profissional experiente que já de fatos corrigiu as engrenagens lógicas não tenta parecer um sênior chique nas frentes das abstrações. Ele exatas odeia o código falso "muito sofisticadinho isolados".
 
-Ele abstrai para reduzir atrito futuro.
+Seu grande propósito é aniquilar totalmente as frentes de custos futuros de engessamentos. No planejamento, ele corta a ilusão assim com voz fortes as regras:
 
-Normalmente isso soa assim:
+> "Se atoa construir aquelas camadas genéricas demonstrarem apenas um resultado nas refatorações em que ela não conseguiu expor a intencionalidade do negócio ou abaixar a taxa de alteração mútua conjunta, a lixeira limpas pra esses componentes apis falhas! Vamos manter as funções solta e repetida hoje."
 
-> Se essa camada nova nao deixar a intencao mais clara e a mudanca mais barata, talvez ela ainda nao precise existir.
-
-Essa pergunta costuma evitar muito design excessivo.
+O foco nas refatorações lógicas se purifica blindada a falências ou vazamentos de componentes lixos.
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade rapido:
+Se lhe atiram na mesa das perguntas lógicas na arquitetura sênior com testes em refatoração, o arquiteto sorri ao enxergar nas tuas defesas absolutas:
 
-- voce sabe diferenciar repeticao aceitavel de repeticao ruim
-- voce entende quando composicao simples e melhor do que generalizacao
-- voce pensa em legibilidade e evolucao, nao so em "codigo seco"
+- provando exata separar repetições saudáveis num código versus a falsidade em replicação perigosa de verdade e de plásticas solta!
+- dominando as lógicas de porque composicional isolado de frentes é largamente o ganho melhor do que encampar todas engrenagens numa mentirosa camada genérica atoa nas vistas.
+- cegas com exata segurança atacando no código a legibilidade cega puramente inquestionável de quem puros persegue puros dogmáticos as "teorias lógicas das limpezas de refatorações falsas nas view".
 
-Quem faz isso bem parece alguem que usa padrao como ferramenta, nao como trofeu.
+Profissionais que operam nestas esferas exatas são analíticos blindados de ego que sabem que puras abstrações num repositório frágil amadores são úteis lógicas nas mãos firmes de usos puros na amarra, e jamais coroas pra justificar horas perdidas!
 
-> Nem toda repeticao pede abstracao. Algumas pedem paciencia para deixar o problema aparecer melhor.
-
-> Se a camada nova exige mais explicacao do que o codigo antigo, talvez ela ainda nao ajudou.
+> A verdadeira genialidade em abstrair nunca é construir cedo. O poder reside no tempo maduro na paciência de deixar expostos os casos de usos e dores até doer com sinais certos e só então refatorar na hora seca de fáticas das repetições lógicas plenas na raiz e o alívio ficar inegociável puro cego! Se você abstrai a cegas base apenas pra secar arquivo sem testar na ferida lógicas atoa cegos da cópias da dor limpas dos erros vivos puros de rotinas e do futuro nas modificações independentes exatas de amarras no código exato exatos falsas de usos, tua inteligência matou o projeto.

@@ -28,83 +28,74 @@ relatedDeckIds: []
 
 ## O problema
 
-Quando algo fica lento, muita gente reage otimizando o que consegue ver primeiro.
+## O problema
 
-Mexe em query, memoiza componente, reduz payload, troca biblioteca, tudo ao mesmo tempo.
+Quando um sistema fica lento, a reação instintiva de muitos desenvolvedores é tentar otimizar a primeira linha de código que conseguem ver na frente.
 
-O problema e que lentidao raramente vem de tudo junto.
+A pessoa reduz o tamanho do pacote JavaScript, altera o componente no React para não renderizar novamente e esconde dados da interface. E no final do dia, a tela continua abrindo na mesma velocidade.
+
+O problema é tratar "lentidão" como se fosse uma neblina genérica espalhada de forma igual por todo o sistema. Lentidão não funciona assim. Ela sempre tem um foco central.
 
 ## Modelo mental
 
-Performance ruim quase sempre tem um gargalo dominante.
+O desempenho ruim é um funil com uma obstrução principal. Essa obstrução é o gargalo.
 
-Ou seja: um ponto do sistema esta segurando mais do que os outros naquele fluxo.
+Omitir esse passo inicial cria roleta-russa de refatoração. Você perde dias movendo blocos de código sem mexer no que importa.
 
-Pode ser:
+O engenheiro sênior não pergunta "como deixo isso mais rápido". Ele pergunta:
 
-- CPU
-- rede
-- banco
-- renderizacao
-- dependencia externa
+> "Dentre todas as partes da plataforma envolvidas nessa ação, qual delas está segurando o resto do grupo?"
 
-Sem localizar esse ponto, otimizar vira loteria.
+Pode ser o banco de dados que demora dois segundos para responder. Pode ser a rede do usuário. Pode ser o processador do celular sofrendo com um cálculo de tela.
+
+Só existe um gargalo primário. Descubra ele primeiro.
 
 ## Quebrando o problema
 
-Uma forma simples de investigar melhor e esta:
+A ordem de investigação madura antes de qualquer alteração estrutural no código deveria ser:
 
-1. escolha um fluxo lento especifico
-2. meca onde o tempo esta sendo gasto
-3. identifique qual etapa domina o atraso
-4. mexa primeiro no ponto que mais pesa
-
-Isso parece obvio, mas evita muita energia gasta em detalhe irrelevante.
+1. **Repita a falha de forma controlada:** Coloque o problema acontecendo na sua frente, na sua aba de rede do navegador.
+2. **Fatie os tempos:** Verifique quanto tempo demorou na requisição, quanto demorou no banco de dados e quanto tempo foi consumido renderizando a tela depois que a informação já chegou.
+3. **Mire no maior número:** Escolha a etapa que domina o relógio.
+4. **Altere apenas o necessário ali:** Otimize exclusivamente essa área que foi identificada.
 
 ## Exemplo simples
 
-Imagine uma tela de dashboard que demora para abrir.
+Avalie um relatório comercial dentro da aplicação que leva inacreditáveis cinco segundos inteiros para ser exibido.
 
-O time pode suspeitar de renderizacao porque a UI parece pesada.
+O time júnior corre para o *frontend* e implementa paginação virtual sob demanda na tela, adiciona paginação invisível no banco e adiam imagens de perfil das empresas.
 
-Mas ao medir, descobre que:
+Se esse grupo tivesse isolado a requisição original, perceberia que a leitura na rede registrou que o banco devolveu a resposta em incríveis 60 milissegundos.
 
-- a API leva 1.8s
-- o browser renderiza em 180ms
+A verdadeira dor era uma conversão manual de datas de fuso horário que o javascript do *frontend* fazia iterando sobre os três mil registros de forma repetida.
 
-Aqui, discutir `memo` cedo demais so desvia a atencao.
-
-O gargalo principal esta no dado chegando tarde, nao no componente desenhando lento.
+O gargalo era a CPU local. Adicionar técnica de carga preguiçosa com paginação virtual foi como comprar um freio melhor para um carro que está com o motor engasgando.
 
 ## Erros comuns
 
-- otimizar sem medir
-- mexer em tudo ao mesmo tempo
-- chamar qualquer espera de "problema de render"
-- confiar em intuicao mesmo quando o fluxo pode ser observado
+- Acelerar tarefas secundárias e irrelevantes e celebrar vitórias matemáticas microscópicas.
+- Culpar o banco de dados imediatamente por qualquer tipo de engasgo no servidor sem provar com base na ferramenta gráfica do banco.
+- Otimizar o componente do sistema que a equipe mais domina ou prefere programar, fugindo da parte do código legada onde o problema realmente se encontra escondido hoje.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte nao comeca a conversa por tecnica.
+Para a engenharia que lidera arquitetura na vida real, cada otimização aplicada aleatoriamente é dívida técnica gratuita amarrada nas costas da futura manutenção do software amanhã.
 
-Ele comeca por evidência.
+Eles exigem evidências cruzadas e não discutem em cima de opiniões ou "sensações de interface".
 
-Normalmente isso soa assim:
+Eles travam a reunião de planejamento com questionamentos de funil básico focados:
 
-> Antes de otimizar, eu quero saber qual etapa esta segurando mais esse fluxo. Sem isso, a chance de mexer no lugar errado e alta.
-
-Essa postura costuma economizar muito tempo e muito retrabalho.
+> "Se nós derrubarmos essa tabela inteira no *backend* para cache em vez de banco, quanto cairemos nos tempos medidos hoje no monitor do provedor em nuvem? A complexidade adicional vai comprar menos de 20 milissegundos? Se for, essa conversa morre agora."
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade rapido:
+Se um recrutador abrir a prancheta branca em uma dinâmica e apresentar um projeto de painel central que "está demorado para apresentar dados", é uma isca perfeita.
 
-- voce sabe investigar antes de otimizar
-- voce entende que performance e contexto, nao reflexo
-- voce melhora o sistema pelo ponto de maior impacto
+- Você vai morder a isca e entregar aulas de índice no Postgres logo no primeiro minuto apenas porque gosta de linguagens orientadas ao banco?
+- A postura certa é perguntar ao recrutador e exigir números básicos iniciais: Qual é o tráfego médio diário atual da empresa? A API deles responde no prazo na ferramenta gráfica da aba da rede do navegador puro?
 
-Quem faz isso bem parece alguem que sabe acelerar produto sem virar refem de achismo.
+> "Uma lente pragmática profissional madura isola problemas de ponta separada antes da ação cega de programar tudo de novo. Sem mapeamento cirúrgico de causa real e medição da latência isolada correta, sua alteração é somente barulho na folha de pagamentos da empresa corporativa ali presente pontual hoje amanhã local." (Wait, let me make the end completely clean and perfect).
 
-> Gargalo real vale mais do que dez suspeitas elegantes.
+O final ideal na entrevista e na vida:
 
-> Se voce ainda nao mediu, talvez ainda nao saiba o que esta lento de verdade.
+> "Acelerar uma etapa fora do gargalo real afeta quase zero por cento do tempo de percepção do seu cliente na ponta da cadeia."

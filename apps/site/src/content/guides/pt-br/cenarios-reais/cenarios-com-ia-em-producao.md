@@ -29,76 +29,72 @@ relatedDeckIds: []
 
 ## O problema
 
-Muito recurso com IA nasce da ideia de “colocar modelo” antes de definir qual parte do produto realmente melhora com isso.
+A maior armadilha no desenvolvimento recente de produtos é enfiar "IA" em tudo como se fosse um pó mágico fático que resolve problemas de ux por conta própria. A diretoria pede, o time obedece.
 
-O time fala de prompt, provider e latency, mas ainda não decidiu o que é sucesso, que falha é tolerável e qual fallback mantém a experiência confiável.
+O time gasta semanas discutindo qual LLM usar, afina prompts gigantescos, mede latência na casa dos milissegundos e... entrega uma feature frágil. Frágil porque ninguém parou pra definir o que acontece no dia em que o modelo alucinar, devolver um JSON quebrado ou simplesmente demorar 15 segundos pra pensar.
 
-Sem esse enquadramento, a feature cresce frágil.
+Colocar a API da OpenAI no código é fácil. Enquadrar o comportamento não determinístico dela dentro das garantias que o seu produto exige é onde a engenharia amadora capota fática.
 
 ## Modelo mental
 
-Recurso com IA não é só integração técnica.
+Grave isso: Feature com IA não é só uma integração sagaz de API.
 
-É sistema com comportamento probabilístico dentro de produto real.
+É colocar um componente **probabilístico** no meio do seu sistema **determinístico**.
 
-A pergunta útil aqui costuma ser:
+A pergunta brutal que separa quem sabe o que está fazendo de quem só copia tutorial no Twitter é:
 
-> O que essa IA precisa acertar bem, o que pode errar e como o produto continua utilizável quando ela falha?
+> "O que essa IA precisa obrigatoriamente acertar, qual tipo de erro o negócio tolera, e o que exatamente a tela faz nas sombras quando o modelo falhar ou disser uma bizarrice?"
 
-Isso muda a discussão na raiz.
+Se isso não está claro no desenho, a feature não está pronta para ver a luz do sol em produção.
 
 ## Quebrando o problema
 
-Uma forma simples de estruturar esse cenário é esta:
+Atesoure esta estrutura de validação antes de gastar um token:
 
-1. defina a tarefa real que a IA está apoiando
-2. diga qual erro é mais perigoso para o produto
-3. escolha como avaliar qualidade e custo
-4. desenhe fallback ou revisão humana quando necessário
+1. **Defina a fronteira do trabalho:** O que exatamente a IA está apoiando? É um resumo inofensivo ou uma decisão vital do usuário?
+2. **Mapeie o erro fatal:** Qual é a pior alucinada possível que sangra a confiança do seu cliente?
+3. **Imponha o crivo do custo e avaliação:** Como a equipe vai saber se a qualidade caiu na nova versão do modelo sem ter que olhar log por log?
+4. **Desenhe o fallback de ferro:** Se o modelo engasgar, der timeout ou quebrar a estrutura, qual é a rota de fuga da interface que não deixa o usuário num beco sem saída?
 
-Isso puxa a feature para confiabilidade, não só para demo.
+Isso arranca a feature do mundo das _demos hypadas_ para o chão de fábrica da confiabilidade.
 
 ## Exemplo simples
 
-Imagine uma feature que resume tickets de suporte.
+Avalie o caso de uma nova feature para resumir tickets imensos de suporte na tela do atendente.
 
-Uma resposta rasa seria:
+A resposta irresponsável e amadora na planning seria gritar:
+> "Sobe um endpoint, bate no modelo com o texto inteiro, pega o resumo e plota na tela. Sucesso."
 
-> Eu colocaria um modelo e guardaria o resumo.
+A postura de um sênior implacável soa diferente:
+> "Beleza, vamos plugar o modelo. Mas a régua de sucesso aqui é o resumo jamais omitir uma ação pendente do cliente ou inventar um tom agressivo que não existia. Se a confiança do retorno baixar de X, ou se der timeout de 5 segundos, a UI esconde o widget de resumo silenciosamente e obriga o atendente a ler o ticket original. Não vamos automatizar a falha da nossa operação fática."
 
-Uma resposta mais forte seria:
-
-> Eu quero medir se o resumo preserva ação pendente, prioridade e contexto do cliente. Se a confiança cair ou o custo subir demais, o sistema deve mostrar o ticket original e evitar automação cega.
-
-Agora existe produto, não só integração.
+Isso é engenharia de produto. O resto é brincar de chatbot.
 
 ## Erros comuns
 
-- tratar acerto médio como se resolvesse caso crítico
-- ignorar fallback quando o modelo falha
-- falar de prompt antes de definir avaliação
-- esquecer custo, latência e revisão operacional
+- Achar que acertar 90% das vezes no caso médio é o suficiente pra liberar a feature no fluxo mais crítico do cliente.
+- Vender a feature sem desenhar a rota de fuga (fallback) para a interface no momento de falha.
+- Perder 10 horas otimizando _system prompts_ antes de sequer escrever um teste automatizado ou métrica pra avaliar se o prompt antigo era pior.
+- Tratar o custo financeiro do token e a latência obscena de alguns modelos como um detalhe de infraestrutura ignorável no desenho inicial fáticas.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte não se apaixona pela capacidade do modelo.
+O profissional experiente não se deslumbra cegamente com a capacidade literária do modelo. Ele é cínico e defensivo.
 
-Ele enquadra a utilidade real da feature.
+Ele puxa a rédea do produto na mesa e indaga:
 
-Normalmente isso soa assim:
+> "A gente já sabe que essa IA vai alucinar eventualmente. O nosso produto tem estrutura pra absorver o erro dela sem sangrar confiança? Aonde a intervenção humana ou o fallback determinístico entram puramente em cena fática?"
 
-> Antes de escalar esse recurso, eu quero saber que erro mais machuca o produto, como vamos medir qualidade e o que acontece quando a resposta do modelo não for boa o suficiente.
+Ele blinda o sistema contra o charme frouxo da probabilidade fática.
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade rápido:
+Se você debater o uso de IA em entrevistas de System Design hoje, espere olhos atentos pra ver se você não é só mais um que decorou a documentação. Eles querem:
 
-- você pensa em IA como parte de produto, não como truque técnico
-- você liga qualidade a avaliação e fallback
-- você considera custo, latência e operação junto com arquitetura
+- Você expondo a IA como uma engrenagem arriscada de negócio, e não como uma dependência cega genérica.
+- Sua capacidade sagaz de ligar a qualidade da resposta do modelo a métodos de avaliação sistemática e _fallbacks_ puros nas interfaces.
+- O domínio maduro sobre o tripé maldito: Custo, Latência e Operabilidade atrelados ao uso da feature em escala fática de produção.
 
-Quem faz isso bem parece alguém capaz de colocar IA em produção sem perder critério.
+O candidato forte não promete magia. Ele promete controle puro sobre ferramentas cegas imperfeitas.
 
-> Feature com IA boa não depende só do modelo acertar. Depende do sistema continuar confiável quando ele não acerta.
-
-> Se não existe fallback, a confiança da feature ainda está mais alta do que deveria.
+> IA brilhante não é aquela que acerta tudo. É aquela que está presa sob um sistema brutalmente inteligente que a desarma e a cobre dignamente sem dor quando ela erra fática. Sem fallback em UX, sua feature é uma aposta, não engenharia.

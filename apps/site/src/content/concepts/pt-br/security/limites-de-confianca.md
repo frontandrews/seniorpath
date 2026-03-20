@@ -17,32 +17,32 @@ relatedGuideIds:
   - safer-input-and-api-design
 ---
 
-## O que e
+## O que é
 
-Limite de confianca e o ponto onde voce deveria parar de assumir que algo e seguro por padrao.
+Um limite de confiança é a linha invisível na sua arquitetura onde você deve parar imediatamente de assumir que um dado, requisição ou identidade é seguro.
 
-Isso pode acontecer entre browser e servidor, servico e banco, sistema interno e fornecedor, ou usuario comum e admin.
+É o exato ponto onde o controle passa de um ambiente menos confiável (como a internet ou um webhook de terceiros) para um ambiente mais confiável (como o seu backend).
 
 ## Quando importa
 
-Importa sempre que dado cruza sistemas, permissao muda ou entrada chega de fora do contexto atual.
+Isso importa sempre que uma informação cruza de um sistema para outro, quando contextos de permissão mudam, ou quando qualquer dado chega de fora.
 
-Se voce ignora essa fronteira, costuma ignorar validacao e autorizacao junto.
+Se você não sabe onde fica sua fronteira de confiança, você invariavelmente vai esquecer de fazer as validações e verificações de autorização que deveriam estar lá.
 
 ## Erro comum
 
-O erro comum e tratar "interno" como automaticamente confiavel.
+O erro mais perigoso é tratar tudo que tem a etiqueta de "interno" como automaticamente confiável e bem-intencionado.
 
-Sistema interno tambem pode estar errado, desatualizado ou mal configurado.
+Sistemas internos também sofrem bugs, ficam com configurações desatualizadas ou acabam repassando lixo. Confiar cegamente numa requisição só porque ela veio da sua própria rede local é arquitetura baseada em otimismo.
 
 ## Exemplo curto
 
-Se um servico diz que um usuario e admin, outro servico ainda precisa decidir o que isso significa dentro das regras dele.
+Se o serviço de Autenticação avisa que um usuário tem a role "admin", o seu serviço de Pagamentos ainda precisa validar e decidir ativamente se esse "admin" tem o direito de estornar uma compra.
 
-Confiar cegamente no rótulo pode virar bug de permissao.
+Se Pagamentos simplesmente engolir a string do outro serviço sem validar na fronteira, um errinho bobo no código de Autenticação vira uma falha crítica de segurança no dinheiro da empresa.
 
 ## Por que isso ajuda
 
-Esse conceito deixa seguranca mais concreta.
+Esse conceito pega o medo abstrato de "segurança" e transforma em algo tangível de engenharia.
 
-Em vez de medo vago, voce ganha uma pergunta melhor: onde a confianca muda aqui, e quais checks pertencem nessa borda?
+Em vez de tentar ser paranoico em todas as linhas de código, você faz uma pergunta muito melhor: "Onde o nível de confiança muda nesse fluxo, e quais checagens eu sou obrigado a fazer nessa exata borda?"

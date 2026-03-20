@@ -29,82 +29,80 @@ relatedDeckIds: []
 
 ## The problem
 
-Discussion about SQL and NoSQL usually becomes a slogan very quickly.
+Discussions about SQL vs NoSQL usually devolve into slogans very quickly.
 
-It starts to sound as if one option were modern and the other old, or as if one scales and the other organizes.
+People talk as if one option is "modern" and the other is "legacy," or as if one guarantees scale while the other only guarantees organization.
 
-In practice, that conversation almost always makes the decision worse instead of helping.
+In practice, treating databases like rival sports teams makes your architectural decisions worse, not better.
 
 ## Mental model
 
-The useful question is not "which database is better?"
+The useful question is never "which database is better?"
 
 The useful question is:
 
-> Which structure fits better with the kind of access, consistency, and evolution this system needs?
+> "Which data structure actually fits the access patterns, consistency requirements, and evolution pace of this specific system?"
 
-When you think that way, the conversation leaves hype and comes back to the problem.
+When you frame it that way, the conversation leaves the hype cycle and returns to engineering.
 
 ## Breaking it down
 
-Before choosing, try to answer:
+Before choosing a side, answer these frankly:
 
-1. does the data have strong relationships and frequent cross-queries?
-2. does consistency need to be stricter?
-3. does the data format change a lot between records?
-4. is the main bottleneck relational querying or simple distribution at scale?
+1. Does the data have strict, rigid relationships that require frequent cross-table joins?
+2. Does the business require absolute transactional consistency without eventual delays?
+3. Does the data format change wildly between different records?
+4. Is your main bottleneck complex relational querying, or just raw distributed volume?
 
-These questions usually give more signal than any superficial comparison.
+These questions give you infinitely more signal than superficial technology comparisons.
 
 ## Simple example
 
-Imagine a system for orders, customers, and payments.
+Imagine a core system for orders, customers, and payments.
 
 If you need to:
 
-- relate an order to a customer and item
-- do joins often
-- guarantee transactional integrity
+- strictly link an order to a customer and inventory item
+- join this data frequently in reports
+- guarantee transactional integrity so a payment isn't processed without an order
 
-SQL is usually a better fit.
+SQL is almost unconditionally the better fit.
 
-Now imagine a system that stores events or documents without a very fixed structure, with simple key-based reads and high distributed volume.
+Now, imagine a system capturing high-velocity clickstream events without a fixed schema, requiring massive distributed writes and simple key-based reads.
 
-In that case, NoSQL may make more sense.
+In that case, NoSQL makes far more sense.
 
-The point is not that one beat the other.
-
-The point is that the shape of use changed.
+The point isn't that one technology "won." The point is that the shape of the problem changed.
 
 ## Common mistakes
 
-- choosing technology because it is fashionable
-- calling NoSQL to escape modeling
-- using SQL without thinking about the real access pattern
-- talking about scale before validating the consistency and query problem
+- choosing a technology just because it was trending on Hacker News
+- adopting NoSQL simply to avoid the discipline of schema modeling
+- defaulting to SQL without ever considering the actual read/write access patterns
+- obsessing over "web scale" before validating basic consistency requirements
 
 ## How a senior thinks
 
-A strong senior does not answer this with team loyalty.
+A strong senior engineer doesn't answer this question with blind team loyalty.
 
-They pull the decision back to real use.
+They drag the decision back to the cruel reality of production use.
 
 That usually sounds like this:
 
-> If the strength of the system is in relationships, querying, and consistency, SQL tends to fit better. If the problem asks for a more flexible format and simple access at large scale, NoSQL can be the better tool.
+> "If the core strength of our system relies on complex queries, relationships, and strict consistency, SQL is the right tool. If we need flexible schema evolution and simple access patterns at massive distributed scale, NoSQL is the better bet."
 
-That answer is better because it starts from the problem, not from a favorite tool.
+That answer wins because it starts from the problem, not from a favorite tool.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity very quickly:
+In technical interviews, how you answer this shows your maturity almost immediately:
 
-- you understand the trade-off between structure and flexibility
-- you know how to connect storage choice to access pattern
-- you do not depend on a canned sentence to answer
+- you demonstrate you understand the brutal trade-offs between rigid structure and flexible scale
+- you can connect storage choices directly to access patterns
+- you do not rely on canned, superficial sentences
 
-People who do this well look like someone who chooses technology with judgment, not hype.
+Candidates who do this well look like engineers who choose technology with judgment and scars, not hype.
 
-> SQL and NoSQL do not compete in the abstract. They answer better to different shapes of problems.
+> SQL and NoSQL do not compete in the abstract. They answer differently to different shapes of problems.
 
-> If you still do not know how the data will be read and written, the database choice is still too early.
+> If you don't know how the data will be queried and written yet, picking the database is premature.

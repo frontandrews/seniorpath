@@ -28,76 +28,65 @@ relatedDeckIds: []
 
 ## O problema
 
-Muita arquitetura de frontend fica estranha porque o time mistura trabalho de cliente e servidor sem critério claro.
+Arquiteturas de frontend costumam falhar quando a equipe mistura o trabalho do cliente e o do servidor no mesmo lugar. 
 
-Daqui a pouco tem fetch no lugar errado, dado sensivel indo para o browser sem necessidade e componente cliente fazendo trabalho que poderia chegar pronto.
+O resultado não demora a aparecer. Componentes de tela começam a carregar regras de negócio. O navegador passa a acessar bancos de dados. A interface fica pesada. Ninguém sabe onde o erro começou.
 
-O resultado costuma ser mais complexidade, mais loading e menos clareza.
+A lentidão é a consequência direta dessa confusão.
 
 ## Modelo mental
 
-Cliente e servidor nao sao so lugares diferentes.
+Dividir o projeto não é apenas organizar pastas. O servidor e o cliente possuem funções distintas.
 
-Eles tem responsabilidades diferentes.
+- **O servidor resolve problemas pesados.** Ele acessa os dados, conecta com as APIs, oculta a regra de negócio e envia a resposta pronta.
+- **O cliente gerencia a interação.** Ele foca no visual, cuida dos eventos do mouse e responde rápido ao usuário.
 
-De forma simples:
-
-- servidor e bom para buscar dado, validar regra, proteger segredo e montar resposta
-- cliente e bom para interacao, estado local, evento do usuario e atualizacao imediata da interface
-
-Quando essa divisao fica clara, muita decisao fica mais facil.
+Manter essa fronteira elimina metade dos bugs difíceis do projeto.
 
 ## Quebrando o problema
 
-Antes de decidir onde algo roda, tente responder:
+Ao criar uma funcionalidade nova, avalie o escopo antes de programar:
 
-1. isso precisa de segredo, permissao ou acesso direto a backend?
-2. isso depende de clique, digitação ou interacao imediata?
-3. isso pode chegar pronto para reduzir trabalho no browser?
-4. essa logica precisa mesmo ficar exposta no cliente?
+1. A tarefa exige cálculo pesado ou acesso ao banco de dados? A lógica pertence ao servidor.
+2. A funcionalidade cuida apenas do clique do usuário e da mudança de cor de um botão? O cliente cuida disso sozinho.
+3. Se o dado chegar limpo e formatado, o celular do usuário vai trabalhar menos? Se sim, prepare tudo no backend.
 
-Essas perguntas evitam muita mistura desnecessaria.
+Isso barra a sobrecarga do navegador.
 
 ## Exemplo simples
 
-Imagine uma pagina que mostra pedidos e permite filtrar por status.
+Avalie uma tela que exibe uma lista de compras e permite filtrar os pedidos por mês.
 
-Uma divisao razoavel seria:
+A abordagem inexperiente carrega a lista inteira do banco de dados e joga no cliente. A partir daí, o navegador do usuário tenta filtrar os dados usando JavaScript na hora. A tela congela.
 
-- servidor busca os pedidos e devolve os dados iniciais
-- cliente controla o filtro selecionado e a interacao da tela
+A abordagem madura separa as funções:
 
-O erro comum seria colocar toda a busca, transformacao e regra de acesso no cliente so porque "ja estamos no componente".
+- O servidor aplica a pesquisa e filtra os pedidos. Ele processa a tabela e envia apenas as vinte linhas solicitadas.
+- O componente da tela apenas recebe essa encomenda. Ele foca unicamente em exibir os dados.
 
-Isso aumenta custo no browser e embaralha responsabilidades.
+A complexidade desaparece. A tela não trava.
 
 ## Erros comuns
 
-- mandar para o cliente trabalho que poderia vir resolvido do servidor
-- colocar segredo ou logica sensivel perto da interface
-- tratar qualquer componente interativo como se tudo precisasse ser client-side
-- decidir pela conveniencia do arquivo atual, e nao pela responsabilidade real
+- Repassar o processamento de matemática pesada para a máquina do usuário.
+- Deixar a regra financeira da empresa acessível no JavaScript final do frontend.
+- Usar tags focadas no cliente apenas para simplificar o trabalho da equipe de desenvolvimento.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte nao pergunta primeiro "em que arquivo eu escrevo isso?".
+Para a engenharia que domina a construção de componentes, a regra principal é economizar recursos.
 
-Ele pergunta:
+Nas revisões de código, o questionamento padrão foca na economia da rede:
 
-> Qual lado deveria ser dono dessa responsabilidade para a interface ficar mais simples e mais segura?
+> "O servidor deveria preparar esse dado antes de enviar. O cliente não precisa baixar o texto inteiro apenas para calcular o filtro em tempo real. Mova o processamento para a rota da API."
 
-Essa pergunta melhora performance, manutencao e clareza ao mesmo tempo.
+A transferência de sobrecarga sempre ocorre em prol do cliente. 
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma mostrar maturidade bem rapido:
+Em dinâmicas de engenharia focadas no frontend, as bancas testam como você protege o navegador:
 
-- voce entende que cliente e servidor tem papeis diferentes
-- voce sabe justificar por que algo deveria viver de um lado e nao do outro
-- voce pensa em seguranca, simplicidade e custo de renderizacao
+- Você consegue identificar quando o processamento deve ser alterado de lado para preservar o tempo de execução do navegador?
+- Você avalia fatores de proteção para não expor regras do seu sistema na máquina do cliente?
 
-Quem faz isso bem passa a imagem de alguem que sabe desenhar interface alem do componente isolado.
-
-> Cliente serve para interagir. Servidor serve para preparar e proteger o que a interface precisa.
-
-> Se tudo foi parar no cliente por conveniencia, a arquitetura provavelmente perdeu criterio no caminho.
+> "A grande engenharia técnica sabe que a interface reage à temperatura do clique, mas o servidor governa à distância nas sombras."

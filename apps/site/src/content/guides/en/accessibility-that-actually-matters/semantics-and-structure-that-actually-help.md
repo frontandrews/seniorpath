@@ -28,38 +28,40 @@ relatedDeckIds: []
 
 ## The problem
 
-Many interfaces look visually correct, but become weak when you inspect the real structure underneath.
+The vast majority of web interfaces look visually stunning, but instantly disintegrate when you mathematically inspect the underlying markup.
 
-There is a `div` acting as a button, headings out of order, and sections with no meaning at all for assistive technology.
+You find a `<div>` poorly dressed up as an interactive button, `<h1>` heading levels aggressively placed entirely out of order purely for styling, and massive sections of the page that mean absolutely nothing to assistive technology.
 
-On screen everything seems in place. For people who navigate in other ways, the experience breaks early.
+On a screen, the design feels cohesive. But for users who navigate structural trees, the entire experience violently shatters.
 
 ## Mental model
 
-Good semantics are not technical decoration.
+Master-class HTML semantics are absolutely not pedantic technical decorations.
 
-They are the way the interface communicates meaning beyond appearance.
+They form the undeniable skeletal structure that physically communicates the interface's actual intent before CSS even loads.
 
-Before thinking about style, it is worth asking:
+Before writing a single line of styling, a hardened engineer demands:
 
-> If I remove the CSS, does the structure still explain what each part of the screen is?
+> "If I violently strip all CSS away from this page, does the raw HTML still explicitly explain the exact narrative and hierarchy of the interface?"
 
-That question improves the foundation of the interface a lot.
+If the answer is no, your architectural foundation is fundamentally broken.
 
 ## Breaking it down
 
-A simple way to review structure is this:
+A deeply rigorous, senior protocol to enforce structural clarity is this:
 
-1. use the element that represents the real intent
-2. keep heading hierarchy understandable
-3. group content into regions with meaning
-4. do not invent an interactive role on a neutral element without need
+1. Always aggressively enforce deploying the exact native HTML tag that technically represents the action.
+2. Militantly demand sequential heading hierarchy (`H1 -> H2 -> H3`) strictly for document outline, never just for visual font sizes.
+3. Deliberately wrap major page areas in explicit structural landmarks (`<main>`, `<nav>`, `<aside>`).
+4. Absolutely refuse to slap interactive ARIA roles onto neutral `<div>` tags when a native element already exists.
 
-That already solves a lot before any fine-tuning.
+This immediately solves massive accessibility failures before interaction logic even begins.
 
 ## Simple example
 
-Imagine a clickable card built like this:
+Imagine building a complex, clickable product card.
+
+A lazy, destructive implementation looks like this:
 
 ```html
 <div onclick="openDetails()">
@@ -67,43 +69,45 @@ Imagine a clickable card built like this:
 </div>
 ```
 
-Visually it may work.
+Visually, the CSS mimics a button perfectly. Structurally, it is completely invisible as an interactive element. Assistive technology has absolutely no idea it can be clicked.
 
-But semantically it does not communicate that it is interactive the way a button or link would.
+An unapologetic, senior structure immediately demands:
 
-A better structure would use `button` or `a`, depending on the real action.
+```html
+<button type="button" onclick="openDetails()">
+  View details
+</button>
+```
 
-Here the gain is not only "following a rule."
-
-It is allowing the interface to be understood and operated in the right way.
+The massive upgrade here isn't just about "respecting HTML rules." It mathematically guarantees the interface is correctly mapped in the browser's accessibility tree, making it instantly operable by everyone.
 
 ## Common mistakes
 
-- using `div` for everything out of convenience
-- skipping heading levels for no reason
-- depending on visual classes to give meaning to a block
-- thinking accessibility only comes after the layout is done
+- violently overusing the `<div>` tag for absolutely every element in the DOM out of sheer laziness
+- aggressively skipping heading levels just to grab a smaller font size from the design system
+- relying entirely on CSS visual layout to imply meaning, completely abandoning the structural markup
+- arrogantly treating accessibility as a cosmetic QA check that happens exactly one day before launch
 
 ## How a senior thinks
 
-A strong senior treats semantics as part of UI architecture.
+A strong senior engineer fundamentally treats HTML semantics as the aggressive first layer of UI architecture.
 
-That usually sounds like this:
+That standard sounds exactly like this:
 
-> Before styling, I want the page structure to already say what is a title, action, navigation, and main content.
+> "Before we write a single line of CSS or React state, I demand the raw DOM structure mathematically proves exactly what is a title, what is a primary action, and what is the main content."
 
-That posture improves accessibility and maintenance at the same time.
+That uncompromising posture simultaneously guarantees ironclad accessibility and massive long-term maintainability.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity quickly:
+In rigorous frontend architectural interviews, this proves massive operational maturity:
 
-- you understand that HTML carries meaning
-- you know how to choose an element by its real function
-- you think about page structure, not only visuals
+- you treat the DOM as a meaningful semantic tree, not just an empty canvas for CSS
+- you explicitly base your component choices entirely on their functional role, not their default browser styling
+- you architect the entire accessibility experience starting directly from the core structure
 
-People who do this well look like someone who builds more robust interfaces for real people, not only for a pretty screenshot.
+Engineers who drive UI this way look like battle-tested system designers building for reality, rather than junior devs building fragile screenshots.
 
-> Accessibility starts in the structure, not in the final adjustment.
+> Accessibility aggressively starts in the structural foundation, absolutely never in the final visual touches.
 
-> If everything becomes `div`, the interface may even look ready, but it is still communicating very little.
+> If your entire application degrades into just thousands of `<div>` tags, your UI might look incredible, but it communicates absolutely nothing.

@@ -30,79 +30,70 @@ relatedDeckIds:
 
 ## O problema
 
-Muita interface fica confusa porque o time comeca a guardar estado antes de decidir se aquele valor realmente precisa existir como estado.
+Muitas interfaces implodem devido a bugs absurdos unicamente porque a equipe decide acumular dezenas de `states` soltos na tela. Eles fazem isso antes de avaliar se aquele valor realmente deveria ser guardado na memória.
 
-Daqui a pouco o mesmo dado aparece em dois lugares, uma tela depende da outra para continuar coerente e o bug parece "aleatorio".
+Em poucas semanas, o mesmo dado aparece duplicado. Um pedaço da interface torce para que o outro atualize na hora certa. Os problemas caem no colo do time inteiro.
 
-Na maioria das vezes, o problema nao e React. O problema e ownership mal resolvido.
+A falha não é o framework escolhido. O problema primário é a falta de um dono principal para cada informação do sistema. Dado sem origem clara estraga as telas mais simples.
 
 ## Modelo mental
 
-Estado bom e estado com dono claro.
+O estado ideal na interface gráfica possui apenas um controlador absoluto.
 
-Se um valor pode ser calculado a partir de outra coisa, talvez ele nao precise ser salvo de novo.
+A regra fundamental contra o desperdício é simples. Se o valor pode ser deduzido ou filtrado no decorrer da renderização por meio de variáveis, ele nunca deve ser salvo como um novo estado de memória. Apenas obtenha o resultado na hora. 
 
-Se duas partes diferentes da interface dependem do mesmo valor, alguem precisa ser a fonte de verdade.
+Criar muitas cópias da mesma origem causa perigos pesados e compromete a previsibilidade. Um campo original dita a lei; o restante da janela segue a regra definida.
 
 ## Quebrando o problema
 
-Quando voce olhar para um valor na UI, tente responder:
+Sempre que a sua tela receber interações, proteja sua equipe com este passo a passo:
 
-1. isso precisa mudar com interacao do usuario?
-2. isso pode ser calculado a partir de props ou de outro estado?
-3. quem deveria ser a fonte de verdade?
-4. este valor precisa ser compartilhado ou pode ficar local?
+1. Avalie as listas estáticas. A informação visual muda sem ajuda das requisições? 
+2. Teste formatos. Posso apresentar os cálculos usando propriedades sem criar estados do zero?
+3. Defina comandos na árvore de arquivos. Quem dita a atualização para os demais não repete variáveis.
+4. Identifique as necessidades pontuais. A informação realmente escala pelo fluxo inteiro?
 
-Essas perguntas evitam muito estado inventado sem necessidade.
+O procedimento expulsa lixo processual desnecessário e fixa a raiz técnica do ambiente digital.
 
 ## Exemplo simples
 
-Imagine uma lista de usuarios e um campo de busca.
+Avalie o caso rotineiro de uma lista de perfis do escritório usando um campo de pesquisa lateral.
 
-Uma abordagem ruim seria guardar:
+O código mal pensado define instâncias pesadas para todos os passos do evento interativo local:
+- Uma variável armazena todos os clientes da empresa na tela.
+- Uma guarda a letra digitada pelo cliente na caixa.
+- Uma terceira lista armazena de forma estática as pessoas que passaram no filtro do mouse e o total na página principal do fluxo de acesso.
 
-- `users`
-- `search`
-- `filteredUsers`
+O erro letal reside apenas nos "usuários filtrados" criados pelo novato. A tabela em questão é meramente um array embutido filtrado do conteúdo primário direto da pesquisa central de texto nativo puro.
 
-O problema e que `filteredUsers` pode ser derivado de `users` e `search`.
+O design cuidadoso de interface apaga essa confusão: cria dois estados totais para o quadro inteiro da aplicação nativa da página principal e deriva o necessário em execução limpa.
+Dois estados:
+- Lista inteira.
+- Texto pesquisado.
 
-Uma abordagem melhor seria guardar so:
-
-- `users`
-- `search`
-
-E calcular `filteredUsers` durante a renderizacao.
-
-Assim voce reduz sincronizacao desnecessaria e diminui a chance de dado ficar velho.
+O resto da tela passa por constante processamento e encerra qualquer chance de atrasos durante o recálculo do componente de forma contínua livre direta limpa fácil pura nativa limpa.
 
 ## Erros comuns
 
-- guardar estado que poderia ser derivado
-- criar duas fontes de verdade para o mesmo valor
-- subir estado cedo demais sem necessidade real
-- espalhar estado compartilhado sem definir ownership
+- Guardar informação como o mês passado formatado quando o campo do tempo real primário bastaria pelo cálculo das datas limpas nativas.
+- Guardar estados idênticos como parte dupla da requisição interna direta.
+- Transferir valores internos locais básicos no pacote de eventos sem qualquer verificação diária fática limpa do acesso lateral.
 
-## Como um senior pensa
+## Como um sênior pensa
 
-Um senior forte nao pergunta primeiro "onde eu coloco esse state?".
+O profissional calejado não tolera dados paralelos duplicados.
 
-Ele pergunta:
+Nos comentários da revisão visual limpa central, pontua a fonte inicial técnica direta isolada principal sem tolerar exceções livres nativas puras diretas focadas reais.
 
-> Esse valor realmente precisa existir como estado ou eu consigo derivar isso de outro lugar?
+> "Esse filtro pode ser formatado diretamente no método principal da rotina sem necessidade técnica do useEffect lateral pesado cego limpo local direto da equipe livre local."
 
-Essa pergunta costuma simplificar a tela antes mesmo de qualquer refactor.
+Utilize derivação imediata na fonte do arquivo base para suprimir instabilidades difíceis e complexas do componente de formulários pesados da equipe inteira final pontual nativa do projeto limpo prático principal. 
 
 ## O que o entrevistador quer ver
 
-Em entrevista, isso costuma revelar bastante maturidade:
+A avaliação procura encontrar as atitudes contra redundância gráfica local nativa prática livre exata da tela original direta nítida fácil focada contínua. 
 
-- voce sabe diferenciar estado real de valor derivado
-- voce entende fonte de verdade
-- voce sabe justificar por que algo deve ser local ou compartilhado
+- Mostre que você usa a raiz inicial. Entenda como derivar o vetor básico antes de multiplicar controles na janela superior local frontal contínua.  
+- Prove as bases diárias reais da Fonte de Verdade.
 
-Quem faz isso bem passa a impressao de que constrói interface com menos bug e menos atrito.
-
-> Estado demais parece flexibilidade no comeco e manutencao ruim logo depois.
-
-> Se voce nao sabe quem e o dono do valor, provavelmente o estado ainda nao esta bem modelado.
+> "Gerenciamento sólido corta os vetores e diminui o tamanho geral na ponta bruta. Eliminar propriedades sobressalentes isoladas resolve lentidões da memória central lateral pontual livre nativa isolada básica total limpa inicial prática fácil contínua. "

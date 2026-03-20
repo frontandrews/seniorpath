@@ -28,76 +28,76 @@ relatedDeckIds: []
 
 ## The problem
 
-Cache often enters the conversation as if it were a free improvement.
+Cache often enters architectural discussions as if it were a magical, free upgrade.
 
-It looks like you get faster reads without losing anything along the way.
+It is treated as a dial you turn to get faster reads without giving anything up in return.
 
-In practice, cache almost always trades latency for consistency complexity.
+In reality, cache almost always trades simple latency for massive consistency complexity.
 
 ## Mental model
 
-Cache is not the truth.
+Cache is never the absolute truth.
 
-Cache is a useful copy of the truth for some time.
+Cache is just a convenient, temporary copy of the truth.
 
-The more you depend on it, the more you need to accept and control questions like:
+The more your system depends on it, the more you have to aggressively control questions like:
 
-- how long this data is allowed to stay stale
-- who invalidates this copy
-- what happens when it diverges from the source
+- exactly how long is this data allowed to be stale?
+- who is responsible for invalidating this copy?
+- what breaks when this copy inevitably diverges from the source database?
 
 ## Breaking it down
 
-Before adding cache, try to answer:
+Before instinctively adding cache to a problem, force yourself to answer:
 
-1. which read is actually slow or expensive
-2. how long stale data is still acceptable
-3. when this copy needs to be invalidated
-4. what the impact is if the interface shows an old value
+1. Which specific read is actually causing a bottleneck?
+2. How long can the business tolerate stale data before it becomes a problem?
+3. What exact event will trigger the invalidation of this copy?
+4. What is the real-world impact if the UI shows an old value to the user?
 
-These questions prevent cache added on impulse.
+Answering these questions prevents cache from being added on reckless impulse.
 
 ## Simple example
 
-Imagine a product page with inventory.
+Imagine an e-commerce product page displaying inventory.
 
-Caching the product detail can reduce load and improve response time.
+Caching the page HTML massively reduces database load and speeds up the response time.
 
-But inventory changes quickly.
+But inventory numbers drop quickly during a sale.
 
-If the copy gets stale, the user may see "available" when the item no longer exists.
+If the copy gets stale, a user might see "In Stock," click buy, and then get an angry error at checkout because the item was actually sold out.
 
-Here the point is not "use or do not use cache."
+The debate isn't "use cache or don't use cache."
 
-The point is deciding which part can tolerate delay and which part needs to arrive fresh.
+The debate is deciding which parts of the page can tolerate a five-minute delay (like the product description) and which parts need to be fetched fresh across the network (like inventory).
 
 ## Common mistakes
 
-- adding cache before proving where the bottleneck is
-- acting as if invalidation were a small detail
-- treating all data as if it could go stale in the same way
-- forgetting that user-perceived consistency is also part of quality
+- adding cache layers before mathematically proving where the actual bottleneck is
+- acting as if cache invalidation is a trivial detail to figure out later
+- treating all data as if it shares the exact same tolerance for staleness
+- forgetting that user trust and perceived consistency are core features of a product
 
 ## How a senior thinks
 
-A strong senior does not ask only "where do I put cache?"
+A strong senior engineer doesn't just ask "where do we put the cache?"
 
 They ask:
 
-> Which read needs to become cheaper, and how much delay can I accept without lying to the system or to the user?
+> "Which read actually needs to be cheaper, and exactly how much staleness can the business accept without lying to the user or breaking the system?"
 
-That question completely changes the quality of the decision.
+That question completely changes the maturity of the architectural decision.
 
 ## What the interviewer wants to see
 
-In interviews, this usually shows maturity quickly:
+In system design interviews, discussing cache properly separates seniors from mid-levels quickly:
 
-- you understand that cache is a trade-off, not an automatic bonus
-- you think about invalidation and lifetime
-- you connect consistency to real product impact
+- you clearly articulate that cache is a painful trade-off, not an automatic bonus
+- you proactively bring up invalidation strategies and lifetime management
+- you connect data consistency to the actual user experience
 
-People who do this well look like someone who knows how to optimize without breaking trust in the information.
+Engineers who do this well look like they know how to optimize systems without destroying trust in the platform's data.
 
-> Cache speeds up reads, but it also creates distance from the truth.
+> Cache speeds up reads, but it fundamentally creates distance from the truth.
 
-> If you do not know when the copy stops being valid, you have not decided the cache properly yet.
+> If you don't know exactly when the copy stops being valid, you haven't finished designing your cache layer.

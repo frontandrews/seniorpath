@@ -17,32 +17,32 @@ relatedGuideIds:
   - failure-and-recovery-scenarios-with-clarity
 ---
 
-## O que e
+## O que é
 
-Idempotencia significa conseguir repetir a mesma operacao sem gerar um novo efeito colateral toda vez.
+Idempotência significa que você pode repetir a mesma operação várias vezes, mas o efeito principal só acontece uma vez.
 
-Isso e importante quando cliente, worker ou integracao externa pode reenviar a mesma intencao.
+Isso salva o seu sistema quando um cliente clica no botão duas vezes sem querer, um worker reinicia no meio do trabalho, ou uma integração externa reenvia a mesma mensagem porque achou que a primeira falhou.
 
 ## Quando importa
 
-Importa em pagamentos, webhooks, jobs e qualquer fluxo onde retry e comportamento normal.
+Importa em sistemas de pagamento, webhooks e jobs em background. Basicamente, em qualquer fluxo onde tentar de novo (retry) é parte normal da vida em produção.
 
-Sem isso, o retry pode criar pedido duplicado, email duplicado ou estado inconsistente.
+Sem idempotência, a internet seria um caos. Um simples retry criaria cobranças duplicadas, emails repetidos e estados corrompidos no banco de dados.
 
 ## Erro comum
 
-O erro comum e tratar todo retry como um comando novo.
+O erro comum é ignorar o conceito e tratar toda requisição como uma intenção completamente nova.
 
-Isso costuma funcionar ate o primeiro timeout ou erro parcial.
+Isso funciona perfeitamente até o dia em que um timeout de rede acontece. Como o cliente não teve certeza se a requisição original terminou, ele tenta de novo. Se o backend não reconhece os dois pedidos como a mesma intenção, o sistema duplica a operação.
 
 ## Exemplo curto
 
-Se `POST /orders` e reenviado depois de timeout, o sistema pode precisar de uma chave de idempotencia para reconhecer que a intencao e a mesma.
+Quando um `POST /orders` chega, o cliente envia junto uma chave de idempotência (como um UUID único para aquela tentativa de compra).
 
-Assim a segunda request devolve o mesmo resultado em vez de criar outro pedido.
+Se a conectividade cair e o cliente enviar a mesmíssima request de novo, o backend vê a chave repetida. Ele entende que o pedido já foi processado na primeira tentativa e apenas devolve o sucesso de antes, sem cobrar o cartão de novo.
 
 ## Por que isso ajuda
 
-Idempotencia deixa o tratamento de falha mais calmo.
+Idempotência deixa o tratamento de falha muito mais calmo em sistemas distribuídos.
 
-Retry para de parecer chute perigoso e vira comportamento planejado.
+Quando você sabe que pode repetir operações com segurança, o retry deixa de ser um "chute no escuro perigoso" e passa a ser uma estratégia confiável e previsível.

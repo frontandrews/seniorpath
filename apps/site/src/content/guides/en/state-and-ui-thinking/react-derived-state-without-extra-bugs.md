@@ -25,30 +25,31 @@ relatedDeckIds:
   - react-rendering-core
 ---
 
-Derived state usually sounds harmless when you first hear the idea.
+Derived state usually sounds completely harmless when you first hear the idea.
 
-You already have some input coming from props, you need a value that looks slightly different, and putting that into local state feels like the straightforward move. The problem is that you have now created two places that both look like sources of truth.
+You already have some input coming from props, you need a value that looks slightly different for the UI, and dumping it into a new `useState` feels like the most straightforward move.
+The fatal problem is that you have now created two places that both look like the absolute truth.
 
-That is the real bug pattern to talk about in interviews.
+That architectural trap is exactly what interviewers are trying to catch when they ask about React state management.
 
 ## What goes wrong
 
-When someone copies props into state, the component now has to keep those two values synchronized over time.
+When a developer copies props into local state, the component is suddenly burdened with keeping those two values perfectly synchronized over time.
 
-That tends to produce one of these outcomes:
+That inevitably produces one of these outcomes:
 
-- the copied value goes stale after a prop change
-- `useEffect` gets added just to keep state in sync
-- edge cases appear around reset logic
-- the component becomes harder to reason about because the “real” value is no longer obvious
+- the copied local value goes stale immediately after a parent prop change
+- a messy `useEffect` gets added just to forcefully keep the state in sync
+- bizarre edge cases appear around resetting the form or component logic
+- the component becomes a nightmare to reason about because the “real” value is no longer obvious
 
-The bug is not only technical. It is architectural. You are increasing the number of moving parts for something that could often be computed during render.
+The bug isn't just a rendering glitch. It is an architectural failure. You drastically increased the number of moving parts for something that could have simply been computed on the fly during the render cycle.
 
 ## The better default
 
-Store the smallest real source of truth possible and derive everything else from it.
+Store the absolute smallest source of truth possible, and forcefully derive everything else from it.
 
-If the derived value is cheap, compute it directly during render:
+If the derived value is cheap (like filtering an array of 50 items), compute it directly during render:
 
 ```tsx
 function UserList({ users, search }: { users: User[]; search: string }) {
@@ -60,7 +61,7 @@ function UserList({ users, search }: { users: User[]; search: string }) {
 }
 ```
 
-If the computation is genuinely expensive, memoization is usually the first thing to try before adding more state:
+If the computation is genuinely expensive (like parsing thousands of records), `useMemo` is usually the exact right tool to reach for before you ever consider adding more state:
 
 ```tsx
 const visibleUsers = useMemo(() => {
@@ -72,22 +73,22 @@ const visibleUsers = useMemo(() => {
 
 ## When state is actually justified
 
-Sometimes you are not storing a derived value. You are storing a user-controlled draft, a local interaction state, or a value that intentionally diverges from the prop after initialization.
+Sometimes you are *not* just storing a derived value. You are storing a user-controlled draft, a local interaction state, or a value that intentionally, permanently diverges from the initial prop.
 
-That is different.
+That is a completely different scenario.
 
 For example:
 
-- a form starts from server data but the user edits it locally
-- a modal starts open or closed from a prop, then becomes locally controlled
-- you need optimistic UI state that temporarily diverges from backend truth
+- a form starts with server data, but the user immediately begins editing it locally
+- a modal starts open or closed based on a prop, but then becomes totally controlled by the user's clicks
+- you are building optimistic UI state that temporarily diverges from the backend's real truth
 
-In those cases, the answer is not “never use state.” The answer is “be explicit about why that state exists.”
+In those cases, the answer isn't “never use state.” The answer is “be aggressively explicit about exactly *why* that duplicated state exists.”
 
 ## Strong interview framing
 
-A stronger answer sounds like this:
+A highly senior answer in an interview sounds like this:
 
-> Derived state is dangerous when it duplicates something that can already be computed from props or existing state. That creates synchronization problems and stale data. My default is to keep the real source of truth as small as possible, derive values during render, and only add memoization or separate state when there is a real performance or UX reason.
+> "Derived state is inherently dangerous because it duplicates something that could already be computed from props or existing state, leading to synchronization nightmares and stale UI. My default is to keep the source of truth as brutally small as possible, derive values directly during render, and only add memoization or separate state when there is a mathematically proven performance or UX reason to do so."
 
-That framing shows you understand the tradeoff, not just the slogan.
+That framing proves you understand the painful tradeoffs of state ownership, not just the React documentation slogans.

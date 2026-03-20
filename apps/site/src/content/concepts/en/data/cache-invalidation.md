@@ -18,32 +18,30 @@ relatedGuideIds:
 
 ## What it is
 
-Cache invalidation is how the system decides that fast data got too old to keep being reliable.
+Cache invalidation is how your system realizes that its fast, cached data has become too old to be trusted anymore.
 
-The hard part is not adding cache.
-
-The hard part is keeping cache aligned with reality.
+Adding a cache is easy. The hard part is keeping that cache from lying to your users when the real data changes.
 
 ## When it matters
 
-It matters when data changes underneath a response, page, object, or cached query.
+This matters the moment an original record changes in the database, but a query, page, or object still lives in the cache.
 
-That is when the system becomes fast and wrong at the same time.
+If you don't handle invalidation, your system becomes incredibly fast—at serving the wrong information.
 
 ## Common mistake
 
-The common mistake is thinking TTL alone solves every case.
+The most common mistake is assuming that a simple TTL (Time-To-Live) solves every cache problem.
 
-Sometimes it does, but many systems also need invalidation tied to write paths or events.
+TTL is fine for data that doesn't matter much. But for critical data, you need proactive invalidation tied directly to your write paths or domain events, so the cache drops the old data the millisecond it becomes invalid.
 
 ## Short example
 
-If the price of a product changes in the database, a cached page may still show the old value until the cache expires.
+If a product's price suddenly drops in your primary database, a cached product page might still show the expensive price to customers until the cache naturally expires.
 
-If that delay is not acceptable, the write path needs to invalidate or update it first.
+If showing the wrong price for five minutes is unacceptable for the business, your update logic must immediately invalidate or overwrite that cache entry before returning success.
 
 ## Why it helps
 
-This concept forces you to think about speed and correctness together.
+Thinking about cache invalidation forces you to stop looking at speed in isolation and start looking at speed and correctness together.
 
-And that is usually where cache decisions start getting mature.
+That is usually the exact moment when a developer's caching strategy stops being naive and starts getting mature.
