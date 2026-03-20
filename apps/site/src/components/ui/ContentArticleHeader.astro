@@ -11,6 +11,7 @@ type BreadcrumbItem = {
 type Props = {
   breadcrumbs?: BreadcrumbItem[]
   className?: string
+  createdMeta?: string | null
   description: string
   meta?: string
   title: string
@@ -19,6 +20,7 @@ type Props = {
 const {
   breadcrumbs = [],
   className = '',
+  createdMeta = null,
   description,
   meta,
   title,
@@ -27,6 +29,7 @@ const {
 
 <header class={cn(ui.articleHeader, className)}>
   {breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
+  {createdMeta ? <p class={ui.articleKicker}>{createdMeta}</p> : null}
   <h1 class={ui.articleTitle}>{title}</h1>
   <p class={ui.articleExcerpt}>{description}</p>
   <slot />

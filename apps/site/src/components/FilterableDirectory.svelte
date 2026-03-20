@@ -196,30 +196,33 @@
         {/if}
         <div class="flex flex-wrap justify-start gap-2.5">
           {#if hasTypeFilters}
-          <button
-            aria-pressed={activeType === 'all'}
-            class={filterChipVariants({ active: activeType === 'all' })}
-            onclick={() => setActiveType('all')}
-            type="button"
-          >
-            <span>{allItemsLabel}</span>
-          </button>
-          <button
-            aria-pressed={activeType === 'guide'}
-            class={filterChipVariants({ active: activeType === 'guide' })}
-            onclick={() => setActiveType('guide')}
-            type="button"
-          >
-            <span>{guideItemsLabel}</span>
-          </button>
-          <button
-            aria-pressed={activeType === 'article'}
-            class={filterChipVariants({ active: activeType === 'article' })}
-            onclick={() => setActiveType('article')}
-            type="button"
-          >
-            <span>{articleItemsLabel}</span>
-          </button>
+            <button
+              aria-pressed={activeType === 'all'}
+              class={filterChipVariants({ active: activeType === 'all' })}
+              onclick={() => setActiveType('all')}
+              type="button"
+            >
+              <span>{allItemsLabel}</span>
+            </button>
+            <button
+              aria-pressed={activeType === 'guide'}
+              class={filterChipVariants({ active: activeType === 'guide' })}
+              onclick={() => setActiveType('guide')}
+              type="button"
+            >
+              <span>{guideItemsLabel}</span>
+            </button>
+            <button
+              aria-pressed={activeType === 'article'}
+              class={filterChipVariants({ active: activeType === 'article' })}
+              onclick={() => setActiveType('article')}
+              type="button"
+            >
+              <span>{articleItemsLabel}</span>
+            </button>
+            {#if filters.length > 0}
+              <span aria-hidden="true" class="self-center text-sm text-site-ink-muted">|</span>
+            {/if}
           {/if}
           {#each visibleFilters as filter, index}
             {@const tone = filterTones[index % filterTones.length]}

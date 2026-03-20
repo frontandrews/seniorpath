@@ -3,35 +3,50 @@ import StaticArticlePage from '@/components/ui/StaticArticlePage.astro'
 ---
 
 <StaticArticlePage
-  description="Privacy policy for SeniorPath."
+  description="A plain-language explanation of what SeniorPath stores and what third parties may receive."
   kicker="Legal"
   title="Privacy Policy"
 >
-  <h2>Local storage</h2>
+  <h2>What SeniorPath stores in your browser</h2>
   <p>
-    SeniorPath stores small pieces of information in your browser to preserve theme preference and guide completion
-    state. This helps keep the experience consistent between visits on the same device.
+    SeniorPath currently uses browser storage for a small amount of product state: your locale preference and the
+    guide-completion markers used by the site UI. That data stays in your browser on that device until you clear
+    it.
   </p>
 
-  <h2>Analytics and tracking</h2>
+  <h2>Traffic measurement</h2>
   <p>
-    SeniorPath may use Cloudflare Web Analytics for lightweight site-level traffic measurement, such as pageviews,
-    top pages, and referrers. This is intended for aggregate website analytics rather than behavioral profiling or
-    ad targeting.
+    SeniorPath may use Cloudflare Web Analytics for lightweight site-level measurement, such as pageviews, top
+    pages, and referrers. The goal is to understand aggregate traffic and what content is being read, not to build
+    ad profiles or personalized tracking around individual visitors.
   </p>
   <p>
-    Local browser storage used by SeniorPath is limited to theme preference, locale preference, and guide
-    completion state. Analytics configuration and data handling by Cloudflare are governed by Cloudflare's own
-    service and privacy terms.
+    Analytics configuration and data handling for that service are governed by Cloudflare's own terms and privacy
+    policies.
   </p>
 
-  <h2>Third-party services</h2>
+  <h2>Comments on articles</h2>
   <p>
-    Links to external services or reference material may be governed by separate privacy terms and policies.
+    Some article pages may load Giscus for comments. If comments are enabled and you interact with them, the page
+    will load resources from Giscus and GitHub, and your use of that comment system will be governed by their
+    policies as well.
+  </p>
+
+  <h2>External links</h2>
+  <p>
+    SeniorPath may link to outside articles, tools, or reference material. When you leave the site or interact
+    with embedded third-party services, those services may collect data under their own policies.
+  </p>
+
+  <h2>What SeniorPath does not currently do</h2>
+  <p>
+    SeniorPath does not currently run a public account system, checkout flow, or newsletter form on the site. If
+    that changes in the future, this page should be updated to explain what new data is collected and why.
   </p>
 
   <h2>Updates</h2>
   <p>
-    This policy may be revised as the product changes. Material updates should be reflected on this page.
+    This policy may be revised as the product changes. Material updates should be reflected on this page so the
+    site's actual behavior stays aligned with the text here.
   </p>
 </StaticArticlePage>
