@@ -2,7 +2,6 @@
 import { getCollection } from 'astro:content'
 
 import ConceptPage from '@/components/ConceptPage.astro'
-import { getConceptDomainRouteSegment, getConceptGroupRouteSegment } from '@/lib/concept-taxonomy'
 import { getConceptSlugFromEntry } from '@/lib/concepts-links'
 
 export async function getStaticPaths() {
@@ -12,8 +11,6 @@ export async function getStaticPaths() {
     .filter((concept) => concept.data.locale === 'en' && concept.data.status !== 'archived')
     .map((concept) => ({
       params: {
-        domain: getConceptDomainRouteSegment(concept.data.domainId, 'en'),
-        group: getConceptGroupRouteSegment(concept.data.domainId, concept.data.groupId, 'en'),
         slug: getConceptSlugFromEntry(concept),
       },
       props: { concept },

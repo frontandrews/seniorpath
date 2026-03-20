@@ -32,7 +32,7 @@ const description =
 const breadcrumbItems = getBranchBreadcrumb(pillar, branch, locale)
 const dateLocale = locale === 'pt-br' ? 'pt-BR' : 'en-US'
 const items = posts.map((post) => ({
-  badgeLabel: post.data.kind === 'article' ? (locale === 'pt-br' ? 'Artigo' : 'Article') : undefined,
+  badgeLabel: post.data.kind === 'article' ? (locale === 'pt-br' ? 'Nota' : 'Journal') : undefined,
   completionId: post.data.kind === 'guide' ? post.data.guideId : undefined,
   contentKind: post.data.kind,
   ctaLabel: locale === 'pt-br' ? 'Ler mais' : 'Learn more',

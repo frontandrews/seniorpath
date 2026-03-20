@@ -1,0 +1,85 @@
+---
+import ArticleSharePanel from '@/components/ArticleSharePanel.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
+import { cn } from '@/lib/cn'
+import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  createdMeta: string | null
+  description: string
+  englishHref?: string | null
+  locale: SiteLocale
+  portugueseHref?: string | null
+  title: string
+  updatedMeta?: string | null
+  url: string
+}
+
+const {
+  createdMeta,
+  description,
+  englishHref = null,
+  locale,
+  portugueseHref = null,
+  title,
+  updatedMeta = null,
+  url,
+} = Astro.props
+const copy = getSiteCopy(locale)
+
+---
+
+<BaseLayout
+  description={description}
+  englishHref={englishHref}
+  portugueseHref={portugueseHref}
+  title={title}
+>
+  <article class="w-full pb-11">
+    <ContentArticleHeader
+      createdMeta={createdMeta}
+      description={description}
+      title={title}
+    >
+      <div class="mt-4 flex items-center gap-3">
+        <img
+          alt="Andrews Ribeiro"
+          class="size-11 shrink-0 rounded-full border border-article-rule bg-article-surface object-cover"
+          height="48"
+          loading="lazy"
+          src="/andrews.jpg"
+          width="48"
+        />
+        <div class="grid gap-0.5">
+          <p class={ui.articleBylineName}>Andrews Ribeiro</p>
+          <p class={ui.articleMetaSubtle}>Founder & Engineer</p>
+        </div>
+      </div>
+      {updatedMeta ? (
+        <p class={cn(ui.articleMetaSubtle, 'mt-3')}>
+          {copy.article.updatedPrefix} {updatedMeta}
+        </p>
+      ) : null}
+      <slot name="headerMeta" />
+    </ContentArticleHeader>
+
+    <div class="relative mx-auto max-w-[52rem] min-[64rem]:max-w-[56rem]">
+      <div class="min-w-0">
+        <div class="article-prose">
+          <slot />
+        </div>
+
+        <ArticleSharePanel
+          description={description}
+          locale={locale}
+          title={title}
+          url={url}
+        />
+
+        <slot name="afterContent" />
+      </div>
+    </div>
+  </article>
+</BaseLayout>

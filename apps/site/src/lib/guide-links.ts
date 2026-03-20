@@ -10,8 +10,22 @@ import {
 
 const SUPPORTED_GUIDE_LOCALE_SET = new Set<string>(SUPPORTED_GUIDE_LOCALES)
 
+function getFlatArticleRoutePathFromEntryId(entryId: string) {
+  const parts = entryId.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean)
+  const [locale = 'en', pillarOrKind, slug] = parts
+  const normalizedLocale = locale === 'pt-br' ? 'pt-br' : 'en'
+
+  if (!slug || (pillarOrKind !== 'article' && pillarOrKind !== 'artigo')) {
+    return null
+  }
+
+  const section = getGuideSectionSegment(normalizedLocale)
+
+  return normalizedLocale === 'en' ? `${section}/${slug}` : `${normalizedLocale}/${section}/${slug}`
+}
+
 export function getGuideHrefFromEntryId(entryId: string) {
-  return `/${getGuideRoutePathFromEntryId(entryId)}`
+  return `/${getFlatArticleRoutePathFromEntryId(entryId) ?? getGuideRoutePathFromEntryId(entryId)}`
 }
 
 type GuideEntryLike = {
@@ -33,7 +47,7 @@ export function getGuideHref(guideId: string, locale = 'en') {
 }
 
 export function getGuideHrefFromEntry(entry: GuideEntryLike) {
-  return getGuideHref(entry.data.guideId, entry.data.locale ?? 'en') ?? getGuideLegacyHrefFromEntryId(entry.id)
+  return getGuideHref(entry.data.guideId, entry.data.locale ?? 'en') ?? getGuideHrefFromEntryId(entry.id)
 }
 
 export function getGuidePillarHref(pillarId: string, locale = 'en') {

@@ -2,9 +2,12 @@ export type SiteLocale = 'en' | 'pt-br'
 
 type SiteCopy = {
   article: {
+    categoryLabel: string
     chatShare: string
     comments: string
     completed: string
+    exploreRelated: string
+    finishedArticle: string
     confirmBody: string
     confirmCancel: string
     confirmConfirm: string
@@ -12,19 +15,26 @@ type SiteCopy = {
     copyLink: string
     copyLinkError: string
     copyLinkSuccess: string
+    levelLabel: string
     markCompleted: string
+    markUnread: string
     nextReads: string
     practice: string
     practiceChecklist: string
     practiceChecklistTitle: string
     practiceInApp: string
     practiceInAppTitle: string
+    partOfTrack: string
     quickSummary: string
     quickSummaryTitle: string
+    readingTimeLabel: string
     share: string
+    shareArticleTitle: string
     shareDescription: string
     shareFallback: string
     shareTitle: string
+    tableOfContents: string
+    nextStep: string
     updatedPrefix: string
   }
   footer: {
@@ -63,6 +73,7 @@ type SiteCopy = {
   header: {
     brand: string
     closeMenu: string
+    explore: string
     menu: string
     primaryNav: string
     languageSwitcher: string
@@ -87,6 +98,7 @@ type SiteCopy = {
   }
   learn: string
   layout: {
+    articles: string
     concepts: string
     glossary: string
     home: string
@@ -111,9 +123,12 @@ type SiteCopy = {
 const siteCopy: Record<SiteLocale, SiteCopy> = {
   en: {
     article: {
+      categoryLabel: 'Category',
       chatShare: 'Share in chat',
       comments: 'Comments',
       completed: 'Completed',
+      exploreRelated: 'Or explore related',
+      finishedArticle: 'You finished this article',
       confirmBody:
         'When you mark this as complete, it will stop showing up in suggestions. You can still practice the topic later. Do you want to continue?',
       confirmCancel: 'Cancel',
@@ -122,19 +137,26 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       copyLink: 'Copy link',
       copyLinkError: 'This browser could not copy the link.',
       copyLinkSuccess: 'Link copied. You can paste it into any chat.',
+      levelLabel: 'Level',
       markCompleted: 'Mark as completed',
+      markUnread: 'Mark as unread',
       nextReads: 'Next reads',
       practice: 'Practice',
       practiceChecklist: 'Practice checklist',
       practiceChecklistTitle: 'Use this when you answer',
       practiceInApp: 'Practice in the app',
       practiceInAppTitle: 'Turn this idea into reps',
+      partOfTrack: 'Part of the track',
       quickSummary: 'Quick summary',
       quickSummaryTitle: 'What to keep in your head',
+      readingTimeLabel: 'Reading time',
       share: 'Share',
-      shareDescription: 'Share this article directly from the site, open it in chat, or copy the link.',
+      shareArticleTitle: 'Share this article',
+      shareDescription: 'Share this page directly from the site, open it in chat, or copy the link.',
       shareFallback: 'This browser could not open the share menu. Use copy link instead.',
-      shareTitle: 'Share this article',
+      shareTitle: 'Share this page',
+      tableOfContents: 'On this page',
+      nextStep: 'Next step',
       updatedPrefix: 'Updated',
     },
     footer: {
@@ -156,6 +178,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
     header: {
       brand: 'SeniorPath',
       closeMenu: 'Close menu',
+      explore: 'Explore',
       menu: 'Menu',
       primaryNav: 'Primary',
       languageSwitcher: 'Language switcher',
@@ -198,6 +221,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
     },
     learn: 'Articles',
     layout: {
+      articles: 'Articles',
       concepts: 'Concepts',
       glossary: 'Glossary',
       home: 'Home',
@@ -220,9 +244,12 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
   },
   'pt-br': {
     article: {
+      categoryLabel: 'Categoria',
       chatShare: 'Compartilhar no chat',
       comments: 'Comentarios',
       completed: 'Concluido',
+      exploreRelated: 'Ou explore relacionados',
+      finishedArticle: 'Voce concluiu este artigo',
       confirmBody:
         'Quando voce marcar este guia como concluido, ele para de aparecer nas sugestoes. Ainda sera possivel praticar o tema depois. Quer continuar?',
       confirmCancel: 'Cancelar',
@@ -231,19 +258,26 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
       copyLink: 'Copiar link',
       copyLinkError: 'Este navegador nao conseguiu copiar o link.',
       copyLinkSuccess: 'Link copiado. Agora voce pode colar em qualquer chat.',
+      levelLabel: 'Nivel',
       markCompleted: 'Marcar como concluido',
+      markUnread: 'Marcar como nao lido',
       nextReads: 'Proximas leituras',
       practice: 'Praticar',
       practiceChecklist: 'Checklist de pratica',
       practiceChecklistTitle: 'Use isto ao responder',
       practiceInApp: 'Pratique no app',
       practiceInAppTitle: 'Transforme esta ideia em repeticoes',
+      partOfTrack: 'Parte da trilha',
       quickSummary: 'Resumo rapido',
       quickSummaryTitle: 'O que vale manter na cabeca',
+      readingTimeLabel: 'Tempo de leitura',
       share: 'Compartilhar',
-      shareDescription: 'Compartilhe este artigo direto do site, abra no chat ou copie o link.',
+      shareArticleTitle: 'Compartilhar este artigo',
+      shareDescription: 'Compartilhe esta pagina direto do site, abra no chat ou copie o link.',
       shareFallback: 'Este navegador nao conseguiu abrir o menu de compartilhamento. Use copiar link.',
-      shareTitle: 'Compartilhar este artigo',
+      shareTitle: 'Compartilhar esta pagina',
+      tableOfContents: 'Nesta pagina',
+      nextStep: 'Proximo passo',
       updatedPrefix: 'Atualizado',
     },
     footer: {
@@ -265,6 +299,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
     header: {
       brand: 'SeniorPath',
       closeMenu: 'Fechar menu',
+      explore: 'Explorar',
       menu: 'Menu',
       primaryNav: 'Principal',
       languageSwitcher: 'Alternar idioma',
@@ -307,6 +342,7 @@ const siteCopy: Record<SiteLocale, SiteCopy> = {
     },
     learn: 'Artigos',
     layout: {
+      articles: 'Artigos',
       concepts: 'Conceitos',
       glossary: 'Glossario',
       home: 'Inicio',

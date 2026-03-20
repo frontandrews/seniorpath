@@ -2,13 +2,9 @@
 import { getCollection } from 'astro:content'
 
 import TopicIndexPage from '@/components/TopicIndexPage.astro'
-import { getAvailableTopicGroups } from '@/lib/topic-taxonomy'
 
 const posts = await getCollection('guides')
-const groups = getAvailableTopicGroups(posts, 'pt-br').map((group) => ({
-  count: 0,
-  groupId: group.id,
-}))
+const activePosts = posts.filter((post) => post.data.locale === 'pt-br' && post.data.status !== 'archived')
 ---
 
-<TopicIndexPage groups={groups} locale="pt-br" />
+<TopicIndexPage locale="pt-br" posts={activePosts} />

@@ -1,0 +1,237 @@
+---
+import SearchIcon from '@lucide/astro/icons/search'
+import XIcon from '@lucide/astro/icons/x'
+
+import { cn } from '@/lib/cn'
+import type { SiteLocale } from '@/lib/site-copy'
+
+type Props = {
+  locale: SiteLocale
+}
+
+const { locale } = Astro.props
+const isDev = import.meta.env.DEV
+const copy =
+  locale === 'pt-br'
+    ? {
+        close: 'Fechar busca',
+        error: 'A busca nao esta disponivel no momento.',
+        empty: 'Digite para buscar em artigos, conceitos, termos e topicos.',
+        hint: 'Busca no site',
+        loading: 'Buscando...',
+        noResults: 'Nenhum resultado encontrado.',
+        placeholder: 'Buscar',
+        shortcut: 'Ctrl K',
+        title: 'Buscar',
+        unavailable: 'A busca so fica disponivel em preview/build.',
+      }
+    : {
+        close: 'Close search',
+        error: 'Search is currently unavailable.',
+        empty: 'Start typing to search articles, concepts, glossary, and topics.',
+        hint: 'Site search',
+        loading: 'Searching...',
+        noResults: 'No results found.',
+        placeholder: 'Search',
+        shortcut: 'Ctrl K',
+        title: 'Search',
+        unavailable: 'Search is only available in preview/build.',
+      }
+const desktopTriggerClass =
+  'hidden min-[56rem]:inline-flex min-[56rem]:h-9 min-[56rem]:w-[13.5rem] min-[56rem]:items-center min-[56rem]:justify-between min-[56rem]:gap-3 rounded-[var(--radius-sm)] border border-site-line bg-site-panel px-3 py-0 text-left text-[0.9rem] text-site-ink-muted transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none min-[64rem]:h-10 min-[64rem]:w-[15rem] min-[64rem]:gap-3.5 min-[64rem]:px-3 min-[64rem]:text-[0.98rem]'
+const mobileTriggerClass =
+  'inline-flex min-h-10 items-center justify-center rounded-[var(--radius-sm)] border border-site-line bg-site-panel px-3 py-2 text-site-ink transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none min-[64rem]:min-h-11 min-[56rem]:hidden'
+---
+
+<Fragment slot="head">
+  <style>
+    .search-launcher-backdrop {
+      background: color-mix(in srgb, var(--site-bg) 58%, transparent);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+  </style>
+</Fragment>
+
+<button
+  aria-expanded="false"
+  class={desktopTriggerClass}
+  data-search-trigger="desktop"
+  type="button"
+>
+  <span class="inline-flex items-center gap-2">
+    <SearchIcon aria-hidden="true" class="size-4" />
+    <span>{copy.placeholder}</span>
+  </span>
+  <span class="rounded-md border border-site-line bg-site-surface px-1.5 py-0.5 text-[0.68rem] uppercase tracking-[0.08em] text-site-ink-muted min-[64rem]:px-2 min-[64rem]:py-[0.35rem] min-[64rem]:text-[0.76rem]">
+    {copy.shortcut}
+  </span>
+</button>
+
+<button
+  aria-expanded="false"
+  class={mobileTriggerClass}
+  data-search-trigger="mobile"
+  type="button"
+>
+  <SearchIcon aria-hidden="true" class="size-4" />
+  <span class="sr-only">{copy.title}</span>
+</button>
+
+<div class="search-launcher-backdrop fixed inset-0 z-40 hidden overflow-y-auto p-4 md:p-6" data-search-overlay>
+  <div class="mx-auto my-[6vh] flex max-h-[min(84dvh,42rem)] w-full max-w-[46rem] flex-col overflow-hidden rounded-[var(--radius-lg)] border border-site-line bg-site-panel shadow-[0_24px_80px_rgba(0,0,0,0.28)] min-[64rem]:max-w-[50rem]">
+    <div class="flex items-center gap-3 border-b border-site-line px-4 py-3 min-[64rem]:gap-3.5 min-[64rem]:px-5 min-[64rem]:py-3.5">
+      <SearchIcon aria-hidden="true" class="size-4 shrink-0 text-site-ink-muted" />
+      <input
+        class="min-w-0 flex-1 bg-transparent text-[1rem] text-site-ink outline-none placeholder:text-site-ink-muted min-[64rem]:text-[1.08rem]"
+        data-search-input
+        placeholder={copy.placeholder}
+        type="search"
+      />
+      <button
+        class={cn(mobileTriggerClass, 'min-[56rem]:inline-flex')}
+        data-search-close
+        type="button"
+      >
+        <XIcon aria-hidden="true" class="size-4" />
+        <span class="sr-only">{copy.close}</span>
+      </button>
+    </div>
+    <div class="flex min-h-0 flex-1 flex-col gap-3 px-4 py-4 min-[64rem]:gap-3.5 min-[64rem]:px-5 min-[64rem]:py-5">
+      <p class="m-0 text-[0.76rem] uppercase tracking-[0.12em] text-site-ink-muted min-[64rem]:text-[0.84rem]">{copy.hint}</p>
+      <div class="grid min-h-0 flex-1 gap-2 overflow-y-auto pr-1" data-search-results></div>
+      <p class="m-0 text-sm text-site-ink-muted min-[64rem]:text-[0.96rem]" data-search-status>{isDev ? copy.unavailable : copy.empty}</p>
+    </div>
+  </div>
+</div>
+
+<script define:vars={{ copy, isDev, locale }} is:inline>
+  const searchTriggers = [...document.querySelectorAll('[data-search-trigger]')];
+  const searchOverlay = document.querySelector('[data-search-overlay]');
+  const searchInput = document.querySelector('[data-search-input]');
+  const searchClose = document.querySelector('[data-search-close]');
+  const searchResults = document.querySelector('[data-search-results]');
+  const searchStatus = document.querySelector('[data-search-status]');
+
+  let pagefindModule;
+  let searchTimer;
+
+  const groupLabel = (url) => {
+    if (url.startsWith('/pt-br/artigos') || url.startsWith('/articles')) return locale === 'pt-br' ? 'Artigos' : 'Articles';
+    if (url.startsWith('/pt-br/conceitos') || url.startsWith('/concepts')) return locale === 'pt-br' ? 'Conceitos' : 'Concepts';
+    if (url.startsWith('/pt-br/glossario') || url.startsWith('/glossary')) return locale === 'pt-br' ? 'Glossario' : 'Glossary';
+    if (url.startsWith('/pt-br/topicos') || url.startsWith('/topics')) return locale === 'pt-br' ? 'Topicos' : 'Topics';
+    if (url.startsWith('/pt-br/trilhas') || url.startsWith('/tracks')) return locale === 'pt-br' ? 'Trilhas' : 'Tracks';
+    return locale === 'pt-br' ? 'Pagina' : 'Page';
+  };
+
+  const setOpen = (isOpen) => {
+    if (!(searchOverlay instanceof HTMLElement)) return;
+    searchOverlay.classList.toggle('hidden', !isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    searchTriggers.forEach((trigger) => trigger.setAttribute('aria-expanded', String(isOpen)));
+    if (isOpen && searchInput instanceof HTMLInputElement) {
+      queueMicrotask(() => searchInput.focus());
+    }
+  };
+
+  const renderResults = (results) => {
+    if (!(searchResults instanceof HTMLElement)) return;
+    searchResults.innerHTML = results
+      .map((result) => {
+        const excerpt = result.excerpt ?? '';
+        return `
+          <a class="grid gap-1 rounded-[var(--radius-sm)] px-3 py-3 text-inherit transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none min-[64rem]:gap-1.5 min-[64rem]:px-4 min-[64rem]:py-3.5" href="${result.url}">
+            <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-site-ink-muted min-[64rem]:text-[0.76rem]">${groupLabel(result.url)}</span>
+            <span class="text-base font-semibold leading-[1.3] text-site-ink min-[64rem]:text-[1.08rem]">${result.meta?.title ?? result.url}</span>
+            ${excerpt ? `<span class="text-sm leading-6 text-site-ink-soft min-[64rem]:text-[0.98rem]">${excerpt}</span>` : ''}
+          </a>
+        `;
+      })
+      .join('');
+  };
+
+  const runSearch = async (term) => {
+    if (!(searchStatus instanceof HTMLElement) || !(searchResults instanceof HTMLElement)) return;
+
+    if (isDev) {
+      searchResults.innerHTML = '';
+      searchStatus.textContent = copy.unavailable;
+      return;
+    }
+
+    const query = term.trim();
+    if (!query) {
+      searchResults.innerHTML = '';
+      searchStatus.textContent = copy.empty;
+      return;
+    }
+
+    searchStatus.textContent = copy.loading;
+
+    try {
+      pagefindModule ??= await import('/pagefind/pagefind.js');
+      const response = await pagefindModule.search(query);
+      const results = await Promise.all(
+        response.results.slice(0, 8).map(async (result) => {
+          const data = await result.data();
+          return {
+            excerpt: data.excerpt,
+            meta: data.meta,
+            url: data.url,
+          };
+        }),
+      );
+
+      renderResults(results);
+      searchStatus.textContent = results.length ? '' : copy.noResults;
+    } catch {
+      searchResults.innerHTML = '';
+      searchStatus.textContent = copy.error;
+    }
+  };
+
+  searchTriggers.forEach((trigger) => {
+    trigger.addEventListener('click', () => setOpen(true));
+  });
+
+  searchClose?.addEventListener('click', () => setOpen(false));
+  searchOverlay?.addEventListener('click', (event) => {
+    if (event.target === searchOverlay) setOpen(false);
+  });
+
+  document.addEventListener('keydown', (event) => {
+    const target = event.target;
+    const isEditable =
+      target instanceof HTMLInputElement ||
+      target instanceof HTMLTextAreaElement ||
+      target instanceof HTMLSelectElement ||
+      (target instanceof HTMLElement && target.isContentEditable);
+
+    if (event.key === 'Escape') {
+      setOpen(false);
+      return;
+    }
+
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+      event.preventDefault();
+      setOpen(true);
+      return;
+    }
+
+    if (!isEditable && event.key === '/') {
+      event.preventDefault();
+      setOpen(true);
+    }
+  });
+
+  searchInput?.addEventListener('input', (event) => {
+    const value =
+      event.currentTarget instanceof HTMLInputElement ? event.currentTarget.value : '';
+
+    clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => {
+      runSearch(value);
+    }, 120);
+  });
+</script>

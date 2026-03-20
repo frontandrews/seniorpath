@@ -25,7 +25,10 @@ export async function getStaticPaths() {
     })
     .map((post) => ({
       params: {
-        slug: post.id.split('/').slice(1).join('/'),
+        slug:
+          post.data.kind === 'article'
+            ? (post.id.replace(/^\/+|\/+$/g, '').split('/').filter(Boolean).at(-1) ?? post.id)
+            : post.id.split('/').slice(1).join('/'),
       },
       props: {
         post,

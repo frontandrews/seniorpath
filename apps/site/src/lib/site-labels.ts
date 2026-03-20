@@ -70,6 +70,7 @@ const PT_BR_LABELS: Record<string, string> = {
   'event loop': 'event loop',
   state: 'estado',
   rendering: 'renderizacao',
+  'coding-interview': 'entrevista de codigo',
   'coding interview': 'entrevista de codigo',
   'senior-thinking': 'pensamento senior',
   'problem-solving': 'resolucao de problemas',
@@ -104,6 +105,7 @@ const EN_LABELS: Record<string, string> = {
   'Execution & Communication': 'Execution and communication',
   'Estimation and Risk': 'Estimation and risk',
   'Communication in Work and Interviews': 'Communication at work and in interviews',
+  'coding-interview': 'Coding interview',
 }
 
 export function translateSiteLabel(label: string, locale?: string | null) {

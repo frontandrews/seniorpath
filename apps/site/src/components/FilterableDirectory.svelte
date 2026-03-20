@@ -35,6 +35,8 @@
   export let moreFiltersLabel = 'more'
   export let fewerFiltersLabel = 'Show less'
   export let moreFiltersHref: string | null = null
+  export let availableFilters: DirectoryTag[] = []
+  export let filterQueryKey: string | null = null
 
   const filterTones = [
     { dark: '#24364f', light: '#dbeafe' },
@@ -44,8 +46,10 @@
     { dark: '#41305a', light: '#ede9fe' },
     { dark: '#274737', light: '#e2f2ea' },
   ]
-  const filterLabelClass = ui.eyebrow
-  const itemEyebrowClass = ui.eyebrowSentence
+  const filterLabelClass =
+    'm-0 mb-2 text-[0.72rem] font-bold uppercase tracking-[0.22em] text-site-ink-subtle min-[64rem]:text-[0.8rem]'
+  const itemEyebrowClass =
+    'm-0 text-[0.72rem] font-light tracking-[0.08em] text-site-ink-subtle min-[64rem]:text-[0.8rem]'
   const listClass = directoryListVariants({ kind })
   const guideArticleClass = ui.linearRow
   const itemLinkClass = directoryLinkVariants({ kind })
@@ -57,28 +61,42 @@
   let filterMeasureContainer: HTMLDivElement | null = null
   let resizeObserver: ResizeObserver | null = null
   let measureRun = 0
+  let hasInitializedQueryFilter = false
+  let hasMeasuredCollapsedFilters = false
+  let previousCollapsedSignature = ''
 
   $: typeScopedItems = items.filter((item) =>
     activeType === 'all' ? true : (item.contentKind ?? 'guide') === activeType,
   )
-  $: filters = Array.from(
-    new Map(typeScopedItems.flatMap((item) => item.tags.map((tag) => [tag.id, tag.label]))).entries(),
-  ).map(([id, label]) => ({ id, label }))
+  $: typeScopedFilterIds = new Set(typeScopedItems.flatMap((item) => item.tags.map((tag) => tag.id)))
+  $: filters =
+    availableFilters.length > 0
+      ? availableFilters.filter((filter) => typeScopedFilterIds.has(filter.id))
+      : Array.from(
+          new Map(typeScopedItems.flatMap((item) => item.tags.map((tag) => [tag.id, tag.label]))).entries(),
+        ).map(([id, label]) => ({ id, label }))
   $: hasTypeFilters =
     items.some((item) => item.contentKind === 'article') && items.some((item) => item.contentKind !== 'article')
   $: if (activeFilter && !filters.some((filter) => filter.id === activeFilter)) {
     activeFilter = null
   }
-  $: if (showAllFilters || visibleCategoryCount === 0) {
+  $: if (showAllFilters) {
     visibleCategoryCount = filters.length
   }
-  $: visibleFilters = showAllFilters ? filters : filters.slice(0, visibleCategoryCount)
-  $: hiddenFiltersCount = Math.max(filters.length - visibleFilters.length, 0)
+  $: shouldCollapseCategoryFilters = hasTypeFilters
+  $: if (!shouldCollapseCategoryFilters) {
+    visibleCategoryCount = filters.length
+    hasMeasuredCollapsedFilters = true
+  }
+  $: visibleFilters = showAllFilters || !shouldCollapseCategoryFilters ? filters : filters.slice(0, visibleCategoryCount)
+  $: shouldRenderCategoryFilters = !shouldCollapseCategoryFilters || showAllFilters || hasMeasuredCollapsedFilters
+  $: hiddenFiltersCount = shouldCollapseCategoryFilters ? Math.max(filters.length - visibleFilters.length, 0) : 0
   $: visibleItems = typeScopedItems.filter((item) => {
     const matchesTag = activeFilter ? item.tags.some((tag) => tag.id === activeFilter) : true
 
     return matchesTag
   })
+  $: collapsedSignature = showAllFilters ? 'expanded' : `${activeType}|${filters.map((filter) => filter.id).join(',')}`
 
   function toggleFilter(id: string) {
     activeFilter = activeFilter === id ? null : id
@@ -110,8 +128,9 @@
   }
 
   function measureCollapsedCategoryCount() {
-    if (!filterMeasureContainer || showAllFilters || filters.length === 0) {
+    if (!filterMeasureContainer || !shouldCollapseCategoryFilters || showAllFilters || filters.length === 0) {
       visibleCategoryCount = filters.length
+      hasMeasuredCollapsedFilters = true
       return
     }
 
@@ -140,6 +159,7 @@
 
     visibleCategoryCount = best
     setMeasuredCategoryCount(best)
+    hasMeasuredCollapsedFilters = true
   }
 
   async function scheduleCollapsedCategoryMeasurement() {
@@ -161,10 +181,25 @@
     return Boolean(item.completionId && completedItemIds.has(item.completionId))
   }
 
+  function syncFilterFromQuery() {
+    if (typeof window === 'undefined' || !filterQueryKey) {
+      return
+    }
+
+    const queryValue = new URL(window.location.href).searchParams.get(filterQueryKey)
+
+    if (queryValue && filters.some((filter) => filter.id === queryValue)) {
+      activeFilter = queryValue
+    }
+  }
+
   onMount(() => {
     if (completionStorageKey) {
       completedItemIds = new Set(readLocalStorageJson<string[]>(completionStorageKey, []))
     }
+
+    syncFilterFromQuery()
+    hasInitializedQueryFilter = true
 
     resizeObserver = new ResizeObserver(() => {
       void scheduleCollapsedCategoryMeasurement()
@@ -182,6 +217,21 @@
   })
 
   $: void filters, hasTypeFilters, showAllFilters, scheduleCollapsedCategoryMeasurement()
+  $: if (hasInitializedQueryFilter && typeof window !== 'undefined' && filterQueryKey) {
+    const nextUrl = new URL(window.location.href)
+
+    if (activeFilter) {
+      nextUrl.searchParams.set(filterQueryKey, activeFilter)
+    } else {
+      nextUrl.searchParams.delete(filterQueryKey)
+    }
+
+    window.history.replaceState({}, '', `${nextUrl.pathname}${nextUrl.search}${nextUrl.hash}`)
+  }
+  $: if (collapsedSignature !== previousCollapsedSignature) {
+    previousCollapsedSignature = collapsedSignature
+    hasMeasuredCollapsedFilters = false
+  }
 </script>
 
 {#if sectionLabel || filters.length > 0 || hasTypeFilters}
@@ -223,36 +273,47 @@
             {#if filters.length > 0}
               <span aria-hidden="true" class="self-center text-sm text-site-ink-muted">|</span>
             {/if}
-          {/if}
-          {#each visibleFilters as filter, index}
-            {@const tone = filterTones[index % filterTones.length]}
+          {:else if filters.length > 0}
             <button
-              aria-pressed={filter.id === activeFilter}
-              class={filterChipVariants({ active: filter.id === activeFilter })}
-              onclick={() => toggleFilter(filter.id)}
-              style={`--chip-accent: ${tone.light}; --chip-accent-dark: ${tone.dark};`}
+              aria-pressed={!activeFilter}
+              class={filterChipVariants({ active: !activeFilter })}
+              onclick={() => (activeFilter = null)}
               type="button"
             >
-              <span>{filter.label}</span>
+              <span>{allItemsLabel}</span>
             </button>
-          {/each}
-          {#if hiddenFiltersCount > 0}
-            {#if moreFiltersHref && !showAllFilters}
-              <a
-                class={filterChipVariants({ active: false })}
-                href={moreFiltersHref}
-              >
-                <span>+{hiddenFiltersCount} {moreFiltersLabel}</span>
-              </a>
-            {:else}
+          {/if}
+          {#if shouldRenderCategoryFilters}
+            {#each visibleFilters as filter, index}
+              {@const tone = filterTones[index % filterTones.length]}
               <button
-                aria-expanded={showAllFilters}
-                class={filterChipVariants({ active: showAllFilters })}
-                onclick={toggleFilterVisibility}
+                aria-pressed={filter.id === activeFilter}
+                class={filterChipVariants({ active: filter.id === activeFilter })}
+                onclick={() => toggleFilter(filter.id)}
+                style={`--chip-accent: ${tone.light}; --chip-accent-dark: ${tone.dark};`}
                 type="button"
               >
-                <span>{showAllFilters ? fewerFiltersLabel : `+${hiddenFiltersCount} ${moreFiltersLabel}`}</span>
+                <span>{filter.label}</span>
               </button>
+            {/each}
+            {#if hiddenFiltersCount > 0}
+              {#if moreFiltersHref && !showAllFilters}
+                <a
+                  class={filterChipVariants({ active: false })}
+                  href={moreFiltersHref}
+                >
+                  <span>+{hiddenFiltersCount} {moreFiltersLabel}</span>
+                </a>
+              {:else}
+                <button
+                  aria-expanded={showAllFilters}
+                  class={filterChipVariants({ active: showAllFilters })}
+                  onclick={toggleFilterVisibility}
+                  type="button"
+                >
+                  <span>{showAllFilters ? fewerFiltersLabel : `+${hiddenFiltersCount} ${moreFiltersLabel}`}</span>
+                </button>
+              {/if}
             {/if}
           {/if}
         </div>
@@ -270,6 +331,10 @@
             </button>
             <button class={filterChipVariants({ active: activeType === 'article' })} data-measure-chip="type" type="button">
               <span>{articleItemsLabel}</span>
+            </button>
+          {:else if filters.length > 0}
+            <button class={filterChipVariants({ active: !activeFilter })} data-measure-chip="all" type="button">
+              <span>{allItemsLabel}</span>
             </button>
           {/if}
           {#each filters as filter, index}
@@ -303,13 +368,14 @@
                 <p class={itemEyebrowClass}>{item.eyebrow}</p>
               {/if}
               {#if item.badgeLabel}
-                <span class={ui.contentKindBadge}>
-                  {item.badgeLabel}
-                </span>
+                {#if item.eyebrow}
+                  <span aria-hidden="true" class={itemEyebrowClass}>•</span>
+                {/if}
+                <p class={itemEyebrowClass}>{item.badgeLabel}</p>
               {/if}
             </div>
           {/if}
-          <div class="grid gap-2 md:pr-20">
+          <div class="grid gap-2 md:pr-20 min-[64rem]:pr-24">
             <h3 class={cn(ui.linearItemTitle, 'transition-colors duration-150')} data-card-title>
               {item.title}
             </h3>
@@ -323,7 +389,7 @@
               <ArrowRightIcon className="size-[0.88rem]" />
             </span>
             <span
-              class="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 items-center gap-1.5 text-[0.76rem] font-medium tracking-[0.04em] text-site-ink-muted opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-site-link-hover group-focus-within:translate-x-0 group-focus-within:opacity-100 group-focus-within:text-site-link-hover md:inline-flex"
+              class="pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 items-center gap-1.5 text-[0.76rem] font-medium tracking-[0.04em] text-site-ink-muted opacity-0 transition-all duration-150 group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-site-link-hover group-focus-within:translate-x-0 group-focus-within:opacity-100 group-focus-within:text-site-link-hover min-[64rem]:gap-2 min-[64rem]:text-[0.84rem] md:inline-flex"
             >
               <span>{item.ctaLabel}</span>
               <ArrowRightIcon className="size-[0.88rem]" />

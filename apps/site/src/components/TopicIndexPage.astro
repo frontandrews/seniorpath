@@ -1,43 +1,58 @@
 ---
-import FilterableDirectory from '@/components/FilterableDirectory.svelte'
-import BaseLayout from '@/layouts/BaseLayout.astro'
-import CompactSection from '@/components/ui/CompactSection.astro'
-import PageHeader from '@/components/ui/PageHeader.astro'
-import { getTopicGroupHref, getTopicIndexHref } from '@/lib/topic-links'
-import { getLocalizedTopicGroupLabel } from '@/lib/topic-taxonomy'
-import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
+import type { CollectionEntry } from 'astro:content'
+import TagsIcon from '@lucide/astro/icons/tags'
 
-type TopicGroupWithCount = {
-  count: number
-  groupId: string
-}
+import FilterableDirectory from '@/components/FilterableDirectory.svelte'
+import DirectoryIndexShell from '@/components/ui/DirectoryIndexShell.astro'
+import { formatEditorialDate } from '@/lib/format-date'
+import { getGuideHrefFromEntry } from '@/lib/guide-links'
+import { sortGuidesByRecency } from '@/lib/guide-tree'
+import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
+import { siteStorageKeys } from '@/lib/storage-keys'
+import { getTopicIndexHref } from '@/lib/topic-links'
+import { getLocalizedGuideTopics, getOrderedAvailableTopicFilters } from '@/lib/topic-taxonomy'
 
 type Props = {
   locale: SiteLocale
-  groups: TopicGroupWithCount[]
+  posts: CollectionEntry<'guides'>[]
 }
 
-const { locale, groups } = Astro.props
+const { locale, posts } = Astro.props
 const copy = getSiteCopy(locale)
-const items = groups.map(({ groupId }) => ({
-  href: getTopicGroupHref(groupId, locale),
-  tags: [],
-  title: getLocalizedTopicGroupLabel(groupId, locale),
+const dateLocale = locale === 'pt-br' ? 'pt-BR' : 'en-US'
+const sortedPosts = sortGuidesByRecency(posts)
+const availableFilters = getOrderedAvailableTopicFilters(sortedPosts, locale)
+const items = sortedPosts.map((post) => ({
+  badgeLabel: post.data.kind === 'article' ? (locale === 'pt-br' ? 'Nota' : 'Journal') : undefined,
+  completionId: post.data.kind === 'guide' ? post.data.guideId : undefined,
+  contentKind: post.data.kind,
+  ctaLabel: locale === 'pt-br' ? 'Ler mais' : 'Learn more',
+  description: post.data.description,
+  eyebrow: formatEditorialDate(post.data.pubDate, dateLocale),
+  href: getGuideHrefFromEntry(post),
+  tags: getLocalizedGuideTopics(post).map(({ id, label }) => ({ id, label })),
+  title: post.data.title,
 }))
 ---
 
-<BaseLayout
+<DirectoryIndexShell
   description={copy.topicIndex.copy}
   englishHref={getTopicIndexHref('en')}
+  icon={TagsIcon}
+  iconLabel={copy.topicIndex.title}
   portugueseHref={getTopicIndexHref('pt-br')}
   title={copy.topicIndex.title}
 >
-  <PageHeader description={copy.topicIndex.copy} title={copy.topicIndex.title} />
-
-  <CompactSection>
-    <FilterableDirectory
-      items={items}
-      kind="title-cards"
-    />
-  </CompactSection>
-</BaseLayout>
+  <FilterableDirectory
+    allItemsLabel={locale === 'pt-br' ? 'Tudo' : 'All'}
+    articleItemsLabel={locale === 'pt-br' ? 'Artigos' : 'Articles'}
+    availableFilters={availableFilters}
+    completionStorageKey={siteStorageKeys.completedGuides}
+    filterLabel={locale === 'pt-br' ? 'Filtrar por topico' : 'Filter by topic'}
+    filterQueryKey="topic"
+    guideItemsLabel={locale === 'pt-br' ? 'Guias' : 'Guides'}
+    items={items}
+    client:load
+    kind="guide-rows"
+  />
+</DirectoryIndexShell>

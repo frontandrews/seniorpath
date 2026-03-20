@@ -1,5 +1,6 @@
 ---
 import { getCollection } from 'astro:content'
+import NewspaperIcon from '@lucide/astro/icons/newspaper'
 
 import FilterableDirectory from '@/components/FilterableDirectory.svelte'
 import CompactSection from '@/components/ui/CompactSection.astro'
@@ -11,7 +12,7 @@ import { sortGuidesByRecency } from '@/lib/guide-tree'
 import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 import { siteStorageKeys } from '@/lib/storage-keys'
 import { getTopicIndexHref } from '@/lib/topic-links'
-import { getLocalizedGuideTopics } from '@/lib/topic-taxonomy'
+import { getLocalizedGuideTopics, getOrderedAvailableTopicFilters } from '@/lib/topic-taxonomy'
 
 type Props = {
   locale: SiteLocale
@@ -23,11 +24,12 @@ const posts = sortGuidesByRecency((await getCollection('guides')).filter(
   (post) => post.data.status !== 'archived' && post.data.locale === locale,
 ))
 const copy = getSiteCopy(locale)
+const availableTopicFilters = getOrderedAvailableTopicFilters(posts, locale)
 const items = posts.map((post) => {
   const topics = getLocalizedGuideTopics(post)
 
   return {
-    badgeLabel: post.data.kind === 'article' ? (locale === 'pt-br' ? 'Artigo' : 'Article') : undefined,
+    badgeLabel: post.data.kind === 'article' ? (locale === 'pt-br' ? 'Nota' : 'Journal') : undefined,
     completionId: post.data.kind === 'guide' ? post.data.guideId : undefined,
     contentKind: post.data.kind,
     ctaLabel: locale === 'pt-br' ? 'Ler mais' : 'Learn more',
@@ -51,6 +53,8 @@ const items = posts.map((post) => {
   <PageHeader
     className={locale === 'pt-br' ? 'px-4 md:px-[1.1rem]' : ''}
     description={copy.guideIndex.copy}
+    icon={NewspaperIcon}
+    iconLabel={copy.layout.articles}
     title={copy.guideIndex.title}
   />
 
@@ -58,6 +62,7 @@ const items = posts.map((post) => {
     <FilterableDirectory
       allItemsLabel={copy.guideIndex.allItems}
       articleItemsLabel={copy.guideIndex.articleItems}
+      availableFilters={availableTopicFilters}
       completionStorageKey={siteStorageKeys.completedGuides}
       filterLabel={copy.guideIndex.filterLabel}
       fewerFiltersLabel={locale === 'pt-br' ? 'Mostrar menos' : 'Show less'}

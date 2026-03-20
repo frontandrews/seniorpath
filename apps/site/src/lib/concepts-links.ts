@@ -17,19 +17,19 @@ export function getConceptsHref(
 ) {
   const baseHref = locale === 'pt-br' ? '/pt-br/conceitos' : '/concepts'
 
-  if (!domainSegment) {
-    return baseHref
-  }
-
-  if (!groupSegment) {
-    return `${baseHref}/${domainSegment}`
-  }
-
   if (!slug) {
-    return `${baseHref}/${domainSegment}/${groupSegment}`
+    if (!domainSegment) {
+      return baseHref
+    }
+
+    const params = new URLSearchParams({
+      scope: groupSegment ? `${domainSegment}/${groupSegment}` : domainSegment,
+    })
+
+    return `${baseHref}?${params.toString()}`
   }
 
-  return `${baseHref}/${domainSegment}/${groupSegment}/${slug}`
+  return `${baseHref}/${slug}`
 }
 
 export function getConceptSlugFromEntry(entry: ConceptEntryLike) {

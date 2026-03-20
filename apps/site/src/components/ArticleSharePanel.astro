@@ -1,4 +1,8 @@
 ---
+import ClipboardCopyIcon from '@lucide/astro/icons/clipboard-copy'
+import MessageCircleIcon from '@lucide/astro/icons/message-circle'
+import Share2Icon from '@lucide/astro/icons/share-2'
+
 import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 import { cn } from '@/lib/cn'
 import { ui } from '@/lib/ui'
@@ -13,11 +17,27 @@ type Props = {
 const { description, locale, title, url } = Astro.props
 const copy = getSiteCopy(locale)
 const shareText = `${title}\n\n${description}\n\n${url}`
-const chatHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`
+const whatsappHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`
+const twitterHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(title)}&url=${encodeURIComponent(url)}`
+const linkedinHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
+const labels =
+  locale === 'pt-br'
+    ? {
+        linkedin: 'Compartilhar no LinkedIn',
+        twitter: 'Compartilhar no X',
+        whatsapp: 'Compartilhar no WhatsApp',
+      }
+    : {
+        linkedin: 'Share on LinkedIn',
+        twitter: 'Share on X',
+        whatsapp: 'Share on WhatsApp',
+      }
+const iconButtonClass =
+  'inline-flex size-11 items-center justify-center rounded-full border border-site-line bg-site-card text-site-ink transition-colors duration-150 hover:border-site-line-strong hover:bg-site-hover hover:text-site-link-hover focus-visible:border-site-line-strong focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none min-[64rem]:size-12'
 ---
 
 <section
-  class={cn(ui.articleSection, ui.panel, 'grid gap-4 px-5 py-5')}
+  class={cn(ui.articleSection, 'grid gap-3 px-0 py-0')}
   data-article-share
   data-copy-link-error={copy.article.copyLinkError}
   data-copy-link-success={copy.article.copyLinkSuccess}
@@ -26,39 +46,71 @@ const chatHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`
   data-share-title={title}
   data-share-url={url}
 >
-  <div class="grid gap-1">
-    <p class={ui.eyebrow}>{copy.article.shareTitle}</p>
-    <p class={ui.bodyCopy}>{copy.article.shareDescription}</p>
-  </div>
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p class="text-[0.8rem] font-medium uppercase tracking-[0.22em] text-site-ink-soft min-[64rem]:text-[0.88rem]">
+      {copy.article.shareTitle}
+    </p>
 
-  <div class="flex flex-wrap gap-3">
-    <button
-      class={cn(ui.actionLink, 'border border-site-line bg-site-card')}
-      data-share-native
-      type="button"
-    >
-      {copy.article.share}
-    </button>
-    <a
-      class={cn(ui.actionLink, 'border border-site-line bg-site-card')}
-      href={chatHref}
-      rel="noreferrer"
-      target="_blank"
-    >
-      {copy.article.chatShare}
-    </a>
-    <button
-      class={cn(ui.actionLink, 'border border-site-line bg-site-card')}
-      data-share-copy
-      type="button"
-    >
-      {copy.article.copyLink}
-    </button>
+    <div class="flex flex-wrap gap-2">
+      <button
+        aria-label={copy.article.share}
+        class={iconButtonClass}
+        data-share-native
+        title={copy.article.share}
+        type="button"
+      >
+        <Share2Icon aria-hidden="true" class="size-4" />
+        <span class="sr-only">{copy.article.share}</span>
+      </button>
+      <a
+        aria-label={labels.twitter}
+        class={iconButtonClass}
+        href={twitterHref}
+        rel="noreferrer"
+        target="_blank"
+        title={labels.twitter}
+      >
+        <span aria-hidden="true" class="text-[0.88rem] font-semibold tracking-[0.02em] min-[64rem]:text-[0.96rem]">X</span>
+        <span class="sr-only">{labels.twitter}</span>
+      </a>
+      <a
+        aria-label={labels.linkedin}
+        class={iconButtonClass}
+        href={linkedinHref}
+        rel="noreferrer"
+        target="_blank"
+        title={labels.linkedin}
+      >
+        <span aria-hidden="true" class="text-[0.9rem] font-semibold lowercase tracking-[-0.02em] min-[64rem]:text-[0.98rem]">in</span>
+        <span class="sr-only">{labels.linkedin}</span>
+      </a>
+      <a
+        aria-label={labels.whatsapp}
+        class={iconButtonClass}
+        href={whatsappHref}
+        rel="noreferrer"
+        target="_blank"
+        title={labels.whatsapp}
+      >
+        <MessageCircleIcon aria-hidden="true" class="size-4" />
+        <span class="sr-only">{labels.whatsapp}</span>
+      </a>
+      <button
+        aria-label={copy.article.copyLink}
+        class={iconButtonClass}
+        data-share-copy
+        title={copy.article.copyLink}
+        type="button"
+      >
+        <ClipboardCopyIcon aria-hidden="true" class="size-4" />
+        <span class="sr-only">{copy.article.copyLink}</span>
+      </button>
+    </div>
   </div>
 
   <p
     aria-live="polite"
-    class="hidden text-sm leading-6 text-site-ink-soft"
+    class="hidden text-sm leading-6 text-site-ink-soft min-[64rem]:text-[0.96rem]"
     data-share-feedback
   />
 </section>

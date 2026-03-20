@@ -2,7 +2,6 @@
 import type { CollectionEntry } from 'astro:content'
 import { getCollection, render } from 'astro:content'
 
-import BaseLayout from '@/layouts/BaseLayout.astro'
 import FilterableDirectory from '@/components/FilterableDirectory.svelte'
 import { getConceptHrefFromEntry, getConceptsHref } from '@/lib/concepts-links'
 import {
@@ -16,7 +15,8 @@ import { getGuideHrefFromEntry } from '@/lib/guide-links'
 import type { SiteLocale } from '@/lib/site-copy'
 import { ui } from '@/lib/ui'
 import ArticleSection from '@/components/ui/ArticleSection.astro'
-import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
+import ReferenceEntryPage from '@/components/ui/ReferenceEntryPage.astro'
+import { cn } from '@/lib/cn'
 
 type Props = {
   concept: CollectionEntry<'concepts'>
@@ -37,28 +37,8 @@ const relatedGuides = allGuides.filter(
 )
 const locale = concept.data.locale === 'pt-br' ? 'pt-br' : 'en'
 const siteLocale: SiteLocale = locale
-const breadcrumbItems = [
-  {
-    href: getConceptsHref(locale),
-    label: locale === 'pt-br' ? 'Conceitos' : 'Concepts',
-  },
-  {
-    href: getConceptsHref(locale, getConceptDomainRouteSegment(concept.data.domainId, siteLocale)),
-    label: getLocalizedConceptDomainLabel(concept.data.domainId, siteLocale),
-  },
-  {
-    href: getConceptsHref(
-      locale,
-      getConceptDomainRouteSegment(concept.data.domainId, siteLocale),
-      getConceptGroupRouteSegment(concept.data.domainId, concept.data.groupId, siteLocale),
-    ),
-    label: getLocalizedConceptGroupLabel(concept.data.domainId, concept.data.groupId, siteLocale),
-  },
-  {
-    href: null,
-    label: concept.data.title,
-  },
-]
+const domainSegment = getConceptDomainRouteSegment(concept.data.domainId, siteLocale)
+const groupSegment = getConceptGroupRouteSegment(concept.data.domainId, concept.data.groupId, siteLocale)
 const englishHref =
   concept.data.locale === 'en'
     ? getConceptHrefFromEntry(concept)
@@ -72,31 +52,42 @@ const portugueseHref =
       ? getConceptHrefFromEntry(alternateConcept)
       : null
 const dateLocale = locale === 'pt-br' ? 'pt-BR' : 'en-US'
+const formattedPubDate = formatEditorialDate(concept.data.pubDate, dateLocale)
+const formattedUpdatedDate = concept.data.updatedDate
+  ? formatEditorialDate(concept.data.updatedDate, 'en-US', {
+      month: 'short',
+    })
+  : null
 const relatedGuideItems = relatedGuides.map((guide) => ({
   href: getGuideHrefFromEntry(guide),
   tags: [],
   title: guide.data.title,
 }))
+const articleUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString()
+const conceptScopeTags = [
+  {
+    href: getConceptsHref(locale, domainSegment),
+    label: getLocalizedConceptDomainLabel(concept.data.domainId, siteLocale),
+  },
+  {
+    href: getConceptsHref(locale, domainSegment, groupSegment),
+    label: getLocalizedConceptGroupLabel(concept.data.domainId, concept.data.groupId, siteLocale),
+  },
+]
 ---
 
-<BaseLayout
+<ReferenceEntryPage
+  createdMeta={formattedPubDate}
   description={concept.data.description}
   englishHref={englishHref}
+  locale={locale}
   portugueseHref={portugueseHref}
   title={concept.data.title}
+  updatedMeta={formattedUpdatedDate}
+  url={articleUrl}
 >
-  <article class={ui.articleShell}>
-    <ContentArticleHeader
-      breadcrumbs={breadcrumbItems}
-      description={concept.data.description}
-      meta={formatEditorialDate(concept.data.pubDate, dateLocale)}
-      title={concept.data.title}
-    />
-
-    <div class="article-prose">
-      <Content />
-    </div>
-
+  <Content />
+  <Fragment slot="afterContent">
     {relatedGuides.length > 0 ? (
       <ArticleSection
         bodyClass="mt-4"
@@ -109,12 +100,15 @@ const relatedGuideItems = relatedGuides.map((guide) => ({
       </ArticleSection>
     ) : null}
 
-    {concept.data.tags.length > 0 ? (
+    {conceptScopeTags.length > 0 || concept.data.tags.length > 0 ? (
       <div class={ui.articleTagList}>
+        {conceptScopeTags.map((tag) => (
+          <a class={cn(ui.badge, ui.badgeLink)} href={tag.href}>{tag.label}</a>
+        ))}
         {concept.data.tags.map((tag) => (
           <span class={ui.badge}>{tag}</span>
         ))}
       </div>
     ) : null}
-  </article>
-</BaseLayout>
+  </Fragment>
+</ReferenceEntryPage>

@@ -1,4 +1,4 @@
-import { getTopicGroupRouteSegment, getTopicPathSegments } from '@seniorpath/content'
+import { getTopicGroupRouteSegment, getTopicRouteSegment } from '@seniorpath/content'
 
 export function getTopicIndexHref(locale = 'en') {
   return locale === 'pt-br' ? '/pt-br/topicos' : '/topics'
@@ -11,7 +11,9 @@ export function getTopicGroupHref(groupId: string, locale = 'en') {
 }
 
 export function getTopicHref(topicId: string, locale = 'en') {
-  const baseHref = getTopicIndexHref(locale)
+  const params = new URLSearchParams({
+    topic: getTopicRouteSegment(topicId, locale),
+  })
 
-  return `${baseHref}/${getTopicPathSegments(topicId, locale).join('/')}`
+  return `${getTopicIndexHref(locale)}?${params.toString()}`
 }

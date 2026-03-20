@@ -1,18 +1,18 @@
 ---
 import { getCollection } from 'astro:content'
-import { getTopicGroupRouteSegment, getTopicPathSegments, TOPIC_DEFINITIONS, TOPIC_GROUP_DEFINITIONS } from '@seniorpath/content'
+import { getTopicGroupRouteSegment, TOPIC_GROUP_DEFINITIONS } from '@seniorpath/content'
 
 import TopicGroupPage from '@/components/TopicGroupPage.astro'
-import TopicPage from '@/components/TopicPage.astro'
-import { getAvailableChildTopics, getTopicGuides } from '@/lib/topic-taxonomy'
+import { getAvailableTopicsInGroup, getTopicGroupGuides } from '@/lib/topic-taxonomy'
 
 export async function getStaticPaths() {
   const posts = await getCollection('guides')
 
   const groupPaths = TOPIC_GROUP_DEFINITIONS.flatMap((group) => {
-    const topics = getAvailableChildTopics(posts, group.id, 'en')
+    const topics = getAvailableTopicsInGroup(posts, group.id, 'en')
+    const topicPosts = getTopicGroupGuides(posts, group.id, 'en')
 
-    if (topics.length === 0) {
+    if (topics.length === 0 && topicPosts.length === 0) {
       return []
     }
 
@@ -23,44 +23,17 @@ export async function getStaticPaths() {
         },
         props: {
           groupId: group.id,
-          topics,
-          variant: 'group',
-        },
-      },
-    ]
-  })
-
-  const topicPaths = TOPIC_DEFINITIONS.flatMap((topic) => {
-    const childTopics = getAvailableChildTopics(posts, topic.id, 'en')
-    const topicPosts = getTopicGuides(posts, topic.id, 'en')
-
-    if (childTopics.length === 0 && topicPosts.length === 0) {
-      return []
-    }
-
-    return [
-      {
-        params: {
-          topic: getTopicPathSegments(topic.id, 'en').join('/'),
-        },
-        props: {
-          childTopics,
           posts: topicPosts,
-          topicId: topic.id,
-          variant: 'topic',
+          topics,
         },
       },
     ]
   })
 
-  return [...groupPaths, ...topicPaths]
+  return groupPaths
 }
 
-const { childTopics = [], groupId = null, posts = [], topicId = null, topics = [], variant } = Astro.props
+const { groupId, posts = [], topics = [] } = Astro.props
 ---
 
-{variant === 'group' && groupId ? (
-  <TopicGroupPage groupId={groupId} locale="en" topics={topics} />
-) : variant === 'topic' && topicId ? (
-  <TopicPage childTopics={childTopics} locale="en" posts={posts} topicId={topicId} />
-) : null}
+{groupId ? <TopicGroupPage groupId={groupId} locale="en" posts={posts} topics={topics} /> : null}

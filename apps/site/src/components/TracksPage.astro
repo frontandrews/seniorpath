@@ -1,4 +1,6 @@
 ---
+import RouteIcon from '@lucide/astro/icons/route'
+
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import type { ResolvedEditorialRoadmap } from '@/lib/editorial-roadmaps'
 import type { SiteLocale } from '@/lib/site-copy'
@@ -40,7 +42,7 @@ const items = roadmaps.map((roadmap) => ({
   portugueseHref={portugueseHref}
   title={copy.title}
 >
-  <PageHeader description={copy.intro} title={copy.title} />
+  <PageHeader description={copy.intro} icon={RouteIcon} iconLabel={copy.title} title={copy.title} />
 
   <CompactSection>
     <FilterableDirectory

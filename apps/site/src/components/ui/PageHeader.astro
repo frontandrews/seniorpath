@@ -12,6 +12,8 @@ type Props = {
   breadcrumbs?: BreadcrumbItem[]
   className?: string
   description: string
+  icon?: any
+  iconLabel?: string
   sectionClass?: string
   title: string
 }
@@ -20,6 +22,8 @@ const {
   breadcrumbs = [],
   className = '',
   description,
+  icon: Icon = null,
+  iconLabel = '',
   sectionClass = ui.compactSection,
   title,
 } = Astro.props
@@ -27,11 +31,27 @@ const {
 
 <section class={sectionClass}>
   <div class={cn(ui.toolbar, className)}>
-    <div class={ui.toolbarIntro}>
-      {breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
-      <h1 class={ui.headingCompact}>{title}</h1>
-      <p class={ui.bodyCopy}>{description}</p>
-      <slot />
-    </div>
+    {breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
+    {Icon ? (
+      <div class="flex items-stretch gap-3 min-[64rem]:gap-4">
+        <span
+          aria-label={iconLabel || title}
+          class="inline-flex w-14 shrink-0 items-center justify-center self-stretch rounded-[var(--radius)] border border-site-line bg-site-card text-site-ink-muted min-[64rem]:w-[4.5rem]"
+        >
+          <Icon class="size-[2rem] min-[64rem]:size-[2.4rem]" />
+        </span>
+        <div class="min-w-0 flex-1 grid gap-1">
+          <h1 class={ui.headingCompact}>{title}</h1>
+          <p class={ui.bodyCopy}>{description}</p>
+          <slot />
+        </div>
+      </div>
+    ) : (
+      <div class={ui.toolbarIntro}>
+        <h1 class={ui.headingCompact}>{title}</h1>
+        <p class={ui.bodyCopy}>{description}</p>
+        <slot />
+      </div>
+    )}
   </div>
 </section>
