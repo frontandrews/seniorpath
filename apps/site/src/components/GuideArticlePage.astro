@@ -186,6 +186,22 @@ const articleUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString
       ) : null}
     </ContentArticleHeader>
 
+    <ArticleStickyMeta
+      categoryLabel={categoryLabel}
+      className="mt-5 xl:hidden"
+      completionId={post.data.guideId}
+      headings={displayHeadings}
+      levelLabel={levelLabel}
+      locale={locale}
+      nextStep={nextStep ? { href: nextStep.href, title: nextStep.title } : null}
+      readingTimeMinutes={readingTimeMinutes}
+      relatedItems={relatedItems}
+      shareTitle={post.data.title}
+      shareUrl={articleUrl}
+      track={completionTrack}
+      updatedMeta={formattedUpdatedDate}
+    />
+
     <div class="w-full xl:grid xl:grid-cols-[minmax(0,1fr)_55rem_minmax(0,1fr)]">
       <div class="min-w-0 xl:col-start-2 xl:self-start">
         <div class="article-prose" data-article-reading-content>

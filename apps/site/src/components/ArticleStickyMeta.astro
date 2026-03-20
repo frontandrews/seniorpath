@@ -234,6 +234,7 @@ const linkedinHref = shareUrl ? `https://www.linkedin.com/sharing/share-offsite/
 <script>
   import { markGuideCompleted, markGuideUnread, readCompletedGuides } from '@/lib/completed-guides';
 
+  const readingResetEvent = 'seniorpath:article-reading-reset';
   const tocRoots = document.querySelectorAll('[data-toc-root]');
 
   for (const root of tocRoots) {
@@ -263,6 +264,68 @@ const linkedinHref = shareUrl ? `https://www.linkedin.com/sharing/share-offsite/
     let isResettingToUnread = false;
     let resetUntil = 0;
 
+    const showStickyDirection = () => {
+      if (tocSection instanceof HTMLElement) {
+        tocSection.classList.add('hidden');
+      }
+      if (stickyDirection instanceof HTMLElement) {
+        stickyDirection.style.maxHeight = '100rem';
+        stickyDirection.style.opacity = '1';
+        stickyDirection.style.transform = 'translateY(0)';
+        stickyDirection.style.paddingTop = '1rem';
+        stickyDirection.style.borderTopColor = 'var(--site-line)';
+        stickyDirection.style.pointerEvents = 'auto';
+      }
+    };
+
+    const hideStickyDirection = () => {
+      if (tocSection instanceof HTMLElement) {
+        tocSection.classList.remove('hidden');
+      }
+      if (!(stickyDirection instanceof HTMLElement)) return;
+      stickyDirection.style.maxHeight = '0';
+      stickyDirection.style.opacity = '0';
+      stickyDirection.style.transform = 'translateY(0.5rem)';
+      stickyDirection.style.paddingTop = '0';
+      stickyDirection.style.borderTopColor = 'transparent';
+      stickyDirection.style.pointerEvents = 'none';
+    };
+
+    const resetCompletionState = (shouldScrollToTop = false) => {
+      isResettingToUnread = true;
+      resetUntil = window.performance.now() + 700;
+      hasCompletedReading = false;
+      progressSection?.classList.remove('is-complete');
+
+      if (progressBar instanceof HTMLElement) {
+        progressBar.style.width = '0%';
+      }
+
+      if (progressValue instanceof HTMLElement) {
+        progressValue.textContent = '0%';
+      }
+
+      hideStickyDirection();
+
+      if (shouldScrollToTop) {
+        root.scrollTo({ top: 0, behavior: 'smooth' });
+
+        if (readingContent instanceof HTMLElement) {
+          const targetTop = Math.max(readingContent.offsetTop - 120, 0);
+          window.scrollTo({ top: targetTop, behavior: 'auto' });
+        }
+
+        if (window.location.hash) {
+          history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
+      }
+
+      window.setTimeout(() => {
+        isResettingToUnread = false;
+        schedule();
+      }, 720);
+    };
+
     if (copyButton instanceof HTMLButtonElement && copyFeedback instanceof HTMLElement) {
       copyButton.addEventListener('click', async () => {
         if (typeof navigator.clipboard?.writeText !== 'function') {
@@ -279,42 +342,11 @@ const linkedinHref = shareUrl ? `https://www.linkedin.com/sharing/share-offsite/
 
     if (markUnreadButton instanceof HTMLButtonElement) {
       markUnreadButton.addEventListener('click', () => {
-        isResettingToUnread = true;
-        resetUntil = window.performance.now() + 700;
-        hasCompletedReading = false;
         if (completionId) {
           markGuideUnread(completionId);
         }
-        progressSection?.classList.remove('is-complete');
-        if (progressBar instanceof HTMLElement) {
-          progressBar.style.width = '0%';
-        }
-        if (progressValue instanceof HTMLElement) {
-          progressValue.textContent = '0%';
-        }
-        if (tocSection instanceof HTMLElement) {
-          tocSection.classList.remove('hidden');
-        }
-        if (stickyDirection instanceof HTMLElement) {
-          stickyDirection.style.maxHeight = '0';
-          stickyDirection.style.opacity = '0';
-          stickyDirection.style.transform = 'translateY(0.5rem)';
-          stickyDirection.style.paddingTop = '0';
-          stickyDirection.style.borderTopColor = 'transparent';
-          stickyDirection.style.pointerEvents = 'none';
-        }
-        root.scrollTo({ top: 0, behavior: 'smooth' });
-        if (readingContent instanceof HTMLElement) {
-          const targetTop = Math.max(readingContent.offsetTop - 120, 0);
-          window.scrollTo({ top: targetTop, behavior: 'auto' });
-        }
-        if (window.location.hash) {
-          history.replaceState(null, '', window.location.pathname + window.location.search);
-        }
-        window.setTimeout(() => {
-          isResettingToUnread = false;
-          schedule();
-        }, 720);
+        resetCompletionState(true);
+        window.dispatchEvent(new CustomEvent(readingResetEvent, { detail: completionId }));
       });
     }
 
@@ -350,31 +382,6 @@ const linkedinHref = shareUrl ? `https://www.linkedin.com/sharing/share-offsite/
       });
 
       if (readingContent instanceof HTMLElement && progressBar instanceof HTMLElement && progressValue instanceof HTMLElement) {
-        const showStickyDirection = () => {
-          if (tocSection instanceof HTMLElement) {
-            tocSection.classList.add('hidden');
-          }
-          if (stickyDirection instanceof HTMLElement) {
-            stickyDirection.style.maxHeight = '100rem';
-            stickyDirection.style.opacity = '1';
-            stickyDirection.style.transform = 'translateY(0)';
-            stickyDirection.style.paddingTop = '1rem';
-            stickyDirection.style.borderTopColor = 'var(--site-line)';
-            stickyDirection.style.pointerEvents = 'auto';
-          }
-        };
-        const hideStickyDirection = () => {
-          if (tocSection instanceof HTMLElement) {
-            tocSection.classList.remove('hidden');
-          }
-          if (!(stickyDirection instanceof HTMLElement)) return;
-          stickyDirection.style.maxHeight = '0';
-          stickyDirection.style.opacity = '0';
-          stickyDirection.style.transform = 'translateY(0.5rem)';
-          stickyDirection.style.paddingTop = '0';
-          stickyDirection.style.borderTopColor = 'transparent';
-          stickyDirection.style.pointerEvents = 'none';
-        };
         const markComplete = () => {
           hasCompletedReading = true;
           if (completionId) {
@@ -446,6 +453,11 @@ const linkedinHref = shareUrl ? `https://www.linkedin.com/sharing/share-offsite/
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', schedule);
     window.addEventListener('hashchange', schedule);
+    window.addEventListener(readingResetEvent, (event) => {
+      if (!(event instanceof CustomEvent)) return;
+      if ((event.detail ?? '') !== completionId) return;
+      resetCompletionState(false);
+    });
 
     if (completionId && readCompletedGuides().includes(completionId)) {
       hasCompletedReading = true;
