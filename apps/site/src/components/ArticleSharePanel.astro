@@ -46,12 +46,12 @@ const iconButtonClass =
   data-share-title={title}
   data-share-url={url}
 >
-  <div class="flex flex-wrap items-center justify-between gap-3 pt-1 min-[64rem]:pt-2">
-    <p class="text-[0.8rem] font-medium uppercase tracking-[0.22em] text-site-ink-soft min-[64rem]:text-[0.88rem]">
+  <div class="grid justify-items-center gap-3 py-3 text-center min-[64rem]:gap-4 min-[64rem]:py-4">
+    <p class="m-0 text-[0.8rem] font-medium uppercase tracking-[0.22em] text-site-ink-soft min-[64rem]:text-[0.88rem]">
       {copy.article.shareTitle}
     </p>
 
-    <div class="flex flex-wrap gap-2">
+    <div class="flex flex-wrap items-center justify-center gap-2">
       <button
         aria-label={copy.article.share}
         class={iconButtonClass}
@@ -110,7 +110,7 @@ const iconButtonClass =
 
   <p
     aria-live="polite"
-    class="hidden text-sm leading-6 text-site-ink-soft min-[64rem]:text-[0.96rem]"
+    class="hidden text-center text-sm leading-6 text-site-ink-soft min-[64rem]:text-[0.96rem]"
     data-share-feedback
   />
 </section>
