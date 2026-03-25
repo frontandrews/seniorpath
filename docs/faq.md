@@ -12,8 +12,13 @@ For this phase, treat these as the stable entrypoints:
 
 - `collections.manifest.json`
 - `pnpm init:template`
+- `pnpm init:content-repo`
+- `pnpm verify:starter`
+- `pnpm verify:external`
 - `SITE_CONTENT_DIR`
 - `.local/content-source.json`
+
+Node `22` is also the canonical runtime for builds and CI this quarter.
 
 ## Do I need both locales?
 
@@ -38,3 +43,5 @@ Yes. Set `enabled: false` for the section in the manifest.
 ## Which host should I use?
 
 Any static host is fine as long as the build can access the right content root.
+
+See [deploy.md](./deploy.md) for the generic model and the concrete Vercel and Cloudflare Pages examples.

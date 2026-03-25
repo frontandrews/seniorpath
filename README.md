@@ -1,6 +1,6 @@
 # Astro Knowledge Site Template
 
-Astro template for structured knowledge sites with external content, localized routes, reusable section renderers, and a bundled starter content root.
+Astro template for structured knowledge sites with external content support, localized routes, reusable section renderers, and a bundled starter content root.
 
 [![Verify](https://github.com/frontandrews/astro-knowledge-site-template/actions/workflows/verify.yml/badge.svg)](https://github.com/frontandrews/astro-knowledge-site-template/actions/workflows/verify.yml)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
@@ -15,6 +15,26 @@ Use it when you want:
 - a project that still runs on a clean clone without extra setup
 
 The code-level branding stays generic on purpose. The public positioning of this repo is specific.
+
+## Requirements
+
+- Node `22`
+- `pnpm@10.32.0`
+
+Node `22` is the canonical runtime for local setup, CI, and deployment examples this quarter.
+
+## Two-minute setup
+
+The GIF below shows the official path:
+
+1. clone the shell
+2. run `pnpm init:template`
+3. optionally scaffold a separate content repo
+4. validate starter or external mode explicitly
+
+<p>
+  <img src="./docs/assets/first-two-minutes.gif" alt="Two minute setup walkthrough" width="100%" />
+</p>
 
 ## Screenshots
 
@@ -34,7 +54,7 @@ The screenshots below come from [seniorpath.pro](https://seniorpath.pro), the ad
 
 ## Why this template exists
 
-- **Shell separate from content.** Layouts, routes, reusable UI, search, and rendering logic live here. The published editorial content can live elsewhere.
+- **Shell separate from content.** Layouts, routes, reusable UI, search, and rendering logic live here. Published editorial content can live elsewhere.
 - **Manifest as contract.** `collections.manifest.json` is the interface between the shell and the content source.
 - **Starter local, content external later.** A clean clone works with `examples/starter-content`, then can graduate to a dedicated content repo without changing the shell model.
 
@@ -47,33 +67,59 @@ The screenshots below come from [seniorpath.pro](https://seniorpath.pro), the ad
 | projects that need localized routes and section labels | projects that only need one flat blog index |
 | static publishing flows with clear build-time content inputs | highly dynamic apps that depend on runtime content storage |
 
-## Clone And Run
+## Official path
 
-Use this when you want the fastest path to a working local copy.
+Use this sequence as the default adoption path for the repo.
+
+### 1. Clone and bootstrap the shell
 
 ```bash
 pnpm install
+pnpm init:template
+pnpm verify:starter
 pnpm dev
 ```
 
-That already works because the shell falls back to `examples/starter-content`.
+`pnpm verify` still works and is currently an alias for `pnpm verify:starter`.
 
-If you also want ignored local files created for you:
+### 2. Optionally scaffold a separate content repo
+
+```bash
+pnpm init:content-repo ../my-content
+pnpm init:template --content-root ../my-content
+SITE_CONTENT_DIR=../my-content pnpm verify:external
+```
+
+That keeps the contract the same while moving editorial content into its own repository.
+
+## Starter mode
+
+Use starter mode when you want the fastest local boot or a public demo deployment with no extra repository.
+
+The shell falls back to `examples/starter-content`.
+`pnpm verify:starter` always pins that bundled content root, even if your local config points somewhere else.
 
 ```bash
 pnpm init:template
+pnpm verify:starter
+pnpm dev
 ```
 
-That command creates local files only when they do not exist yet:
+## External content mode
 
-- `.local/content-source.json`
-- `apps/site/.env`
+Use external mode when the app shell and the editorial content should evolve independently.
 
-## Use With An External Content Repo
+### Option A: scaffold a repo
 
-Use this when the app shell and the editorial content should evolve independently.
+```bash
+pnpm init:content-repo ../your-content-repo
+pnpm init:template --content-root ../your-content-repo
+SITE_CONTENT_DIR=../your-content-repo pnpm verify:external
+```
 
-### Option A: local config file
+If `.local/content-source.json` is still the untouched starter bootstrap, `pnpm init:template --content-root ...` upgrades it to the external path for you.
+
+### Option B: wire an existing repo
 
 Create `.local/content-source.json`:
 
@@ -83,13 +129,13 @@ Create `.local/content-source.json`:
 }
 ```
 
-### Option B: environment variable
+or use an environment variable:
 
 ```bash
 SITE_CONTENT_DIR=/absolute/path/to/your-content-repo pnpm dev
 ```
 
-The resolution order is:
+Resolution order stays:
 
 1. `SITE_CONTENT_DIR`
 2. `.local/content-source.json`
@@ -97,19 +143,7 @@ The resolution order is:
 
 More detail: [docs/external-content.md](./docs/external-content.md)
 
-## Rebrand For Your Own Site
-
-Use this when the shell is right but the identity is not yours yet.
-
-1. Update `apps/site/src/brand/brand.config.ts`
-2. Set your public env vars in `apps/site/.env`
-3. Rename section labels and route segments in `collections.manifest.json`
-4. Replace the starter content or point to your real content repo
-5. Run `pnpm verify`
-
-More detail: [docs/rebrand.md](./docs/rebrand.md)
-
-## First Successful Customization
+## First successful customization
 
 Your first real customization is done when all of these are true:
 
@@ -118,9 +152,10 @@ Your first real customization is done when all of these are true:
 - [ ] `PUBLIC_STORAGE_NAMESPACE` matches your project
 - [ ] `collections.manifest.json` uses your section labels and route slugs
 - [ ] the shell runs against your own content root
-- [ ] `pnpm verify` passes after the rebrand
+- [ ] `pnpm verify:starter` passes for starter mode
+- [ ] `SITE_CONTENT_DIR=../your-content-repo pnpm verify:external` passes for external mode
 
-## Advanced Live Example
+## Advanced live example
 
 The public shell example is [seniorpath.pro](https://seniorpath.pro). Treat it as an advanced implementation of this template, not as the default branding.
 
@@ -129,10 +164,22 @@ The public shell example is [seniorpath.pro](https://seniorpath.pro). Treat it a
 - Concept: [Idempotency](https://seniorpath.pro/concepts/idempotency/)
 - Glossary: [Two pointers](https://seniorpath.pro/glossary/two-pointers/)
 - Challenge: [Two Sum without memorizing the trick](https://seniorpath.pro/challenges/two-sum/)
+- Technical note: [How SeniorPath uses this template](./docs/how-seniorpath-uses-this-template.md)
 
-## Public Environment Variables
+## Public commands
 
-These are the currently supported public env vars. No new env vars are needed for the adoption phase.
+| Command | Purpose |
+| --- | --- |
+| `pnpm init:template` | create ignored local setup files for the shell repo |
+| `pnpm init:template --content-root ../repo` | create ignored local setup files and point to an external content repo |
+| `pnpm init:content-repo ../repo` | scaffold a minimal external editorial repo |
+| `pnpm verify:starter` | validate the shell with bundled starter content |
+| `pnpm verify:external` | validate the shell against a configured external content repo |
+| `pnpm docs:smoke` | validate local doc links and referenced assets |
+
+## Public environment variables
+
+These are the currently supported public env vars. No new env vars are needed for the current adoption phase.
 
 | Variable | Required | When used | Notes |
 | --- | --- | --- | --- |
@@ -167,6 +214,7 @@ These are the currently supported public env vars. No new env vars are needed fo
 flowchart LR
   Shell["Shell repo<br/>astro-knowledge-site-template"]
   Starter["Bundled starter<br/>examples/starter-content"]
+  RepoTemplate["Content repo template<br/>templates/content-repo"]
   External["External editorial repo<br/>your-content-repo"]
   Local["Local config<br/>.local/content-source.json"]
   Env["Env override<br/>SITE_CONTENT_DIR"]
@@ -174,6 +222,8 @@ flowchart LR
   Build["Astro dev / build / preview / verify"]
 
   Shell --> Starter
+  Shell --> RepoTemplate
+  RepoTemplate --> External
   Local --> External
   Env --> External
   Starter --> Synced
@@ -181,15 +231,16 @@ flowchart LR
   Synced --> Build
 ```
 
-## Repository Layout
+## Repository layout
 
 - `apps/site` — Astro app, routes, layouts, brand defaults, sync scripts
 - `packages/content` — shared helpers used by the shell
-- `examples/starter-content` — runnable starter content root
-- `docs` — rebrand, deploy, content-repo, and FAQ guides
-- `scripts/init-template.mjs` — non-destructive bootstrap for ignored local files
+- `examples/starter-content` — runnable starter content root for clean clones
+- `templates/content-repo` — scaffold for a separate editorial repository
+- `docs` — rebrand, deploy, content-repo, architecture, and FAQ guides
+- `scripts` — bootstrap, verification, and smoke-test entrypoints
 
-## Stability Policy
+## Stability policy
 
 - The project is currently in `v0.x`
 - `v0.x` means the repo is active, but some internal details can still move
@@ -202,6 +253,9 @@ flowchart LR
 - [Rebrand the template](./docs/rebrand.md)
 - [Use an external content repo](./docs/external-content.md)
 - [Deploy the template](./docs/deploy.md)
+- [Deploy on Vercel](./docs/deploy-vercel.md)
+- [Deploy on Cloudflare Pages](./docs/deploy-cloudflare-pages.md)
+- [How SeniorPath uses this template](./docs/how-seniorpath-uses-this-template.md)
 - [FAQ](./docs/faq.md)
 - [Contributing](./CONTRIBUTING.md)
 - [Changelog](./CHANGELOG.md)
@@ -213,11 +267,17 @@ flowchart LR
 
 ## Validation
 
-The core acceptance path for this repo is still:
+The public acceptance paths for this repo are now:
 
 ```bash
 pnpm init:template
-pnpm verify
+pnpm verify:starter
+pnpm docs:smoke
 ```
 
-If those pass on a clean clone and with an external content root, the onboarding model is healthy.
+and for a separate editorial repository:
+
+```bash
+pnpm init:content-repo ../sample-content
+SITE_CONTENT_DIR=../sample-content pnpm verify:external
+```

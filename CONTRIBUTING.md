@@ -7,13 +7,24 @@ Thanks for contributing to `astro-knowledge-site-template`.
 ```bash
 pnpm install
 pnpm init:template
+pnpm verify:starter
 pnpm dev
 ```
 
-For a full validation pass:
+Node `22` is the canonical runtime for this repository.
+
+For public validation flows:
 
 ```bash
-pnpm verify
+pnpm verify:starter
+pnpm docs:smoke
+```
+
+For an external content repo:
+
+```bash
+pnpm init:content-repo ../sample-content
+SITE_CONTENT_DIR=../sample-content pnpm verify:external
 ```
 
 ## Branch and PR flow
@@ -25,11 +36,13 @@ pnpm verify
 
 ## Before opening a PR
 
-- Run `pnpm verify`
-- Confirm a clean clone still works with the bundled starter content
+- Run `pnpm verify:starter`
+- Run `pnpm docs:smoke` when links, docs, or screenshots changed
+- Confirm the starter flow still works on a clean clone
+- Confirm external content still works when the PR touches scaffold, sync, or manifest expectations
 - Update `README.md`, `docs/`, or `.env.example` when user-facing setup changes
 - Add or refresh screenshots when the public UI or onboarding flow changes visibly
-- Keep `examples/starter-content` compatible with the current shell contract
+- Keep both `examples/starter-content` and `templates/content-repo` compatible with the current shell contract
 
 ## Contract changes
 
@@ -38,7 +51,14 @@ If you change the content contract or sync flow, update all of these in the same
 - `README.md`
 - `docs/external-content.md`
 - `examples/starter-content`
+- `templates/content-repo`
 - `CHANGELOG.md`
+
+## Releases
+
+Release notes should always include a short `What changed for adopters` section.
+
+That section should describe setup, migration, validation, or deployment changes from the point of view of someone cloning the template.
 
 ## Community threads
 

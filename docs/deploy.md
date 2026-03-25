@@ -1,28 +1,30 @@
 # Deploy the template
 
-This project builds to a static Astro output. The important part is making the correct content root available during build.
+This project builds to a static Astro output.
 
-## Deployment modes
+The deployment decision is less about the host and more about where the content root comes from during build.
 
-### 1. Bundled starter content
+Node `22` is the canonical runtime for this template.
 
-Use this when you want a demo, preview, or starter deployment fast.
+## Start with the right build mode
+
+### Starter content
+
+Use this when the deployment should rely on `examples/starter-content`.
 
 ```bash
-pnpm install
-pnpm verify
-pnpm build
+pnpm verify:starter
 ```
 
-No extra content checkout is required because the shell falls back to `examples/starter-content`.
+### External content repo
 
-### 2. External content repo
+Use this when the shell must read a second repository during build.
 
-Use this when your real editorial content lives somewhere else.
+```bash
+SITE_CONTENT_DIR=../your-content-repo pnpm verify:external
+```
 
-Your CI build needs both repositories available at build time.
-
-Example layout inside CI:
+## Generic multi-repo CI layout
 
 ```text
 workspace/
@@ -30,40 +32,17 @@ workspace/
   your-content-repo/
 ```
 
-Then build with:
-
-```bash
-SITE_CONTENT_DIR=../your-content-repo pnpm verify
-SITE_CONTENT_DIR=../your-content-repo pnpm build
-```
-
-## Generic CI example
-
-```yaml
-steps:
-  - checkout shell repo
-  - checkout content repo
-  - pnpm install
-  - SITE_CONTENT_DIR=../your-content-repo pnpm verify
-  - SITE_CONTENT_DIR=../your-content-repo pnpm build
-  - publish apps/site/dist
-```
-
-## Hosting target
-
-Any host that can publish a static directory works:
-
-- Vercel
-- Cloudflare Pages
-- Netlify
-- GitHub Pages
-- S3 + CDN
-
 Publish `apps/site/dist`.
+
+## Provider guides
+
+- [Deploy on Vercel](./deploy-vercel.md)
+- [Deploy on Cloudflare Pages](./deploy-cloudflare-pages.md)
 
 ## Production checklist
 
 - `PUBLIC_SITE_URL` points to the final domain
 - legal and support vars are set if you expose those pages publicly
 - `SITE_CONTENT_DIR` resolves correctly in CI when using an external repo
-- `pnpm verify` passes in the same environment used for deployment
+- the same build environment uses Node `22`
+- `pnpm verify:starter` or `pnpm verify:external` passes before publish

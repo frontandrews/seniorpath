@@ -41,7 +41,7 @@ That keeps the shell generic while letting the editorial surface match your proj
 You have two options:
 
 1. keep content in the same repo and replace `examples/starter-content`
-2. point the shell to a separate editorial repo with `SITE_CONTENT_DIR` or `.local/content-source.json`
+2. point the shell to a separate editorial repo with `pnpm init:content-repo`, `SITE_CONTENT_DIR`, or `.local/content-source.json`
 
 If you want the cleanest long-term split, use the second option.
 
@@ -53,4 +53,5 @@ Your first successful customization is done when all of these are true:
 - the canonical URL is yours
 - the manifest labels and route segments match your product
 - the site runs with your own content root
-- `pnpm verify` still passes
+- `pnpm verify:starter` still passes for starter mode
+- `SITE_CONTENT_DIR=../your-content-repo pnpm verify:external` passes for external mode

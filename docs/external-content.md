@@ -4,6 +4,13 @@ The shell and the editorial content do not need to live in the same repository.
 
 That split is the default long-term model for this template.
 
+If you want the fastest separate-repo setup, generate one from the shell:
+
+```bash
+pnpm init:content-repo ../your-content-repo
+pnpm init:template --content-root ../your-content-repo
+```
+
 ## What stays in the shell repo
 
 - Astro app
@@ -88,9 +95,15 @@ The shell only depends on the manifest and published collections. Planning files
 From the shell repo:
 
 ```bash
-pnpm content:sync
-pnpm typecheck
-pnpm build
+SITE_CONTENT_DIR=../your-content-repo pnpm verify:external
+```
+
+If you want the individual steps instead:
+
+```bash
+SITE_CONTENT_DIR=../your-content-repo pnpm content:sync
+SITE_CONTENT_DIR=../your-content-repo pnpm typecheck
+SITE_CONTENT_DIR=../your-content-repo pnpm build
 ```
 
 If those pass, the shell can already consume the external repo correctly.
