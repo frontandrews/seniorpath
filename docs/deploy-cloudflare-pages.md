@@ -29,6 +29,8 @@ If your editorial content lives in a second repository, the safer path is:
 1. build the static output in CI where both repositories are available
 2. publish the generated `apps/site/dist` directory to Pages
 
+If your Pages project was created with Git integration first, disable automatic production and preview deployments in Cloudflare before moving to this flow. Keep the project, stop the dashboard build, and let CI publish with `wrangler pages deploy`.
+
 Example shell-side build command:
 
 ```bash
