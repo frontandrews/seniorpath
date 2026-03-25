@@ -1,342 +1,223 @@
-# Site Template
+# Astro Knowledge Site Template
 
-Astro shell for editorial sites with reusable section renderers, versioned branding, and example-based content bootstrapping.
+Astro template for structured knowledge sites with external content, localized routes, reusable section renderers, and a bundled starter content root.
 
-This repository is designed to work in two modes:
+[![Verify](https://github.com/frontandrews/astro-knowledge-site-template/actions/workflows/verify.yml/badge.svg)](https://github.com/frontandrews/astro-knowledge-site-template/actions/workflows/verify.yml)
+![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)
 
-1. clean clone with bundled starter content
-2. real project with an external editorial repository
+This repository is for people who want to publish more than a blog.
 
-The bundled example is the default path now. That is the main change in the template model.
+Use it when you want:
 
-Live example: `https://seniorpath.pro`
+- articles with structure, not only chronological posts
+- tracks, concepts, glossary entries, and practice content in the same shell
+- a clean split between the app shell and the editorial repository
+- a project that still runs on a clean clone without extra setup
 
-## Core Idea
+The code-level branding stays generic on purpose. The public positioning of this repo is specific.
 
-This repo owns the application shell.
+## Screenshots
 
-It does not need to own the final published content on day one.
+The screenshots below come from [seniorpath.pro](https://seniorpath.pro), the advanced live example built on top of this shell.
 
-Instead, the shell can start with the example content in `examples/starter-content`, and later switch to a separate content repository without changing the shell contract.
+<p>
+  <img src="./docs/assets/landing.png" alt="Landing page" width="49%" />
+  <img src="./docs/assets/search-overlay.png" alt="Search overlay" width="49%" />
+</p>
+<p>
+  <img src="./docs/assets/challenge-playground.png" alt="Challenge page with playground" width="49%" />
+  <img src="./docs/assets/localized-routes.png" alt="Localized article route" width="49%" />
+</p>
+<p>
+  <img src="./docs/assets/legal-pages.png" alt="Legal page example" width="49%" />
+</p>
 
-## Project Model
+## Why this template exists
 
-The template is split into three layers:
+- **Shell separate from content.** Layouts, routes, reusable UI, search, and rendering logic live here. The published editorial content can live elsewhere.
+- **Manifest as contract.** `collections.manifest.json` is the interface between the shell and the content source.
+- **Starter local, content external later.** A clean clone works with `examples/starter-content`, then can graduate to a dedicated content repo without changing the shell model.
 
-- `shell`: Astro app, layouts, routes, indexes, reusable UI, search
-- `brand`: site identity, locale defaults, legal defaults, feature flags
-- `editorial`: starter content or an external content repository consumed through sync
+## Good Fit / Bad Fit
 
-That split is deliberate:
+| Good fit | Not a fit |
+| --- | --- |
+| knowledge sites with articles, tracks, concepts, glossary, and practice | personal landing pages with little or no content structure |
+| teams that want shell and content separated | CMS-first projects that expect live in-browser editing |
+| projects that need localized routes and section labels | projects that only need one flat blog index |
+| static publishing flows with clear build-time content inputs | highly dynamic apps that depend on runtime content storage |
 
-- shell stays versioned here
-- brand defaults stay versioned here
-- editorial content can move out later without rewriting the shell
+## Clone And Run
 
-## Repository Layout
-
-- `apps/site`: Astro app, pages, layouts, brand config, sync scripts
-- `packages/content`: shared taxonomy helpers used by the shell
-- `packages/theme`: shared theme assets
-- `examples/starter-content`: bundled runnable example content
-- `scripts/init-template.mjs`: local bootstrap for ignored files
-
-## Fastest Path
-
-If you only want to clone and test the template:
+Use this when you want the fastest path to a working local copy.
 
 ```bash
 pnpm install
 pnpm dev
 ```
 
-That already works.
+That already works because the shell falls back to `examples/starter-content`.
 
-If you also want local editable config files created for you:
+If you also want ignored local files created for you:
 
 ```bash
 pnpm init:template
 ```
 
-That command creates these files only when they do not exist yet:
+That command creates local files only when they do not exist yet:
 
 - `.local/content-source.json`
 - `apps/site/.env`
 
-## What The Example Gives You
+## Use With An External Content Repo
 
-The bundled example is not a fake placeholder directory. It is a real minimal content root that exercises the shell.
+Use this when the app shell and the editorial content should evolve independently.
 
-It includes:
+### Option A: local config file
 
-- 1 article in English and PT-BR
-- 1 track
-- 1 concept entry
-- 1 glossary entry
-- 1 challenge with interactive playground
-- roadmap and article registry modules required by the shell
+Create `.local/content-source.json`:
 
-So a clean clone can validate:
-
-- localized routes
-- dynamic sections
-- legal pages
-- RSS and sitemap generation
-- challenge playground rendering
-- track rendering
-
-## Example Content Root
-
-The bundled example follows the same contract expected from a real external editorial repository:
-
-```text
-examples/starter-content/
-  collections.manifest.json
-  collections/
-    articles/
-    roadmaps/
-    concepts/
-    glossary/
-    challenges/
+```json
+{
+  "contentRoot": "../your-content-repo"
+}
 ```
 
-That means the example is also the reference implementation for the content contract.
+### Option B: environment variable
 
-## Content Resolution Order
+```bash
+SITE_CONTENT_DIR=/absolute/path/to/your-content-repo pnpm dev
+```
 
-When the shell needs content, it resolves the source in this order:
+The resolution order is:
 
 1. `SITE_CONTENT_DIR`
 2. `.local/content-source.json`
 3. `examples/starter-content`
 
-So the example is the safe fallback, not a side note.
+More detail: [docs/external-content.md](./docs/external-content.md)
 
-## Example First, Real Content Later
+## Rebrand For Your Own Site
 
-### Clean clone flow
+Use this when the shell is right but the identity is not yours yet.
 
-Use this when you want to test the shell before making any structural decisions:
+1. Update `apps/site/src/brand/brand.config.ts`
+2. Set your public env vars in `apps/site/.env`
+3. Rename section labels and route segments in `collections.manifest.json`
+4. Replace the starter content or point to your real content repo
+5. Run `pnpm verify`
 
-```bash
-pnpm install
-pnpm dev
+More detail: [docs/rebrand.md](./docs/rebrand.md)
+
+## First Successful Customization
+
+Your first real customization is done when all of these are true:
+
+- [ ] `PUBLIC_SITE_NAME` matches your product
+- [ ] `PUBLIC_SITE_URL` matches your domain
+- [ ] `PUBLIC_STORAGE_NAMESPACE` matches your project
+- [ ] `collections.manifest.json` uses your section labels and route slugs
+- [ ] the shell runs against your own content root
+- [ ] `pnpm verify` passes after the rebrand
+
+## Advanced Live Example
+
+The public shell example is [seniorpath.pro](https://seniorpath.pro). Treat it as an advanced implementation of this template, not as the default branding.
+
+- Article: [Writing Code People Can Understand](https://seniorpath.pro/articles/thinking-like-a-senior/writing-code-people-can-read/)
+- Track: [How to think before you solve](https://seniorpath.pro/tracks/how-to-think-before-you-solve/)
+- Concept: [Idempotency](https://seniorpath.pro/concepts/idempotency/)
+- Glossary: [Two pointers](https://seniorpath.pro/glossary/two-pointers/)
+- Challenge: [Two Sum without memorizing the trick](https://seniorpath.pro/challenges/two-sum/)
+
+## Public Environment Variables
+
+These are the currently supported public env vars. No new env vars are needed for the adoption phase.
+
+| Variable | Required | When used | Notes |
+| --- | --- | --- | --- |
+| `PUBLIC_SITE_NAME` | optional | always | visible site name override |
+| `PUBLIC_SITE_DESCRIPTION` | optional | always | meta description override |
+| `PUBLIC_SITE_URL` | recommended in production | always | used for canonical URLs, sitemap, and feed metadata |
+| `PUBLIC_STORAGE_NAMESPACE` | optional | always | browser storage namespace |
+| `PUBLIC_APP_URL` | optional | only if you link to a separate practice app | defaults to `/app` when unset |
+| `PUBLIC_LEGAL_OWNER_NAME` | optional | only if you publish legal pages with real operator info | falls back to template copy |
+| `PUBLIC_LEGAL_OWNER_LOCATION` | optional | same as above | falls back to template copy |
+| `PUBLIC_GOVERNING_LAW` | optional | same as above | falls back to template copy |
+| `PUBLIC_GOVERNING_VENUE` | optional | same as above | falls back to template copy |
+| `PUBLIC_LEGAL_EMAIL` | optional | same as above | falls back to template copy |
+| `PUBLIC_SUPPORT_EMAIL` | optional | same as above | falls back to template copy |
+| `PUBLIC_NEWSLETTER_URL` | optional | only when newsletter is enabled in `brand.config.ts` | newsletter stays off by default |
+| `PUBLIC_GISCUS_REPO` | only if comments are enabled | comments | comments stay off by default |
+| `PUBLIC_GISCUS_REPO_ID` | only if comments are enabled | comments | required with Giscus |
+| `PUBLIC_GISCUS_CATEGORY` | only if comments are enabled | comments | required with Giscus |
+| `PUBLIC_GISCUS_CATEGORY_ID` | only if comments are enabled | comments | required with Giscus |
+| `PUBLIC_GISCUS_THEME` | optional | comments | defaults to `app` |
+| `PUBLIC_GISCUS_EMIT_METADATA` | optional | comments | defaults to `0` |
+| `PUBLIC_GISCUS_INPUT_POSITION` | optional | comments | defaults to `bottom` |
+| `PUBLIC_GISCUS_MAPPING` | optional | comments | defaults to `pathname` |
+| `PUBLIC_GISCUS_REACTIONS_ENABLED` | optional | comments | defaults to `1` |
+| `PUBLIC_GISCUS_STRICT` | optional | comments | defaults to `0` |
+
+`newsletter` is intentionally offline until you enable the feature and set `PUBLIC_NEWSLETTER_URL`.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  Shell["Shell repo<br/>astro-knowledge-site-template"]
+  Starter["Bundled starter<br/>examples/starter-content"]
+  External["External editorial repo<br/>your-content-repo"]
+  Local["Local config<br/>.local/content-source.json"]
+  Env["Env override<br/>SITE_CONTENT_DIR"]
+  Synced["Synced content<br/>apps/site/.content"]
+  Build["Astro dev / build / preview / verify"]
+
+  Shell --> Starter
+  Local --> External
+  Env --> External
+  Starter --> Synced
+  External --> Synced
+  Synced --> Build
 ```
 
-### Local bootstrap flow
+## Repository Layout
 
-Use this when you want ignored local files ready for editing:
+- `apps/site` — Astro app, routes, layouts, brand defaults, sync scripts
+- `packages/content` — shared helpers used by the shell
+- `examples/starter-content` — runnable starter content root
+- `docs` — rebrand, deploy, content-repo, and FAQ guides
+- `scripts/init-template.mjs` — non-destructive bootstrap for ignored local files
+
+## Stability Policy
+
+- The project is currently in `v0.x`
+- `v0.x` means the repo is active, but some internal details can still move
+- `collections.manifest.json` is the primary stable contract between shell and content
+- Changes to the contract should be documented in `CHANGELOG.md`
+- New optional capabilities should default to non-breaking behavior
+
+## Docs
+
+- [Rebrand the template](./docs/rebrand.md)
+- [Use an external content repo](./docs/external-content.md)
+- [Deploy the template](./docs/deploy.md)
+- [FAQ](./docs/faq.md)
+- [Contributing](./CONTRIBUTING.md)
+- [Changelog](./CHANGELOG.md)
+
+## Community
+
+- Public roadmap: [issue #1](https://github.com/frontandrews/astro-knowledge-site-template/issues/1)
+- Showcase / built with this template: [issue #2](https://github.com/frontandrews/astro-knowledge-site-template/issues/2)
+
+## Validation
+
+The core acceptance path for this repo is still:
 
 ```bash
 pnpm init:template
-pnpm dev
-```
-
-### External content flow
-
-When you are ready to move to a real editorial repository, point the shell to it with `.local/content-source.json`:
-
-```json
-{
-  "contentRoot": "../site-content"
-}
-```
-
-Or set it directly through the environment:
-
-```bash
-SITE_CONTENT_DIR=/absolute/path/to/content-root pnpm dev
-```
-
-## The Content Contract
-
-The shell expects a content root with this minimum shape:
-
-```text
-collections.manifest.json
-collections/
-  articles/
-  roadmaps/
-  concepts/
-  glossary/
-  challenges/
-```
-
-`collections.manifest.json` is the main contract between the shell and the content source. It defines:
-
-- which sections exist
-- which renderer each section uses
-- whether each section is enabled
-- where each collection lives
-- public route segments
-- localized labels and descriptions
-
-Current supported `pageType` values:
-
-- `articles`
-- `tracks`
-- `topics`
-- `concepts`
-- `glossary`
-- `challenges`
-
-At the moment the shell still supports one section per `pageType`.
-
-## Example Manifest
-
-This is the same pattern used by the bundled starter:
-
-```json
-{
-  "sections": [
-    {
-      "id": "articles",
-      "pageType": "articles",
-      "enabled": true,
-      "sourceDir": "collections/articles",
-      "routes": {
-        "en": "articles",
-        "pt-br": "artigos"
-      },
-      "labels": {
-        "en": "Articles",
-        "pt-br": "Artigos"
-      }
-    }
-  ]
-}
-```
-
-The full working example lives in [`examples/starter-content/collections.manifest.json`](examples/starter-content/collections.manifest.json).
-
-## Branding And Shell Config
-
-The main shell config lives in [`apps/site/src/brand/brand.config.ts`](apps/site/src/brand/brand.config.ts).
-
-It owns:
-
-- `site`: name, description, canonical URL, storage namespace
-- `locales`: default locale, supported locales, labels, `htmlLang`
-- `legal`: owner, support, and legal page defaults
-- `features`: shell toggles such as search, comments, newsletter, locale switcher
-- `home`: landing or default section
-- `integrations`: comments and newsletter defaults
-
-Section enablement does not live there. It stays in `collections.manifest.json`, because section structure is editorial, not branding.
-
-## Local Env Model
-
-Versioned config is the source of truth. Public env vars only override fields the shell already knows about.
-
-For local work, use `apps/site/.env`.
-
-`pnpm init:template` creates it from [`apps/site/.env.example`](apps/site/.env.example) when missing.
-
-Main env groups:
-
-### Branding and metadata
-
-```bash
-PUBLIC_SITE_NAME
-PUBLIC_SITE_DESCRIPTION
-PUBLIC_SITE_URL
-PUBLIC_STORAGE_NAMESPACE
-PUBLIC_APP_URL
-```
-
-### Legal and support
-
-```bash
-PUBLIC_LEGAL_OWNER_NAME
-PUBLIC_LEGAL_OWNER_LOCATION
-PUBLIC_GOVERNING_LAW
-PUBLIC_GOVERNING_VENUE
-PUBLIC_LEGAL_EMAIL
-PUBLIC_SUPPORT_EMAIL
-```
-
-### Newsletter
-
-```bash
-PUBLIC_NEWSLETTER_URL
-```
-
-### Giscus
-
-```bash
-PUBLIC_GISCUS_REPO
-PUBLIC_GISCUS_REPO_ID
-PUBLIC_GISCUS_CATEGORY
-PUBLIC_GISCUS_CATEGORY_ID
-PUBLIC_GISCUS_THEME
-PUBLIC_GISCUS_EMIT_METADATA
-PUBLIC_GISCUS_INPUT_POSITION
-PUBLIC_GISCUS_MAPPING
-PUBLIC_GISCUS_REACTIONS_ENABLED
-PUBLIC_GISCUS_STRICT
-```
-
-Comments and newsletter only render when both conditions are true:
-
-- the feature is enabled in `brand.config.ts`
-- the required env values are present
-
-## Recommended Adoption Sequence
-
-If you want this repository to stay easy to clone and fork, this is the clean order:
-
-1. run the example first with `pnpm dev`
-2. create local files with `pnpm init:template`
-3. change `apps/site/.env`
-4. change `apps/site/src/brand/brand.config.ts`
-5. only then point the shell at a real external content source
-
-That sequence isolates failures and keeps the template trustworthy.
-
-## Commands
-
-- `pnpm init:template`: create ignored local template files when missing
-- `pnpm dev`: sync content and start the Astro dev server
-- `pnpm content:sync`: sync the resolved content source into `apps/site/.content`
-- `pnpm typecheck`: run `astro check`
-- `pnpm build`: build the site and search index
-- `pnpm verify`: run style checks, canonical Tailwind checks, typecheck, and build
-
-## Current Limits
-
-The shell is reusable, but not fully open-ended yet.
-
-- supported renderers are still defined by `pageType` in the shell
-- Astro content collections are still declared manually
-- the section manifest still assumes localized route data for `en` and `pt-br`
-- topic taxonomy still lives in `packages/content`
-- roadmap data still assumes the current shared locale model
-- a good part of the UI copy still lives in the shell
-
-Those constraints are intentional for now. The goal is a reusable shell with explicit contracts, not a no-rules runtime builder.
-
-## Next Steps
-
-The highest-leverage improvements from here are:
-
-1. remove the `en` and `pt-br` hard requirement from the section manifest
-2. move more UI and institutional copy into locale-aware brand config
-3. move taxonomy and roadmap locale ownership out of the shell package layer
-4. generate Astro collection config from the editorial manifest
-5. add a smoke test that validates the bundled starter on a clean clone
-
-## Verification
-
-Full validation:
-
-```bash
 pnpm verify
 ```
 
-Starter validation only:
-
-```bash
-SITE_CONTENT_DIR=./examples/starter-content pnpm content:sync
-SITE_CONTENT_DIR=./examples/starter-content pnpm typecheck
-SITE_CONTENT_DIR=./examples/starter-content pnpm build
-```
+If those pass on a clean clone and with an external content root, the onboarding model is healthy.
