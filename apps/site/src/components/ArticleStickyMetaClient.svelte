@@ -59,6 +59,11 @@
     let resetUntil = 0
     let resetTimeout = 0
 
+    type ReadingResetDetail = string | {
+      completionId?: string
+      shouldScrollToTop?: boolean
+    }
+
     const showStickyDirection = () => {
       if (!shouldShowCompletionInPlace) {
         return
@@ -290,11 +295,17 @@
         return
       }
 
-      if ((event.detail ?? '') !== completionId) {
+      const detail = (event.detail ?? '') as ReadingResetDetail
+      const resetCompletionId = typeof detail === 'string' ? detail : detail.completionId ?? ''
+      const shouldScrollToTop = typeof detail === 'object' && detail !== null
+        ? detail.shouldScrollToTop === true
+        : false
+
+      if (resetCompletionId !== completionId) {
         return
       }
 
-      resetCompletionState(false)
+      resetCompletionState(shouldScrollToTop)
     }
 
     if (markUnreadButton instanceof HTMLButtonElement) {

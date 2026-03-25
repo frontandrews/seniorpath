@@ -503,6 +503,7 @@ const structuredDataItems = [
         currentScript instanceof HTMLScriptElement ? currentScript.dataset.newsletterEmailId ?? '' : ''
       const newsletterMirrorAttr =
         currentScript instanceof HTMLScriptElement ? currentScript.dataset.newsletterMirrorAttr ?? '' : ''
+      const dismissableDetailsSelector = 'details[data-dismiss-on-outside="true"][open]'
 
       const readCompletedArticles = () => {
         try {
@@ -558,6 +559,22 @@ const structuredDataItems = [
         syncCompletedArticleCards(readCompletedArticles())
       }
 
+      const closeDismissableDetailsOutside = (target) => {
+        if (!(target instanceof Node)) {
+          return
+        }
+
+        document.querySelectorAll(dismissableDetailsSelector).forEach((detailsElement) => {
+          if (!(detailsElement instanceof HTMLDetailsElement)) {
+            return
+          }
+
+          if (!detailsElement.contains(target)) {
+            detailsElement.removeAttribute('open')
+          }
+        })
+      }
+
       const handleNewsletterInput = (event) => {
         if (!(event.target instanceof HTMLInputElement) || event.target.id !== newsletterEmailId) {
           return
@@ -570,6 +587,9 @@ const structuredDataItems = [
       emitCompletedArticles()
 
       document.addEventListener('input', handleNewsletterInput)
+      document.addEventListener('pointerdown', (event) => {
+        closeDismissableDetailsOutside(event.target)
+      })
       window.addEventListener(completedArticlesChangedEvent, emitCompletedArticles)
       window.addEventListener('storage', (event) => {
         if (event.key === completedArticlesKey) {

@@ -69,7 +69,12 @@
       }
 
       markArticleUnread(completionId)
-      window.dispatchEvent(new CustomEvent(readingResetEvent, { detail: completionId }))
+      window.dispatchEvent(new CustomEvent(readingResetEvent, {
+        detail: {
+          completionId,
+          shouldScrollToTop: true,
+        },
+      }))
     }
 
     if (markUnreadButton instanceof HTMLButtonElement) {

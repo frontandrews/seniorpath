@@ -40,7 +40,7 @@ function getLocaleChoiceHandler(code: string) {
 }
 ---
 
-<details class="relative">
+<details class="relative" data-dismiss-on-outside="true">
   <summary aria-label={triggerLabel} class={cn(triggerClass, 'list-none [&::-webkit-details-marker]:hidden')}>
     <span>{currentLocaleCode}</span>
     <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
