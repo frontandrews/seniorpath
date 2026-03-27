@@ -2,6 +2,7 @@
 import Breadcrumbs from '@/components/Breadcrumbs.astro'
 import { cn } from '@/lib/cn'
 import { ui } from '@/lib/ui'
+import { marked } from 'marked'
 
 type BreadcrumbItem = {
   href: string | null
@@ -27,13 +28,30 @@ const {
   meta,
   title,
 } = Astro.props
+
+const titleHtml = await marked.parseInline(title)
+const descriptionHtml = await marked.parseInline(description)
 ---
 
 <header class={cn(ui.articleHeader, className)}>
   {breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
   {createdMeta ? <p class={cn(ui.articleKicker, createdMetaClassName)}>{createdMeta}</p> : null}
-  <h1 class={ui.articleTitle}>{title}</h1>
-  <p class={ui.articleExcerpt}>{description}</p>
+  <h1
+    class={cn(
+      ui.articleTitle,
+      '[&_code]:bg-transparent [&_code]:px-0 [&_code]:font-inherit [&_code]:text-inherit [&_code]:tracking-inherit',
+      '[&_a]:text-inherit [&_a]:no-underline',
+    )}
+    set:html={titleHtml}
+  />
+  <p
+    class={cn(
+      ui.articleExcerpt,
+      '[&_a]:underline [&_a]:decoration-site-line-strong [&_a]:underline-offset-2 [&_a]:transition-colors [&_a]:duration-150 hover:[&_a]:text-site-link-hover',
+      '[&_code]:rounded-xs [&_code]:bg-site-hover [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.92em] [&_code]:text-site-ink',
+    )}
+    set:html={descriptionHtml}
+  />
   <slot />
   {meta ? <p class={ui.articleMeta}>{meta}</p> : null}
 </header>

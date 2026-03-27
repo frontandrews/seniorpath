@@ -9,6 +9,7 @@ type BadgeLink = {
 }
 
 type CardLink = {
+  completionId?: string
   description?: string
   href: string
   title: string
@@ -43,6 +44,7 @@ const items = [
     title: normalizeExploreLabel(item.label),
   })),
   ...cards.map((item) => ({
+    completionId: item.completionId,
     href: item.href,
     tags: [],
     title: item.title,

@@ -1,10 +1,13 @@
 ---
 import ArticleStickyMeta from '@/components/ArticleStickyMeta.astro'
+import ArticleCompletionPanel from '@/components/ArticleCompletionPanel.astro'
+import ArticleCompletionRail from '@/components/ArticleCompletionRail.astro'
 import ArticleSharePanel from '@/components/ArticleSharePanel.astro'
 import AuthorByline from '@/components/ui/AuthorByline.astro'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
 import { articleReadingDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
+import type { ArticleRecommendationLink } from '@/lib/article-recommendations'
 import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 import { ui } from '@/lib/ui'
 
@@ -16,11 +19,13 @@ type TocHeading = {
 
 type Props = {
   alternateLocaleHrefs?: Record<string, string | null>
+  completionId?: string | null
   createdMeta: string | null
   description: string
   headings?: TocHeading[]
   locale: SiteLocale
   localeHrefs?: Record<string, string | null>
+  nextStep?: ArticleRecommendationLink | null
   socialImage?: string
   structuredData?: Record<string, unknown> | Record<string, unknown>[]
   title: string
@@ -30,11 +35,13 @@ type Props = {
 
 const {
   alternateLocaleHrefs = {},
+  completionId = null,
   createdMeta,
   description,
   headings = [],
   locale,
   localeHrefs = {},
+  nextStep = null,
   socialImage,
   structuredData = [],
   title,
@@ -73,8 +80,10 @@ const copy = getSiteCopy(locale)
 
     <ArticleStickyMeta
       className="article-reading-shell mx-auto my-5 w-full xl:hidden"
+      completionId={completionId}
       headings={headings}
       locale={locale}
+      nextStep={nextStep}
       showCompletionInPlace={false}
     />
 
@@ -88,12 +97,32 @@ const copy = getSiteCopy(locale)
 
       <div class={ui.articleRailLayoutGuide}>
         <ArticleStickyMeta
+          completionId={completionId}
           headings={headings}
           locale={locale}
+          nextStep={nextStep}
           showCompletionInPlace={false}
         />
+
+        {completionId ? (
+          <ArticleCompletionRail
+            className={ui.articleRailLayoutCompletion}
+            completionId={completionId}
+            locale={locale}
+            nextStep={nextStep}
+          />
+        ) : null}
       </div>
     </div>
+
+    {completionId ? (
+      <ArticleCompletionPanel
+        className="mt-6"
+        completionId={completionId}
+        locale={locale}
+        nextStep={nextStep}
+      />
+    ) : null}
 
     <ArticleSharePanel
       description={description}

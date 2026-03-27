@@ -2,16 +2,18 @@
 import type { ResolvedEditorialRoadmap } from '@/lib/roadmaps'
 import RouteIcon from '@lucide/astro/icons/route'
 
-import ArticleCard from '@/components/ArticleCard.astro'
 import ArticleSharePanel from '@/components/ArticleSharePanel.astro'
 import BaseLayout from '@/layouts/BaseLayout.astro'
+import FilterableDirectory from '@/components/FilterableDirectory.svelte'
 import TrackProgressPanel from '@/components/TrackProgressPanel.astro'
 import TrackConceptPanel from '@/components/TrackConceptPanel.astro'
-import { formatEditorialDate } from '@/lib/format-date'
+import ArticleSection from '@/components/ui/ArticleSection.astro'
 import { getLocalePath, resolveLocaleHrefMap, resolveLocaleMap } from '@/lib/locale-config'
 import { resolveEntityOgImageUrl } from '@/lib/og-image'
+import { resolveEditorialRoadmaps, type EditorialLocale } from '@/lib/roadmaps'
 import { createBreadcrumbSchema, createTrackSchema } from '@/lib/seo'
-import { getSiteCopy, getSiteDateLocale, getSiteLowerCaseLocale, type SiteLocale } from '@/lib/site-copy'
+import { getSiteCopy, getSiteLowerCaseLocale, type SiteLocale } from '@/lib/site-copy'
+import { getArticleCollection } from '@/lib/site-content'
 import { getTracksHref } from '@/lib/tracks-links'
 import CompactSection from '@/components/ui/CompactSection.astro'
 import PageHeader from '@/components/ui/PageHeader.astro'
@@ -39,7 +41,6 @@ const localeHrefs = resolveLocaleHrefMap((supportedLocale) =>
   ?? getTracksHref(supportedLocale),
 )
 const tracksHref = getTracksHref(locale) ?? '/'
-const dateLocale = getSiteDateLocale(locale)
 const lowerCaseLocale = getSiteLowerCaseLocale(locale)
 const shareUrl = Astro.url.href
 const socialImage = resolveEntityOgImageUrl(
@@ -48,6 +49,8 @@ const socialImage = resolveEntityOgImageUrl(
   locale,
   roadmap.id,
 )
+const allArticles = await getArticleCollection()
+const allRoadmaps = resolveEditorialRoadmaps(locale as EditorialLocale, allArticles)
 const trackItems = roadmap.articleNodes.map((node, index) => ({
   articleId: node.articleId,
   href: node.href,
@@ -93,18 +96,55 @@ const trackStructuredData = [
     ],
   }),
 ]
+const currentRoadmapIndex = allRoadmaps.findIndex((entry) => entry.id === roadmap.id)
+const orderedOtherRoadmaps = currentRoadmapIndex >= 0
+  ? [...allRoadmaps.slice(currentRoadmapIndex + 1), ...allRoadmaps.slice(0, currentRoadmapIndex)]
+  : allRoadmaps.filter((entry) => entry.id !== roadmap.id)
+const otherTrackItems = orderedOtherRoadmaps
+  .filter((entry) => entry.id !== roadmap.id)
+  .slice(0, 3)
+  .map((entry) => ({
+    href: entry.href,
+    tags: [],
+    title: entry.title,
+  }))
+const fallbackArticleItems = roadmap.articleNodes.map((node) => ({
+  completionId: node.articleId,
+  href: node.href,
+  tags: [],
+  title: node.post.data.title,
+}))
+const standaloneArticleItems: typeof fallbackArticleItems = []
+const groupedConceptSections: Array<{
+  articleItems: typeof fallbackArticleItems
+  node: ResolvedEditorialRoadmap['nodes'][number] & { kind: 'concept' }
+}> = []
 
-const renderedNodes = roadmap.nodes.map((node, index) => {
-  const stepIndex =
-    node.kind === 'article'
-      ? roadmap.articleNodes.findIndex((articleNode) => articleNode.id === node.id) + 1
-      : null
+let activeConceptSection: (typeof groupedConceptSections)[number] | null = null
 
-  return {
-    isFirst: index === 0,
-    node,
-    stepIndex,
+roadmap.nodes.forEach((node) => {
+  if (node.kind === 'concept') {
+    activeConceptSection = {
+      articleItems: [],
+      node,
+    }
+    groupedConceptSections.push(activeConceptSection)
+    return
   }
+
+  const articleItem = {
+    completionId: node.articleId,
+    href: node.href,
+    tags: [],
+    title: node.post.data.title,
+  }
+
+  if (activeConceptSection) {
+    activeConceptSection.articleItems.push(articleItem)
+    return
+  }
+
+  standaloneArticleItems.push(articleItem)
 })
 ---
 
@@ -127,31 +167,30 @@ const renderedNodes = roadmap.nodes.map((node, index) => {
   <TrackProgressPanel
     items={trackItems}
     locale={locale}
-    tracksHref={tracksHref}
     totalReadingMinutes={roadmap.estimatedReadingMinutes}
   />
 
   <CompactSection className="xl:mt-0">
-    <div class={ui.linearList}>
-      {renderedNodes.map(({ isFirst, node, stepIndex }) =>
-        node.kind === 'article' ? (
-          <ArticleCard
-            className={isFirst ? 'border-t-0' : ''}
-            eyebrow={`${formatEditorialDate(node.post.data.pubDate, dateLocale)} - ${copy.startHere.stepLabel} ${stepIndex}`}
-            eyebrowVariant="sentence"
-            post={node.post}
-            subtitle={node.post.data.description}
-            variant="linear"
-          />
-        ) : (
+    {groupedConceptSections.length > 0 ? (
+      <div class={ui.linearList}>
+        {standaloneArticleItems.length > 0 ? (
+          <div class="pb-4">
+            <FilterableDirectory items={standaloneArticleItems} layout="cards" />
+          </div>
+        ) : null}
+
+        {groupedConceptSections.map(({ articleItems, node }, index) => (
           <TrackConceptPanel
-            className={isFirst ? 'border-t-0' : ''}
+            articleItems={articleItems}
+            className={index === 0 && standaloneArticleItems.length === 0 ? 'border-t-0' : ''}
             locale={locale}
             node={node}
           />
-        ),
-      )}
-    </div>
+        ))}
+      </div>
+    ) : (
+      <FilterableDirectory items={fallbackArticleItems} layout="cards" />
+    )}
   </CompactSection>
 
   <ArticleSharePanel
@@ -160,4 +199,14 @@ const renderedNodes = roadmap.nodes.map((node, index) => {
     title={roadmap.title}
     url={shareUrl}
   />
+
+  {otherTrackItems.length > 0 ? (
+    <ArticleSection
+      bodyClass="mt-4"
+      sectionClass={ui.articleUtilitySection}
+      title={copy.startHere.otherTracks}
+    >
+      <FilterableDirectory items={otherTrackItems} layout="cards" />
+    </ArticleSection>
+  ) : null}
 </BaseLayout>

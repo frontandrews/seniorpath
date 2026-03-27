@@ -65,7 +65,7 @@ const linkedTopics = getLocalizedArticleTopics(post)
 const locale = getSiteLocale(post.data.locale)
 const dateLocale = getSiteDateLocale(post.data.locale)
 const giscusConfig = getGiscusConfig(post.data.locale)
-const formattedPubDate = formatEditorialDate(post.data.pubDate, dateLocale)
+const formattedPubDate = formatEditorialDate(post.data.pubDate, dateLocale, { year: 'numeric' })
 const formattedUpdatedDate = post.data.updatedDate
   ? formatEditorialDate(post.data.updatedDate, dateLocale)
   : null

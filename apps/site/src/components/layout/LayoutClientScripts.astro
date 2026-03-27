@@ -145,6 +145,8 @@ import { siteEvents, siteStorageKeys } from '@/lib/site-config'
 
   const finishPageTransition = () => {
     syncJavascriptState()
+    syncNewsletterEmail()
+    emitCompletedArticles()
     document.documentElement.classList.remove(transitionPendingClass)
   }
 

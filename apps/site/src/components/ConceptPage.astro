@@ -5,6 +5,7 @@ import { render } from 'astro:content'
 import FilterableDirectory from '@/components/FilterableDirectory.svelte'
 import HeaderTagMeta from '@/components/ui/HeaderTagMeta.astro'
 import { toHashtagLabel } from '@/lib/article-meta'
+import { getConceptCompletionId } from '@/lib/completion-ids'
 import { getConceptHrefFromEntry, getConceptsHref } from '@/lib/concepts-links'
 import {
   getConceptDomainRouteSegment,
@@ -51,7 +52,7 @@ const localeHrefs = resolveLocalizedEntryHrefMap(
   (supportedLocale) => getConceptsHref(supportedLocale),
 )
 const dateLocale = getSiteDateLocale(locale)
-const formattedPubDate = formatEditorialDate(concept.data.pubDate, dateLocale)
+const formattedPubDate = formatEditorialDate(concept.data.pubDate, dateLocale, { year: 'numeric' })
 const formattedUpdatedDate = concept.data.updatedDate
   ? formatEditorialDate(concept.data.updatedDate, dateLocale)
   : null
@@ -60,6 +61,7 @@ const relatedArticleItems = relatedArticles.map((article) => ({
   tags: [],
   title: article.data.title,
 }))
+const completionId = getConceptCompletionId(concept.data.conceptId)
 const recommendedConcepts = allConcepts
   .filter(
     (entry) =>
@@ -91,9 +93,17 @@ const recommendedConcepts = allConcepts
   .slice(0, 3)
   .map(({ entry }) => ({
     description: entry.data.summary,
+    completionId: getConceptCompletionId(entry.data.conceptId),
     href: getConceptHrefFromEntry(entry),
     title: entry.data.title,
   }))
+const nextStep = recommendedConcepts[0]
+  ? {
+      articleId: recommendedConcepts[0].completionId,
+      href: recommendedConcepts[0].href,
+      title: recommendedConcepts[0].title,
+    }
+  : null
 const articleUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString()
 const socialImage = resolveEntityOgImageUrl(
   Astro.site ?? Astro.url,
@@ -135,11 +145,13 @@ const displayHeadings = headings.filter((heading) => heading.depth === 2 || head
 
 <ReferenceEntryPage
   alternateLocaleHrefs={alternateLocaleHrefs}
+  completionId={completionId}
   createdMeta={formattedPubDate}
   description={concept.data.description}
   headings={displayHeadings}
   locale={locale}
   localeHrefs={localeHrefs}
+  nextStep={nextStep}
   socialImage={socialImage}
   title={concept.data.title}
   updatedMeta={formattedUpdatedDate}

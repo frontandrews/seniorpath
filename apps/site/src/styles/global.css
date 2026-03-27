@@ -574,12 +574,45 @@ pre {
     opacity: 0.7;
   }
 
+  .content-directory-item.is-complete:hover,
+  .content-directory-item.is-complete:focus-within {
+    opacity: 1;
+    background: var(--site-hover);
+  }
+
   .content-directory-item:not(.is-complete) .content-directory-title {
     color: var(--site-link-hover);
   }
 
   .content-directory-item.is-complete .content-directory-title {
     color: var(--site-ink-soft);
+  }
+
+  .content-directory-item.is-complete:hover .content-directory-title,
+  .content-directory-item.is-complete:focus-within .content-directory-title {
+    color: var(--site-link-hover);
+  }
+
+  .content-directory-item .content-directory-trailing-complete-icon {
+    display: none;
+  }
+
+  .content-directory-item.is-complete .content-directory-trailing-arrow {
+    display: none;
+  }
+
+  .content-directory-item.is-complete .content-directory-trailing-complete-icon {
+    display: inline-flex;
+  }
+
+  .content-directory-item.is-complete:hover .content-directory-trailing-arrow,
+  .content-directory-item.is-complete:focus-within .content-directory-trailing-arrow {
+    display: inline-flex;
+  }
+
+  .content-directory-item.is-complete:hover .content-directory-trailing-complete-icon,
+  .content-directory-item.is-complete:focus-within .content-directory-trailing-complete-icon {
+    display: none;
   }
 
   .content-directory-item .content-directory-complete-badge {
@@ -654,6 +687,11 @@ pre {
 
   .track-progress-root.is-complete .track-progress-status {
     color: var(--site-success);
+  }
+
+  .track-progress-root.is-complete .track-progress-overall {
+    color: var(--site-success);
+    font-size: 1.16rem;
   }
 }
 

@@ -6,7 +6,7 @@ export function formatEditorialDate(
   const isCurrentUtcYear = value.getUTCFullYear() === new Date().getUTCFullYear()
   const resolvedOptions: Intl.DateTimeFormatOptions = {
     day: 'numeric',
-    month: isCurrentUtcYear ? 'short' : 'long',
+    month: 'long',
     ...(isCurrentUtcYear ? {} : { year: 'numeric' }),
     timeZone: 'UTC',
     ...options,

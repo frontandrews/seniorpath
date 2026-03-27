@@ -34,26 +34,23 @@
     const progressBar = queryByHook<HTMLElement>(root, trackProgressDomHooks.progressBar)
     const cta = queryByHook<HTMLAnchorElement>(root, trackProgressDomHooks.cta)
     const ctaLabel = queryByHook<HTMLElement>(root, trackProgressDomHooks.ctaLabel)
-    const nextLink = queryByHook<HTMLAnchorElement>(root, trackProgressDomHooks.nextLink)
-    const nextText = queryByHook<HTMLElement>(root, trackProgressDomHooks.nextText)
     const overallIcon = queryByHook<HTMLElement>(root, trackProgressDomHooks.overallIcon)
     const overallText = queryByHook<HTMLElement>(root, trackProgressDomHooks.overallText)
+    const overallRow = overallText instanceof HTMLElement ? overallText.closest('p') : null
+    const overallSection = overallRow instanceof HTMLElement ? overallRow.parentElement : null
     const itemLinks = queryAllByHook<HTMLAnchorElement>(root, trackProgressDomHooks.item)
     const totalSteps = itemLinks.length
     const progressLabel = readDataHookValue(trackProgressDomHooks.progressLabel, root) || 'Progress'
     const stepLabel = readDataHookValue(trackProgressDomHooks.stepLabel, root) || 'Step'
     const ofLabel = readDataHookValue(trackProgressDomHooks.ofLabel, root) || 'of'
     const continueLabel = ctaLabel?.textContent ?? 'Continue'
-    const reviewLabel = readDataHookValue(trackProgressDomHooks.reviewLabel, root) || 'Review'
     const completedLabel = readDataHookValue(trackProgressDomHooks.completedLabel, root) || 'Completed'
     const continueTrackLabel = readDataHookValue(trackProgressDomHooks.continueLabel, root) || 'Keep going'
-    const nextTrackLabel = readDataHookValue(trackProgressDomHooks.nextTrackLabel, root) || 'Next track'
 
     const syncTrackProgress = (completedArticleIds: Set<string>) => {
       let completedCount = 0
       let firstUnreadHref = ''
       let firstUnreadStep = totalSteps
-      let firstUnreadTitle = ''
 
       itemLinks.forEach((item, index) => {
         if (!(item instanceof HTMLElement)) {
@@ -71,7 +68,6 @@
         if (!firstUnreadHref) {
           firstUnreadHref = readDataHookValue(trackProgressDomHooks.itemHref, item)
           firstUnreadStep = index + 1
-          firstUnreadTitle = item.textContent?.trim() ?? ''
         }
       })
 
@@ -95,25 +91,22 @@
       }
 
       if (cta instanceof HTMLAnchorElement) {
+        cta.hidden = isComplete
         cta.href = isComplete ? itemLinks[0]?.getAttribute('href') ?? '#' : firstUnreadHref || '#'
       }
 
       if (ctaLabel instanceof HTMLElement) {
-        ctaLabel.textContent = isComplete ? reviewLabel : continueLabel
-      }
-
-      if (nextLink instanceof HTMLAnchorElement) {
-        nextLink.href = isComplete ? readDataHookValue(trackProgressDomHooks.nextDefaultHref, nextLink) || '#' : firstUnreadHref || '#'
-      }
-
-      if (nextText instanceof HTMLElement) {
-        nextText.textContent = isComplete ? nextTrackLabel : firstUnreadTitle || continueLabel
+        ctaLabel.textContent = continueLabel
       }
 
       if (overallIcon instanceof HTMLElement) {
         overallIcon.textContent = isComplete ? '✓' : '→'
         overallIcon.classList.toggle('text-site-success', isComplete)
         overallIcon.classList.toggle('text-site-ink-muted', !isComplete)
+      }
+
+      if (overallSection instanceof HTMLElement) {
+        overallSection.hidden = !isComplete
       }
 
       if (overallText instanceof HTMLElement) {

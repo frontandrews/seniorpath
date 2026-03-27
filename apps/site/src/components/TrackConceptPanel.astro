@@ -1,25 +1,30 @@
 ---
-import LinkCard from '@/components/ui/LinkCard.astro'
-import { getArticleHrefFromEntry } from '@/lib/article-links'
+import FilterableDirectory from '@/components/FilterableDirectory.svelte'
 import { cn } from '@/lib/cn'
 import { getDataHookAttributes, trackPageDomHooks } from '@/lib/dom-hooks'
 import type { ResolvedRoadmapConceptNode } from '@/lib/roadmaps'
 import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 import { ui } from '@/lib/ui'
 
+type TrackArticleItem = {
+  completionId?: string
+  href: string
+  tags: Array<{
+    id: string
+    label: string
+  }>
+  title: string
+}
+
 type Props = {
+  articleItems?: TrackArticleItem[]
   className?: string
   locale: SiteLocale
   node: ResolvedRoadmapConceptNode
 }
 
-const { className = '', locale, node } = Astro.props
+const { articleItems = [], className = '', locale, node } = Astro.props
 const copy = getSiteCopy(locale)
-const relatedArticles = node.relatedArticles.map((article) => ({
-  description: article.data.description,
-  href: getArticleHrefFromEntry(article),
-  title: article.data.title,
-}))
 ---
 
 <section
@@ -39,20 +44,9 @@ const relatedArticles = node.relatedArticles.map((article) => ({
       <p class={ui.bodyCopy}>{node.panelBody}</p>
     </div>
 
-    {relatedArticles.length > 0 ? (
+    {articleItems.length > 0 ? (
       <div class="grid gap-3 border-t border-site-line pt-4">
-        <p class={ui.eyebrow}>{copy.directory.relatedArticles}</p>
-        <div class="grid gap-2 md:grid-cols-2">
-          {relatedArticles.map((article) => (
-            <LinkCard
-              description={article.description}
-              href={article.href}
-              title={article.title}
-              titleTag="h3"
-              variant="ghost"
-            />
-          ))}
-        </div>
+        <FilterableDirectory items={articleItems} layout="cards" />
       </div>
     ) : null}
   </div>

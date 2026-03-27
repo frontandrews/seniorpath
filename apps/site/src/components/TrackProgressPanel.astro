@@ -17,7 +17,6 @@ type Props = {
   className?: string
   items: TrackItem[]
   locale: SiteLocale
-  tracksHref: string
   totalReadingMinutes: number
 }
 
@@ -25,7 +24,6 @@ const {
   className = '',
   items,
   locale,
-  tracksHref,
   totalReadingMinutes,
 } = Astro.props
 
@@ -42,11 +40,9 @@ const controllerId = randomUUID()
   {...getDataHookAttributes(trackProgressDomHooks.root)}
   {...getDataHookAttributes(trackProgressDomHooks.ofLabel, ofLabel)}
   {...getDataHookAttributes(trackProgressDomHooks.progressLabel, copy.startHere.progressLabel)}
-  {...getDataHookAttributes(trackProgressDomHooks.reviewLabel, copy.startHere.reviewTrack)}
   {...getDataHookAttributes(trackProgressDomHooks.stepLabel, copy.startHere.stepLabel)}
   {...getDataHookAttributes(trackProgressDomHooks.completedLabel, copy.startHere.trackCompleted)}
   {...getDataHookAttributes(trackProgressDomHooks.continueLabel, copy.trackProgress.continueTrack)}
-  {...getDataHookAttributes(trackProgressDomHooks.nextTrackLabel, copy.startHere.nextTrack)}
 >
   <div class="grid gap-5 border-y border-site-line bg-transparent px-[0.45rem] py-5 lg:gap-6 lg:px-[0.55rem] lg:py-6">
     <div class="grid gap-2.5">
@@ -83,26 +79,11 @@ const controllerId = randomUUID()
       <ArrowRightIcon className="size-[0.92rem]" />
     </a>
 
-    <div class="grid gap-3 border-t border-site-line pt-4">
-      <p class={cn(ui.progressStatus, 'flex items-center gap-2')}>
+    <div class="grid gap-3 border-t border-site-line pt-4" hidden>
+      <p class={cn(ui.progressStatus, 'track-progress-overall m-0 flex items-center justify-center gap-2 text-center text-[0.98rem] font-semibold lg:text-[1.08rem]')}>
         <span aria-hidden="true" class="text-site-ink-muted" {...getDataHookAttributes(trackProgressDomHooks.overallIcon)}>→</span>
         <span {...getDataHookAttributes(trackProgressDomHooks.overallText)}>{copy.trackProgress.continueTrack}</span>
       </p>
-
-      <div class="grid gap-2">
-        <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.18em] text-site-line-strong lg:text-[0.78rem]">
-          {copy.trackProgress.nextLabel}
-        </p>
-        <a
-          class={ui.cardButton}
-          {...getDataHookAttributes(trackProgressDomHooks.nextDefaultHref, tracksHref)}
-          {...getDataHookAttributes(trackProgressDomHooks.nextLink)}
-          href={tracksHref}
-        >
-          <span {...getDataHookAttributes(trackProgressDomHooks.nextText)}>{copy.startHere.nextTrack}</span>
-          <ArrowRightIcon className="size-[0.92rem]" />
-        </a>
-      </div>
     </div>
 
     <div class="hidden" aria-hidden="true">

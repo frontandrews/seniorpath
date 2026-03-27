@@ -4,10 +4,10 @@ import { e2eHookSelectors } from './support/hooks'
 test.describe('track progress and share flows', () => {
   test('shows a completed track state when the only article is already finished', async ({ page }) => {
     await page.addInitScript(() => {
-      window.localStorage.setItem(
-        'site-template.completed-articles.v1',
-        JSON.stringify(['customize-the-template-after-clone']),
-      )
+      const payload = JSON.stringify(['customize-the-template-after-clone'])
+
+      window.localStorage.setItem('site-template.completed-articles.v1', payload)
+      window.localStorage.setItem('seniorpath.completed-articles.v1', payload)
     })
 
     await page.goto('/tracks/first-clone-checklist')

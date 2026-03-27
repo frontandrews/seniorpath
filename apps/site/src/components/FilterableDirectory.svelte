@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte'
   import ArrowRightIcon from '@/components/ui/icons/ArrowRightIcon.svelte'
+  import CircleCheckIcon from '@/components/ui/icons/CircleCheckIcon.svelte'
   import { cn } from '@/lib/cn'
   import { completedArticlesSetStore } from '@/lib/completed-articles-store'
   import type { DirectoryItem, DirectoryTag } from '@/lib/directory'
@@ -598,7 +599,16 @@
         <div class="grid gap-2">
           <div class="flex items-center justify-between gap-4">
             <h2 class={cn('content-directory-title', ui.linkCardTitle)}>{item.title}</h2>
-            <ArrowRightIcon className="size-4 shrink-0 text-site-ink-muted transition-colors duration-150 group-hover:text-site-link-hover group-focus-within:text-site-link-hover" />
+            {#if item.completionId}
+              <span class="content-directory-trailing-arrow">
+                <ArrowRightIcon className="size-4 shrink-0 text-site-ink-muted transition-colors duration-150 group-hover:text-site-link-hover group-focus-within:text-site-link-hover" />
+              </span>
+              <span class="content-directory-trailing-complete-icon">
+                <CircleCheckIcon className="size-4 shrink-0 text-site-success" />
+              </span>
+            {:else}
+              <ArrowRightIcon className="size-4 shrink-0 text-site-ink-muted transition-colors duration-150 group-hover:text-site-link-hover group-focus-within:text-site-link-hover" />
+            {/if}
           </div>
           {#if item.description}
             <p class={ui.cardDescription}>{item.description}</p>

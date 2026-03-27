@@ -7,12 +7,12 @@ describe('formatEditorialDate', () => {
     vi.useRealTimers()
   })
 
-  it('omits the year and uses a short month for current-year dates', () => {
+  it('omits the year and uses a full month for current-year dates', () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date('2026-06-01T00:00:00.000Z'))
 
-    expect(formatEditorialDate(new Date('2026-03-24T00:00:00.000Z'), 'en-US')).toBe('Mar 24')
-    expect(formatEditorialDate(new Date('2026-03-24T00:00:00.000Z'), 'pt-BR')).toBe('24 de Mar')
+    expect(formatEditorialDate(new Date('2026-03-24T00:00:00.000Z'), 'en-US')).toBe('March 24')
+    expect(formatEditorialDate(new Date('2026-03-24T00:00:00.000Z'), 'pt-BR')).toBe('24 de Março')
   })
 
   it('includes the year for non-current-year dates', () => {

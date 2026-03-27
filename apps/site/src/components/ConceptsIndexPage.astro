@@ -6,6 +6,7 @@ import DirectoryList from '@/components/ui/DirectoryList.astro'
 import DirectoryPagination from '@/components/ui/DirectoryPagination.astro'
 import DirectoryIndexShell from '@/components/ui/DirectoryIndexShell.astro'
 import RouteFilterNav from '@/components/ui/RouteFilterNav.astro'
+import { getConceptCompletionId } from '@/lib/completion-ids'
 import {
   getConceptHrefFromEntry,
   getConceptsHref,
@@ -73,6 +74,8 @@ const items = concepts.map((concept) => {
   const groupSegment = getConceptGroupRouteSegment(concept.data.domainId, concept.data.groupId, locale)
 
   return {
+    completedCtaLabel: copy.directory.readAgain,
+    completionId: getConceptCompletionId(concept.data.conceptId),
     href: getConceptHrefFromEntry(concept),
     tags: [
       {
