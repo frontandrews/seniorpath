@@ -1,0 +1,15 @@
+---
+import AgentIndexPage from '@/components/AgentIndexPage.astro'
+import { getNonDefaultLocales } from '@/lib/locale-config'
+
+export async function getStaticPaths() {
+  return getNonDefaultLocales().map((locale) => ({
+    params: { locale },
+    props: { locale },
+  }))
+}
+
+const { locale } = Astro.props
+---
+
+<AgentIndexPage locale={locale} />

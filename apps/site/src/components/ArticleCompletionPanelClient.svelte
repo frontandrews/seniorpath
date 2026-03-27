@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
+  import { syncArticleCompletionSummaryRecommendations } from '@/lib/article-completion-summary'
   import { completedArticlesSetStore } from '@/lib/completed-articles-store'
   import {
     articleCompletionPanelDomHooks,
@@ -53,6 +54,8 @@
     }
 
     const sync = (completedSet: Set<string>) => {
+      syncArticleCompletionSummaryRecommendations(panel, completedSet)
+
       const isComplete = Boolean(completionId && completedSet.has(completionId))
 
       if (isComplete) {

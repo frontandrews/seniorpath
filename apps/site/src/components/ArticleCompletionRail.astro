@@ -1,0 +1,59 @@
+---
+import { randomUUID } from 'node:crypto'
+import ArticleCompletionSummary from '@/components/ArticleCompletionSummary.astro'
+import ArticleCompletionPanelClient from '@/components/ArticleCompletionPanelClient.svelte'
+import { cn } from '@/lib/cn'
+import { articleCompletionPanelDomHooks, getDataHookAttributes, sharedDomHooks } from '@/lib/dom-hooks'
+import type { ArticleRecommendationCandidate, ArticleRecommendationLink } from '@/lib/article-recommendations'
+import type { SiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+
+type TrackSummary = {
+  href: string
+  stepIndex: number
+  title: string
+  totalSteps: number
+}
+
+type Props = {
+  className?: string
+  completionId?: string | null
+  locale: SiteLocale
+  nextStep?: ArticleRecommendationLink | null
+  recommendationCandidates?: ArticleRecommendationCandidate[]
+  relatedItems?: ArticleRecommendationLink[]
+  track?: TrackSummary | null
+}
+
+const {
+  className = '',
+  completionId = null,
+  locale,
+  nextStep = null,
+  recommendationCandidates = [],
+  relatedItems = [],
+  track = null,
+} = Astro.props
+const controllerId = randomUUID()
+---
+
+<div
+  class={cn('w-full overflow-hidden', className)}
+  {...getDataHookAttributes(articleCompletionPanelDomHooks.root)}
+  {...getDataHookAttributes(articleCompletionPanelDomHooks.completionId, completionId ?? '')}
+  {...getDataHookAttributes(sharedDomHooks.controllerId, controllerId)}
+  style="max-height: 0; opacity: 0; transform: translateY(0.5rem); pointer-events: none; transition: max-height 300ms ease, opacity 220ms ease, transform 300ms ease;"
+>
+  <section class={cn(ui.panel, ui.spotlightPanel, 'border-0')}>
+    <ArticleCompletionSummary
+      locale={locale}
+      nextStep={nextStep}
+      recommendationCandidates={recommendationCandidates}
+      relatedItems={relatedItems}
+      track={track}
+      variant="compact"
+    />
+  </section>
+
+  <ArticleCompletionPanelClient client:idle controllerId={controllerId} />
+</div>

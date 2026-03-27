@@ -4,13 +4,9 @@ import ArticleCompletionSummary from '@/components/ArticleCompletionSummary.astr
 import ArticleCompletionPanelClient from '@/components/ArticleCompletionPanelClient.svelte'
 import { cn } from '@/lib/cn'
 import { articleCompletionPanelDomHooks, getDataHookAttributes, sharedDomHooks } from '@/lib/dom-hooks'
+import type { ArticleRecommendationCandidate, ArticleRecommendationLink } from '@/lib/article-recommendations'
 import type { SiteLocale } from '@/lib/site-copy'
 import { ui } from '@/lib/ui'
-
-type CompletionLink = {
-  href: string
-  title: string
-}
 
 type TrackSummary = {
   href: string
@@ -23,8 +19,9 @@ type Props = {
   className?: string
   completionId?: string | null
   locale: SiteLocale
-  nextStep?: CompletionLink | null
-  relatedItems?: CompletionLink[]
+  nextStep?: ArticleRecommendationLink | null
+  recommendationCandidates?: ArticleRecommendationCandidate[]
+  relatedItems?: ArticleRecommendationLink[]
   track?: TrackSummary | null
 }
 
@@ -33,6 +30,7 @@ const {
   completionId = null,
   locale,
   nextStep = null,
+  recommendationCandidates = [],
   relatedItems = [],
   track = null,
 } = Astro.props
@@ -40,7 +38,7 @@ const controllerId = randomUUID()
 ---
 
 <div
-  class={cn('overflow-hidden xl:hidden', className)}
+  class={cn('article-reading-shell mx-auto w-full overflow-hidden xl:hidden', className)}
   {...getDataHookAttributes(articleCompletionPanelDomHooks.root)}
   {...getDataHookAttributes(articleCompletionPanelDomHooks.completionId, completionId ?? '')}
   {...getDataHookAttributes(sharedDomHooks.controllerId, controllerId)}
@@ -55,6 +53,7 @@ const controllerId = randomUUID()
     <ArticleCompletionSummary
       locale={locale}
       nextStep={nextStep}
+      recommendationCandidates={recommendationCandidates}
       relatedItems={relatedItems}
       track={track}
       variant="default"

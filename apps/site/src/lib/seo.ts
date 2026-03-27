@@ -26,6 +26,46 @@ type WebsiteSchemaInput = {
   url: string
 }
 
+type TrackSchemaInput = {
+  description: string
+  items: {
+    description: string
+    title: string
+    url: string
+  }[]
+  level: 'beginner' | 'intermediate' | 'advanced'
+  locale: SiteLocale
+  title: string
+  totalReadingMinutes: number
+  totalSteps: number
+  url: string
+}
+
+type DefinedTermSchemaInput = {
+  aliases?: string[]
+  description: string
+  locale: SiteLocale
+  tags?: string[]
+  termCode: string
+  termSetUrl?: string
+  title: string
+  url: string
+}
+
+type LearningResourceSchemaInput = {
+  dateModified?: string | null
+  datePublished: string
+  description: string
+  estimatedMinutes: number
+  keywords?: string[]
+  level: 'beginner' | 'intermediate' | 'advanced'
+  locale: SiteLocale
+  resourceType: string
+  teaches?: string[]
+  title: string
+  url: string
+}
+
 function compactObject<T extends StructuredData>(value: T) {
   return Object.fromEntries(
     Object.entries(value).filter(([, entryValue]) => {
@@ -40,6 +80,38 @@ function compactObject<T extends StructuredData>(value: T) {
       return true
     }),
   ) as T
+}
+
+function createSiteOrganizationSchema() {
+  return {
+    '@type': 'Organization',
+    logo: {
+      '@type': 'ImageObject',
+      url: siteUrls.socialImage,
+    },
+    name: siteConfig.site.name,
+    url: siteConfig.site.siteUrl,
+  }
+}
+
+function toIsoDuration(totalMinutes?: number | null) {
+  if (!totalMinutes || totalMinutes <= 0) {
+    return undefined
+  }
+
+  const roundedMinutes = Math.max(1, Math.round(totalMinutes))
+  const hours = Math.floor(roundedMinutes / 60)
+  const minutes = roundedMinutes % 60
+
+  if (hours > 0 && minutes > 0) {
+    return `PT${hours}H${minutes}M`
+  }
+
+  if (hours > 0) {
+    return `PT${hours}H`
+  }
+
+  return `PT${minutes}M`
 }
 
 export function normalizeStructuredData(
@@ -97,13 +169,106 @@ export function createArticleSchema({
     keywords,
     mainEntityOfPage: url,
     publisher: {
+      ...createSiteOrganizationSchema(),
+    },
+    url,
+  })
+}
+
+export function createTrackSchema({
+  description,
+  items,
+  level,
+  locale,
+  title,
+  totalReadingMinutes,
+  totalSteps,
+  url,
+}: TrackSchemaInput) {
+  return compactObject({
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    description,
+    educationalLevel: level,
+    inLanguage: getLocaleHtmlLang(locale),
+    mainEntity: compactObject({
+      '@type': 'ItemList',
+      itemListElement: items.map((item, index) => ({
+        '@type': 'ListItem',
+        item: compactObject({
+          '@type': 'Article',
+          description: item.description,
+          headline: item.title,
+          name: item.title,
+          url: item.url,
+        }),
+        position: index + 1,
+      })),
+      numberOfItems: totalSteps,
+    }),
+    name: title,
+    publisher: createSiteOrganizationSchema(),
+    timeRequired: toIsoDuration(totalReadingMinutes),
+    url,
+  })
+}
+
+export function createDefinedTermSchema({
+  aliases = [],
+  description,
+  locale,
+  tags = [],
+  termCode,
+  termSetUrl,
+  title,
+  url,
+}: DefinedTermSchemaInput) {
+  return compactObject({
+    '@context': 'https://schema.org',
+    '@type': 'DefinedTerm',
+    alternateName: aliases,
+    description,
+    inDefinedTermSet: termSetUrl,
+    inLanguage: getLocaleHtmlLang(locale),
+    keywords: tags,
+    name: title,
+    termCode,
+    url,
+  })
+}
+
+export function createLearningResourceSchema({
+  dateModified,
+  datePublished,
+  description,
+  estimatedMinutes,
+  keywords = [],
+  level,
+  locale,
+  resourceType,
+  teaches = [],
+  title,
+  url,
+}: LearningResourceSchemaInput) {
+  return compactObject({
+    '@context': 'https://schema.org',
+    '@type': 'LearningResource',
+    author: {
       '@type': 'Organization',
-      logo: {
-        '@type': 'ImageObject',
-        url: siteUrls.socialImage,
-      },
       name: siteConfig.site.name,
     },
+    dateModified: dateModified ?? datePublished,
+    datePublished,
+    description,
+    educationalLevel: level,
+    inLanguage: getLocaleHtmlLang(locale),
+    isAccessibleForFree: true,
+    keywords,
+    learningResourceType: resourceType,
+    name: title,
+    publisher: createSiteOrganizationSchema(),
+    teaches,
+    timeRequired: toIsoDuration(estimatedMinutes),
     url,
   })
 }

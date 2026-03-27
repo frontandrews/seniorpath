@@ -1,0 +1,94 @@
+---
+import type { LayoutLocaleLink } from '@/lib/layout-head'
+import { siteStorageKeys } from '@/lib/site-config'
+import type { SiteLocale } from '@/lib/site-copy'
+
+type Props = {
+  currentLocale: SiteLocale
+  enableRedirect?: boolean
+  homeHref: string
+  localeSwitchLinks?: LayoutLocaleLink[]
+}
+
+const {
+  currentLocale,
+  enableRedirect = false,
+  homeHref,
+  localeSwitchLinks = [],
+} = Astro.props
+---
+
+<script
+  data-current-locale={currentLocale}
+  data-enable-redirect={enableRedirect ? 'true' : 'false'}
+  data-home-href={homeHref}
+  data-locale-options={JSON.stringify(localeSwitchLinks.map((localeLink) => ({
+    code: localeLink.code,
+    href: localeLink.href,
+  })))}
+  data-locale-preference-key={siteStorageKeys.localePreference}
+  is:inline
+>
+  try {
+    const currentScript = document.currentScript
+
+    if (!(currentScript instanceof HTMLScriptElement)) {
+      throw new Error('Missing locale redirect script context')
+    }
+
+    const currentLocale = currentScript.dataset.currentLocale ?? 'en'
+    const enableRedirect = currentScript.dataset.enableRedirect === 'true'
+    const homeHref = currentScript.dataset.homeHref ?? '/'
+    const localePreferenceKey = currentScript.dataset.localePreferenceKey ?? ''
+    const localeOptions = JSON.parse(currentScript.dataset.localeOptions ?? '[]')
+    const currentPathname = window.location.pathname.replace(/\/+$/u, '') || '/'
+
+    if (enableRedirect && currentPathname === homeHref) {
+      const readSavedLocalePreference = () => {
+        if (!localePreferenceKey) {
+          return null
+        }
+
+        try {
+          return window.localStorage.getItem(localePreferenceKey)
+        } catch {
+          return null
+        }
+      }
+
+      const savedLocalePreference = readSavedLocalePreference()
+
+      if (!savedLocalePreference) {
+        const resolvePreferredLocale = () => {
+          for (const option of localeOptions) {
+            const languageNeedle = option.code.split('-')[0]?.toLowerCase()
+
+            if (!languageNeedle) {
+              continue
+            }
+
+            if (
+              navigator.languages?.some((value) => value.toLowerCase().startsWith(languageNeedle))
+              || navigator.language?.toLowerCase().startsWith(languageNeedle)
+            ) {
+              return option.code
+            }
+          }
+
+          return null
+        }
+
+        const preferredLocale = resolvePreferredLocale()
+        const preferredOption = localeOptions.find((option) => option.code === preferredLocale) ?? null
+
+        if (
+          preferredOption
+          && preferredOption.code !== currentLocale
+          && typeof preferredOption.href === 'string'
+        ) {
+          window.location.replace(preferredOption.href)
+        }
+      }
+    }
+  } catch {}
+</script>

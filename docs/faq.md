@@ -45,3 +45,9 @@ Yes. Set `enabled: false` for the section in the manifest.
 Any static host is fine as long as the build can access the right content root.
 
 See [deploy.md](./deploy.md) for the generic model and the concrete Vercel and Cloudflare Pages examples.
+
+See [operations.md](./operations.md) for the short operational map.
+
+See [release-checklist.md](./release-checklist.md) for the production-ready starter-mode and external-mode checklist.
+
+See [how-seniorpath-uses-this-template.md](./how-seniorpath-uses-this-template.md) for the split between generic shell behavior and SeniorPath-specific defaults.

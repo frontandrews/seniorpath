@@ -2,12 +2,22 @@
 import type { CollectionEntry } from 'astro:content'
 import { render } from 'astro:content'
 
+import HeaderTagMeta from '@/components/ui/HeaderTagMeta.astro'
+import { toHashtagLabel } from '@/lib/article-meta'
 import { formatEditorialDate } from '@/lib/format-date'
-import { getGlossaryHrefFromEntry, getGlossaryIndexHref } from '@/lib/glossary-links'
-import { resolveLocalizedEntryHrefMap, resolveLocaleMap } from '@/lib/locale-config'
+import {
+  getGlossaryHrefFromEntry,
+  getGlossaryIndexHref,
+  getGlossaryTagHref,
+} from '@/lib/glossary-links'
+import { getGlossaryTagEntries } from '@/lib/glossary-tags'
+import { getLocalePath, resolveLocalizedEntryHrefMap, resolveLocaleMap } from '@/lib/locale-config'
+import { resolveEntityOgImageUrl } from '@/lib/og-image'
+import { createBreadcrumbSchema, createDefinedTermSchema } from '@/lib/seo'
 import { getGlossaryCollection } from '@/lib/site-content'
-import { getSiteDateLocale, getSiteLocale } from '@/lib/site-copy'
-import { ui } from '@/lib/ui'
+import { translateSiteLabel } from '@/lib/site-labels'
+import { getSiteCopy, getSiteDateLocale, getSiteLocale } from '@/lib/site-copy'
+import ReferenceExploreSection from '@/components/ui/ReferenceExploreSection.astro'
 import ReferenceEntryPage from '@/components/ui/ReferenceEntryPage.astro'
 
 type Props = {
@@ -15,10 +25,17 @@ type Props = {
 }
 
 const { term } = Astro.props
-const { Content } = await render(term)
+const { Content, headings = [] } = await render(term)
 const allTerms = await getGlossaryCollection()
 const localizedTerms = allTerms.filter(
   (entry) => entry.data.termId === term.data.termId && entry.data.status === 'active',
+)
+const activeLocaleTerms = allTerms.filter(
+  (entry) => entry.data.locale === term.data.locale && entry.data.status === 'active',
+)
+const locale = getSiteLocale(term.data.locale)
+const glossaryTagMap = new Map(
+  getGlossaryTagEntries(activeLocaleTerms, locale).map((tag) => [tag.id, tag]),
 )
 const alternateLocaleHrefs = resolveLocaleMap((supportedLocale) => {
   const localizedEntry = localizedTerms.find((entry) => entry.data.locale === supportedLocale)
@@ -30,34 +47,111 @@ const localeHrefs = resolveLocalizedEntryHrefMap(
   (supportedLocale) => getGlossaryIndexHref(supportedLocale),
 )
 const dateLocale = getSiteDateLocale(term.data.locale)
-const locale = getSiteLocale(term.data.locale)
+const copy = getSiteCopy(locale)
 const formattedPubDate = formatEditorialDate(term.data.pubDate, dateLocale)
 const formattedUpdatedDate = term.data.updatedDate
-  ? formatEditorialDate(term.data.updatedDate, dateLocale, {
-      month: 'long',
-    })
+  ? formatEditorialDate(term.data.updatedDate, dateLocale)
   : null
 const articleUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString()
+const socialImage = resolveEntityOgImageUrl(
+  Astro.site ?? Astro.url,
+  'glossary',
+  locale,
+  term.data.termId,
+)
+const glossaryStructuredData = [
+  createDefinedTermSchema({
+    aliases: term.data.aliases,
+    description: term.data.description,
+    locale,
+    tags: term.data.tags,
+    termCode: term.data.termId,
+    termSetUrl: new URL(getGlossaryIndexHref(locale), Astro.site ?? Astro.url).toString(),
+    title: term.data.title,
+    url: articleUrl,
+  }),
+  createBreadcrumbSchema({
+    items: [
+      {
+        name: copy.layout.home,
+        url: new URL(getLocalePath(locale), Astro.site ?? Astro.url).toString(),
+      },
+      {
+        name: copy.layout.glossary,
+        url: new URL(getGlossaryIndexHref(locale), Astro.site ?? Astro.url).toString(),
+      },
+      {
+        name: term.data.title,
+        url: articleUrl,
+      },
+    ],
+  }),
+]
+const headerTagItems = term.data.tags
+  .map((tagId) => {
+    const tagEntry = glossaryTagMap.get(tagId)
+    const label = translateSiteLabel(tagId, locale)
+
+    return {
+      href: getGlossaryTagHref(locale, tagEntry?.slug ?? tagId),
+      label: toHashtagLabel(label, locale) ?? label,
+    }
+  })
+  .filter((item, index, items) => items.findIndex((candidate) => candidate.label === item.label) === index)
+const recommendedTerms = activeLocaleTerms
+  .filter((entry) => entry.data.termId !== term.data.termId)
+  .map((entry) => ({
+    entry,
+    score: entry.data.tags.filter((tag) => term.data.tags.includes(tag)).length,
+  }))
+  .filter((item) => item.score > 0)
+  .sort((left, right) => right.score - left.score || left.entry.data.title.localeCompare(right.entry.data.title, locale))
+  .slice(0, 3)
+  .map(({ entry }) => ({
+    description: entry.data.summary,
+    href: getGlossaryHrefFromEntry(entry),
+    title: entry.data.title,
+  }))
+const exploreGlossaryLinks = [
+  {
+    href: getGlossaryIndexHref(locale),
+    label: copy.layout.glossary,
+  },
+  ...term.data.tags.map((tagId) => {
+    const tagEntry = glossaryTagMap.get(tagId)
+
+    return {
+      href: getGlossaryTagHref(locale, tagEntry?.slug ?? tagId),
+      label: translateSiteLabel(tagId, locale),
+    }
+  }),
+].filter((item, index, items) => items.findIndex((candidate) => candidate.label === item.label) === index)
+const displayHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
 ---
 
 <ReferenceEntryPage
   alternateLocaleHrefs={alternateLocaleHrefs}
   createdMeta={formattedPubDate}
   description={term.data.description}
+  headings={displayHeadings}
   locale={locale}
   localeHrefs={localeHrefs}
+  socialImage={socialImage}
+  structuredData={glossaryStructuredData}
   title={term.data.title}
   updatedMeta={formattedUpdatedDate}
   url={articleUrl}
 >
+  <Fragment slot="headerMeta">
+    <HeaderTagMeta items={headerTagItems} />
+  </Fragment>
+
   <Content />
   <Fragment slot="afterContent">
-    {term.data.tags.length > 0 ? (
-      <div class={ui.articleTagList}>
-        {term.data.tags.map((tag) => (
-          <span class={ui.badge}>{tag}</span>
-        ))}
-      </div>
-    ) : null}
+    <ReferenceExploreSection
+      badgeLinks={exploreGlossaryLinks}
+      cards={recommendedTerms}
+      title={copy.startHere.supportHeading}
+    />
   </Fragment>
 </ReferenceEntryPage>

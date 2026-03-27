@@ -6,6 +6,7 @@ Use this guide when the shell structure is right but the default identity still 
 
 Edit `apps/site/src/brand/brand.config.ts` to change:
 
+- author byline defaults
 - feature defaults
 - default locale and supported locales
 - landing copy
@@ -24,6 +25,7 @@ Update `apps/site/.env` or your hosting env vars:
 - `PUBLIC_STORAGE_NAMESPACE`
 
 Set the legal and support vars only when you have real values for them.
+If you want a provider script for analytics or monitoring without hard-coding a vendor, set `PUBLIC_OBSERVABILITY_SCRIPT_SRC` and optionally `PUBLIC_OBSERVABILITY_SCRIPT_DATA_JSON`.
 
 ## 3. Rename or disable sections
 
@@ -55,3 +57,5 @@ Your first successful customization is done when all of these are true:
 - the site runs with your own content root
 - `pnpm verify:starter` still passes for starter mode
 - `SITE_CONTENT_DIR=../your-content-repo pnpm verify:external` passes for external mode
+
+See [operations.md](./operations.md) for the short deploy/release/rebrand map after the first pass.

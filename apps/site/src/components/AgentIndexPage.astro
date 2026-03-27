@@ -1,0 +1,94 @@
+---
+import CompactSection from '@/components/ui/CompactSection.astro'
+import LinkCard from '@/components/ui/LinkCard.astro'
+import PageHeader from '@/components/ui/PageHeader.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import {
+  getAgentsIndexHref,
+  getDiscoverabilityPageData,
+} from '@/lib/discoverability'
+import { resolveLocaleHrefMap } from '@/lib/locale-config'
+import type { SiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  locale: SiteLocale
+}
+
+const { locale } = Astro.props
+const localeHrefs = resolveLocaleHrefMap((supportedLocale) => getAgentsIndexHref(supportedLocale))
+const {
+  copy,
+  coreCards,
+  localeCards,
+  sectionCards,
+} = getDiscoverabilityPageData(locale)
+---
+
+<BaseLayout
+  description={copy.description}
+  localeHrefs={localeHrefs}
+  pagefind={false}
+  title={copy.title}
+>
+  <PageHeader description={copy.description} title={copy.title}>
+    <p class={ui.eyebrow}>{copy.eyebrow}</p>
+  </PageHeader>
+
+  <CompactSection className="grid gap-5">
+    <div class="grid gap-2 md:max-w-2xl">
+      <h2 class={ui.headingCompact}>{copy.coreTitle}</h2>
+      <p class={ui.bodyCopy}>{copy.coreDescription}</p>
+    </div>
+
+    <div class={ui.cardsGrid}>
+      {coreCards.map((card) => (
+        <LinkCard
+          description={card.description}
+          href={card.href}
+          meta={card.meta}
+          title={card.title}
+          titleTag="h3"
+        />
+      ))}
+    </div>
+  </CompactSection>
+
+  <CompactSection className="grid gap-5">
+    <div class="grid gap-2 md:max-w-2xl">
+      <h2 class={ui.headingCompact}>{copy.localeTitle}</h2>
+      <p class={ui.bodyCopy}>{copy.localeDescription}</p>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2">
+      {localeCards.map((card) => (
+        <LinkCard
+          description={card.description}
+          href={card.href}
+          meta={card.meta}
+          title={card.title}
+          titleTag="h3"
+        />
+      ))}
+    </div>
+  </CompactSection>
+
+  <CompactSection className="grid gap-5">
+    <div class="grid gap-2 md:max-w-2xl">
+      <h2 class={ui.headingCompact}>{copy.sectionsTitle}</h2>
+      <p class={ui.bodyCopy}>{copy.sectionsDescription}</p>
+    </div>
+
+    <div class={ui.cardsGrid}>
+      {sectionCards.map((card) => (
+        <LinkCard
+          description={card.description}
+          href={card.href}
+          meta={card.meta}
+          title={card.title}
+          titleTag="h3"
+        />
+      ))}
+    </div>
+  </CompactSection>
+</BaseLayout>

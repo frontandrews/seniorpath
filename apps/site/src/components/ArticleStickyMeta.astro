@@ -9,13 +9,9 @@ import {
   getDataHookAttributes,
   sharedDomHooks,
 } from '@/lib/dom-hooks'
+import type { ArticleRecommendationCandidate, ArticleRecommendationLink } from '@/lib/article-recommendations'
 import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 import { ui } from '@/lib/ui'
-
-type CompletionLink = {
-  href: string
-  title: string
-}
 
 type TrackSummary = {
   href: string
@@ -37,9 +33,10 @@ type Props = {
   categoryLabel?: string
   levelLabel?: string
   locale: SiteLocale
-  nextStep?: CompletionLink | null
+  nextStep?: ArticleRecommendationLink | null
   readingTimeMinutes?: number | null
-  relatedItems?: CompletionLink[]
+  recommendationCandidates?: ArticleRecommendationCandidate[]
+  relatedItems?: ArticleRecommendationLink[]
   showCompletionInPlace?: boolean
   track?: TrackSummary | null
   updatedMeta?: string | null
@@ -54,6 +51,7 @@ const {
   locale,
   nextStep = null,
   readingTimeMinutes = null,
+  recommendationCandidates = [],
   relatedItems = [],
   showCompletionInPlace = true,
   track = null,
@@ -69,7 +67,7 @@ const controllerId = randomUUID()
     class={cn(
       ui.panel,
       ui.spotlightPanel,
-      'xl:max-h-[calc(100vh-8.5rem)] xl:overflow-y-auto',
+      'gap-3 px-4 py-3.5 lg:px-4 lg:py-4 xl:border-0 xl:bg-transparent xl:max-h-[calc(100vh-8.5rem)] xl:overflow-y-auto',
     )}
     {...getDataHookAttributes(sharedDomHooks.controllerId, controllerId)}
     {...getDataHookAttributes(articleCompletionPanelDomHooks.completionId, completionId ?? '')}
@@ -77,7 +75,7 @@ const controllerId = randomUUID()
     {...getDataHookAttributes(articleStickyMetaDomHooks.root)}
   >
     {updatedMeta || (readingTimeMinutes && levelLabel && categoryLabel) || headings.length > 0 ? (
-      <div class="grid gap-3" {...getDataHookAttributes(articleStickyMetaDomHooks.tocSection)}>
+      <div class="grid gap-2" {...getDataHookAttributes(articleStickyMetaDomHooks.tocSection)}>
         {updatedMeta ? (
           <div class={cn(ui.metaQuiet, 'grid gap-1')}>
             {updatedMeta ? <p class="m-0">{copy.article.updatedPrefix} {updatedMeta}</p> : null}
@@ -96,17 +94,18 @@ const controllerId = randomUUID()
 
         {headings.length > 0 ? (
           <>
-            <p class={ui.eyebrow}>{copy.article.tableOfContents}</p>
-            <nav aria-label={copy.article.tableOfContents} class="grid gap-1">
+            <p class={cn(ui.eyebrow, 'text-site-line-strong')}>{copy.article.tableOfContents}</p>
+            <nav aria-label={copy.article.tableOfContents} class="grid gap-0.5">
               {headings.map((heading) => (
                 <a
                   class={cn(
                     'article-toc-link',
-                    'rounded-xs px-2 py-1.5 text-sm leading-6 text-site-ink-soft transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none lg:text-[0.96rem]',
-                    heading.depth > 2 && 'ml-3 text-[0.82rem] text-site-ink-muted lg:text-[0.9rem]',
+                    'px-0 py-0.5 text-[0.9rem] leading-[1.45] text-site-line-strong transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none lg:text-[0.94rem]',
+                    heading.depth > 2 && 'ml-2 text-[0.82rem] lg:text-[0.88rem]',
                   )}
                   {...getDataHookAttributes(articleStickyMetaDomHooks.tocLink)}
                   {...getDataHookAttributes(articleStickyMetaDomHooks.tocSlug, heading.slug)}
+                  data-astro-reload
                   href={`#${heading.slug}`}
                 >
                   {heading.text}
@@ -118,7 +117,7 @@ const controllerId = randomUUID()
       </div>
     ) : null}
 
-    <div class="article-reading-progress grid gap-2 border-t border-site-line pt-4" {...getDataHookAttributes(articleStickyMetaDomHooks.readingProgress)}>
+    <div class="article-reading-progress grid gap-2 border-t border-site-line pt-4" data-js-only="true" {...getDataHookAttributes(articleStickyMetaDomHooks.readingProgress)}>
       <div class="flex items-center gap-3">
         <div class={cn('min-w-0 flex-1', ui.progressTrack)}>
           <div
@@ -126,7 +125,7 @@ const controllerId = randomUUID()
             {...getDataHookAttributes(articleStickyMetaDomHooks.readingProgressBar)}
           />
         </div>
-        <p class={cn('article-reading-progress-value', ui.progressMeta, 'shrink-0 lg:text-[0.88rem]')} {...getDataHookAttributes(articleStickyMetaDomHooks.readingProgressValue)}>
+        <p class={cn('article-reading-progress-value', ui.progressMeta, 'shrink-0 text-site-line-strong lg:text-[0.88rem]')} {...getDataHookAttributes(articleStickyMetaDomHooks.readingProgressValue)}>
           0%
         </p>
       </div>
@@ -141,6 +140,7 @@ const controllerId = randomUUID()
         <ArticleCompletionSummary
           locale={locale}
           nextStep={nextStep}
+          recommendationCandidates={recommendationCandidates}
           relatedItems={relatedItems}
           track={track}
           variant="compact"

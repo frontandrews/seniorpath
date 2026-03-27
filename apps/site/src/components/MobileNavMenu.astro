@@ -1,4 +1,5 @@
 ---
+import { getDataHookAttributes, mobileNavMenuDomHooks } from '@/lib/dom-hooks'
 import { siteStorageKeys } from '@/lib/storage-keys'
 
 type LinkItem = {
@@ -56,10 +57,16 @@ function getLocaleChoiceHandler(code: string) {
 }
 ---
 
-<details class="group relative nav:hidden" data-dismiss-on-outside="true">
+<details
+  class="group relative nav:hidden"
+  data-dismiss-on-outside="true"
+  {...getDataHookAttributes(mobileNavMenuDomHooks.root)}
+>
   <summary
     aria-controls="mobile-site-nav"
+    aria-label={menuLabel}
     class="inline-flex min-h-10 items-center justify-center rounded-xs border border-site-line bg-site-panel px-3 py-2 text-sm font-semibold tracking-[0.04em] text-site-ink transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none list-none [&::-webkit-details-marker]:hidden"
+    {...getDataHookAttributes(mobileNavMenuDomHooks.trigger)}
   >
     <svg class="size-4 group-open:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path d="M4 7h16" />
@@ -76,6 +83,7 @@ function getLocaleChoiceHandler(code: string) {
   <div
     class="absolute right-0 top-[calc(100%+0.75rem)] z-30 w-[min(18rem,calc(100vw-1.5rem))]"
     id="mobile-site-nav"
+    {...getDataHookAttributes(mobileNavMenuDomHooks.panel)}
   >
     <div class={panelClass}>
       {navLinks.length > 0 ? (

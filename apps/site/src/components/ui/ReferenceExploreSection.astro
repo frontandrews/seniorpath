@@ -1,0 +1,61 @@
+---
+import FilterableDirectory from '@/components/FilterableDirectory.svelte'
+import ArticleSection from '@/components/ui/ArticleSection.astro'
+import { ui } from '@/lib/ui'
+
+type BadgeLink = {
+  href: string
+  label: string
+}
+
+type CardLink = {
+  description?: string
+  href: string
+  title: string
+}
+
+type Props = {
+  badgeLinks?: BadgeLink[]
+  cards?: CardLink[]
+  title: string
+}
+
+const {
+  badgeLinks = [],
+  cards = [],
+  title,
+} = Astro.props
+
+function normalizeExploreLabel(label: string) {
+  const trimmedLabel = label.trim()
+
+  if (!trimmedLabel) {
+    return trimmedLabel
+  }
+
+  return `${trimmedLabel.charAt(0).toLocaleUpperCase()}${trimmedLabel.slice(1)}`
+}
+
+const items = [
+  ...badgeLinks.map((item) => ({
+    href: item.href,
+    tags: [],
+    title: normalizeExploreLabel(item.label),
+  })),
+  ...cards.map((item) => ({
+    href: item.href,
+    tags: [],
+    title: item.title,
+  })),
+].filter((item, index, collection) => collection.findIndex((candidate) => candidate.href === item.href) === index)
+---
+
+{items.length > 0 ? (
+  <ArticleSection
+    bodyClass="mt-4"
+    sectionClass={ui.articleUtilitySection}
+    title={title}
+  >
+    <FilterableDirectory items={items} layout="cards" />
+  </ArticleSection>
+) : null}

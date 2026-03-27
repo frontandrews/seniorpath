@@ -3,6 +3,8 @@ import type { CollectionEntry } from 'astro:content'
 import { render } from 'astro:content'
 
 import FilterableDirectory from '@/components/FilterableDirectory.svelte'
+import HeaderTagMeta from '@/components/ui/HeaderTagMeta.astro'
+import { toHashtagLabel } from '@/lib/article-meta'
 import { getConceptHrefFromEntry, getConceptsHref } from '@/lib/concepts-links'
 import {
   getConceptDomainRouteSegment,
@@ -11,21 +13,23 @@ import {
   getLocalizedConceptGroupLabel,
 } from '@/lib/concept-taxonomy'
 import { getArticleHrefFromEntry } from '@/lib/article-links'
+import { resolveActiveRelatedArticles } from '@/lib/content-integrity'
 import { formatEditorialDate } from '@/lib/format-date'
 import { resolveLocalizedEntryHrefMap, resolveLocaleMap } from '@/lib/locale-config'
+import { resolveEntityOgImageUrl } from '@/lib/og-image'
 import { getSiteCopy, getSiteDateLocale, getSiteLocale, type SiteLocale } from '@/lib/site-copy'
 import { getArticleCollection, getConceptCollection } from '@/lib/site-content'
-import { ui } from '@/lib/ui'
 import ArticleSection from '@/components/ui/ArticleSection.astro'
+import ReferenceExploreSection from '@/components/ui/ReferenceExploreSection.astro'
 import ReferenceEntryPage from '@/components/ui/ReferenceEntryPage.astro'
-import { cn } from '@/lib/cn'
+import { ui } from '@/lib/ui'
 
 type Props = {
   concept: CollectionEntry<'concepts'>
 }
 
 const { concept } = Astro.props
-const { Content } = await render(concept)
+const { Content, headings = [] } = await render(concept)
 const allConcepts = await getConceptCollection()
 const allArticles = await getArticleCollection()
 const localizedConcepts = allConcepts.filter(
@@ -35,12 +39,7 @@ const alternateLocaleHrefs = resolveLocaleMap((supportedLocale) => {
   const localizedEntry = localizedConcepts.find((entry) => entry.data.locale === supportedLocale)
   return localizedEntry ? getConceptHrefFromEntry(localizedEntry) : null
 })
-const relatedArticles = allArticles.filter(
-  (entry) =>
-    entry.data.locale === concept.data.locale &&
-    entry.data.status === 'active' &&
-    concept.data.relatedArticleIds.includes(entry.data.articleId),
-)
+const relatedArticles = resolveActiveRelatedArticles(allArticles, concept.data.locale, concept.data.relatedArticleIds)
 const locale = getSiteLocale(concept.data.locale)
 const siteLocale: SiteLocale = locale
 const copy = getSiteCopy(locale)
@@ -54,16 +53,54 @@ const localeHrefs = resolveLocalizedEntryHrefMap(
 const dateLocale = getSiteDateLocale(locale)
 const formattedPubDate = formatEditorialDate(concept.data.pubDate, dateLocale)
 const formattedUpdatedDate = concept.data.updatedDate
-  ? formatEditorialDate(concept.data.updatedDate, dateLocale, {
-      month: 'long',
-    })
+  ? formatEditorialDate(concept.data.updatedDate, dateLocale)
   : null
 const relatedArticleItems = relatedArticles.map((article) => ({
   href: getArticleHrefFromEntry(article),
   tags: [],
   title: article.data.title,
 }))
+const recommendedConcepts = allConcepts
+  .filter(
+    (entry) =>
+      entry.data.locale === concept.data.locale &&
+      entry.data.status === 'active' &&
+      entry.data.conceptId !== concept.data.conceptId,
+  )
+  .map((entry) => {
+    const sharedTagCount = entry.data.tags.filter((tag) => concept.data.tags.includes(tag)).length
+    const sharedRelatedArticleCount = entry.data.relatedArticleIds.filter((articleId) =>
+      concept.data.relatedArticleIds.includes(articleId),
+    ).length
+    let score = sharedTagCount * 2 + sharedRelatedArticleCount * 4
+
+    if (entry.data.domainId === concept.data.domainId) {
+      score += 10
+    }
+
+    if (entry.data.groupId === concept.data.groupId) {
+      score += 20
+    }
+
+    return {
+      entry,
+      score,
+    }
+  })
+  .sort((left, right) => right.score - left.score || left.entry.data.title.localeCompare(right.entry.data.title, locale))
+  .slice(0, 3)
+  .map(({ entry }) => ({
+    description: entry.data.summary,
+    href: getConceptHrefFromEntry(entry),
+    title: entry.data.title,
+  }))
 const articleUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString()
+const socialImage = resolveEntityOgImageUrl(
+  Astro.site ?? Astro.url,
+  'concepts',
+  locale,
+  concept.data.conceptId,
+)
 const conceptScopeTags = [
   {
     href: getConceptsHref(locale, domainSegment),
@@ -74,23 +111,56 @@ const conceptScopeTags = [
     label: getLocalizedConceptGroupLabel(concept.data.domainId, concept.data.groupId, siteLocale),
   },
 ]
+const browseConceptItems = [
+  {
+    href: getConceptsHref(locale),
+    label: copy.layout.concepts,
+  },
+  {
+    href: getConceptsHref(locale, domainSegment),
+    label: getLocalizedConceptDomainLabel(concept.data.domainId, siteLocale),
+  },
+]
+const headerTagItems = [
+  ...conceptScopeTags.map((tag) => ({
+    href: tag.href,
+    label: toHashtagLabel(tag.label, locale) ?? tag.label,
+  })),
+  ...concept.data.tags.map((tag) => ({
+    label: toHashtagLabel(tag, locale) ?? tag,
+  })),
+].filter((item, index, items) => items.findIndex((candidate) => candidate.label === item.label) === index)
+const displayHeadings = headings.filter((heading) => heading.depth === 2 || heading.depth === 3)
 ---
 
 <ReferenceEntryPage
   alternateLocaleHrefs={alternateLocaleHrefs}
   createdMeta={formattedPubDate}
   description={concept.data.description}
+  headings={displayHeadings}
   locale={locale}
   localeHrefs={localeHrefs}
+  socialImage={socialImage}
   title={concept.data.title}
   updatedMeta={formattedUpdatedDate}
   url={articleUrl}
 >
+  <Fragment slot="headerMeta">
+    <HeaderTagMeta items={headerTagItems} />
+  </Fragment>
+
   <Content />
   <Fragment slot="afterContent">
+    <ReferenceExploreSection
+      badgeLinks={browseConceptItems}
+      cards={recommendedConcepts}
+      title={copy.startHere.supportHeading}
+    />
+
     {relatedArticles.length > 0 ? (
       <ArticleSection
         bodyClass="mt-4"
+        sectionClass={ui.articleUtilitySection}
         title={copy.directory.relatedArticles}
       >
           <FilterableDirectory
@@ -98,17 +168,6 @@ const conceptScopeTags = [
             layout="cards"
           />
       </ArticleSection>
-    ) : null}
-
-    {conceptScopeTags.length > 0 || concept.data.tags.length > 0 ? (
-      <div class={ui.articleTagList}>
-        {conceptScopeTags.map((tag) => (
-          <a class={cn(ui.badge, ui.badgeLink)} href={tag.href}>{tag.label}</a>
-        ))}
-        {concept.data.tags.map((tag) => (
-          <span class={ui.badge}>{tag}</span>
-        ))}
-      </div>
     ) : null}
   </Fragment>
 </ReferenceEntryPage>

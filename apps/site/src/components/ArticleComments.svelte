@@ -7,12 +7,13 @@
   import { ui } from '@/lib/ui'
 
   type Props = {
+    className?: string
     config: GiscusConfig
     openLabel?: string
     title?: string
   }
 
-  let { config, openLabel = 'View comments', title = 'Comments' }: Props = $props()
+  let { className, config, openLabel = 'View comments', title = 'Comments' }: Props = $props()
   let host = $state<HTMLDivElement | null>(null)
   let isOpen = $state(false)
   let hasLoaded = $state(false)
@@ -51,7 +52,7 @@
 </script>
 
 {#if isOpen}
-  <section class={ui.articleSection} {...getDataHookAttributes(articleReadingDomHooks.end)}>
+  <section class={cn(ui.articleUtilitySection, className)} {...getDataHookAttributes(articleReadingDomHooks.end)}>
     <div class={ui.sectionHeader}>
       <div class="grid gap-1">
         <h2 class={ui.headingCompact}>{title}</h2>
@@ -61,7 +62,7 @@
     <div bind:this={host} class="giscus-comments pt-1.5"></div>
   </section>
 {:else}
-  <section class={cn(ui.articleSection, 'flex justify-center')} {...getDataHookAttributes(articleReadingDomHooks.end)}>
+  <section class={cn(ui.articleUtilitySection, className, 'flex justify-center')} {...getDataHookAttributes(articleReadingDomHooks.end)}>
     <button
       class={cn(ui.controlButton, 'px-4 py-3 text-[0.88rem] font-medium lg:px-4.5 lg:py-3.5 lg:text-[0.96rem]')}
       onclick={openComments}

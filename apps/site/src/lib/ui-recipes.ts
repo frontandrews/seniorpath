@@ -1,7 +1,7 @@
 const interactiveTone =
   'text-inherit transition-colors duration-150 hover:bg-site-hover hover:text-site-link-hover focus-visible:bg-site-hover focus-visible:text-site-link-hover focus-visible:outline-none'
 const linearCard =
-  'relative -mx-[0.45rem] grid gap-[0.35rem] rounded-xs px-[0.45rem] py-[0.8rem] lg:gap-2 lg:px-[0.55rem] lg:py-[0.95rem]'
+  'relative -mx-[0.45rem] grid gap-[0.35rem] rounded-xs px-[0.45rem] py-[0.8rem] md:pr-38 lg:gap-2 lg:px-[0.55rem] lg:py-[0.95rem] lg:pr-41'
 const completionBadgeBase =
   'site-completion-badge pointer-events-none absolute inline-flex items-center justify-center rounded-full font-semibold transition-all duration-150'
 const completionDesktopCta =
@@ -20,9 +20,9 @@ export const uiRecipes = {
   completionBadgeLinear: `${completionBadgeBase} right-3 top-3.5 size-7 text-[0.92rem] lg:right-4 lg:top-1/2 lg:size-9 lg:-translate-y-1/2 lg:text-[1.08rem]`,
   completionDesktopCta,
   completionDesktopCtaInteractive: `${completionDesktopCta} group-hover:translate-x-0 group-hover:opacity-100 group-hover:text-site-link-hover group-focus-within:translate-x-0 group-focus-within:opacity-100 group-focus-within:text-site-link-hover`,
-  completionRailInlineMd: 'pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 items-center md:inline-flex',
-  completionRailLg: 'pointer-events-none absolute right-4 top-1/2 hidden min-w-37 -translate-y-1/2 items-center justify-end lg:inline-flex',
-  completionRailMd: 'pointer-events-none absolute right-4 top-1/2 hidden min-w-37 -translate-y-1/2 items-center justify-end md:inline-flex',
+  completionRailInlineMd: 'pointer-events-none absolute right-4 top-1/2 hidden w-34 -translate-y-1/2 items-center justify-end md:inline-flex lg:w-37',
+  completionRailLg: 'pointer-events-none absolute right-4 top-1/2 hidden w-37 -translate-y-1/2 items-center justify-end lg:inline-flex',
+  completionRailMd: 'pointer-events-none absolute right-4 top-1/2 hidden w-37 -translate-y-1/2 items-center justify-end md:inline-flex',
   contentKindBadge:
     'inline-flex w-fit items-center rounded-full border border-site-line bg-site-card px-2.5 py-1 text-[0.64rem] font-semibold uppercase tracking-[0.16em] text-site-ink-subtle lg:px-3 lg:text-[0.72rem]',
   controlButton:
@@ -55,7 +55,7 @@ export const uiRecipes = {
   quietAction:
     'w-fit text-[0.78rem] font-medium text-site-ink-muted transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none lg:text-[0.86rem]',
   searchDialog:
-    'site-overlay-shadow mx-auto my-[6vh] flex max-h-[min(84dvh,42rem)] w-full max-w-184 flex-col overflow-hidden rounded-lg border border-site-line bg-site-panel lg:max-w-200',
+    'flex h-dvh w-screen max-w-none flex-col overflow-hidden bg-site-panel nav:site-overlay-shadow nav:mx-auto nav:my-[6vh] nav:h-auto nav:max-h-[min(84dvh,42rem)] nav:w-full nav:max-w-184 nav:rounded-lg nav:border nav:border-site-line lg:max-w-200',
   searchResultLink: `grid gap-1 rounded-xs px-3 py-3 ${interactiveTone} lg:gap-1.5 lg:px-4 lg:py-3.5`,
   spotlightPanel:
     'grid gap-4 border border-site-panel-border bg-site-panel-spotlight px-4 py-4 lg:px-5 lg:py-5',

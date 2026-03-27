@@ -29,6 +29,10 @@ type PrivacyCopy = {
   description: (siteName: string) => string
   howDataIsUsed: LegalSection<PrivacyContext>
   intro: (siteName: string) => string
+  publishChecklist: {
+    items: string[]
+    title: string
+  }
   retention: LegalSection<PrivacyContext>
   templateNoteLabel: string
   thirdPartyServices: LegalSection<PrivacyContext>
@@ -55,6 +59,10 @@ type TermsCopy = {
   governingLawVenue: LegalSection<TermsContext>
   intro: (siteName: string) => string
   noProfessionalAdvice: LegalSection<TermsContext>
+  publishChecklist: {
+    items: string[]
+    title: string
+  }
   templateNoteLabel: string
   thirdPartyServices: LegalSection<TermsContext>
   title: string
@@ -71,7 +79,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
     privacy: {
       applicableLaw: {
         body: ({ governingLaw }) =>
-          `This starter policy assumes compliance with ${governingLaw}. Replace this section with the real legal basis, jurisdiction, and notice requirements that apply to your project.`,
+          `Document the real privacy regime that applies to the site, including ${governingLaw} when relevant, plus any lawful-basis, notice, transfer, or consumer-rights requirements that actually govern your operation.`,
         title: 'Applicable law',
       },
       changes: {
@@ -97,7 +105,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       cookies: {
         body: () =>
-          'This template may use cookies, local storage, analytics scripts, or similar technologies for core site behavior, preferences, security, traffic measurement, and optional marketing flows. Review the exact tools you enable before publishing.',
+          'State which cookies, local storage keys, analytics scripts, or similar technologies actually run in production, why they exist, how long they persist, and whether consent is required in your jurisdiction.',
         title: 'Cookies, local storage, and analytics',
       },
       description: (siteName) => `How ${siteName} handles personal data, cookies, and site preferences.`,
@@ -113,16 +121,25 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
         title: 'How data may be used',
       },
       intro: (siteName) =>
-        `This Privacy Policy is a reusable starting point for projects built on this template. It explains how ${siteName} may collect, use, store, and share personal data when someone browses the site, subscribes to updates, or uses optional product features.`,
+        `Use this page as the public explanation of how ${siteName} handles personal data. Before launch, replace placeholders, remove flows you do not offer, and name the real providers and legal duties that apply to your operation.`,
+      publishChecklist: {
+        items: [
+          'Replace operator name, location, legal contact, and governing law with real production values.',
+          'Remove references to features you do not offer and add the providers you actually use for hosting, analytics, email, auth, comments, or payments.',
+          'Confirm retention, consent, and data-subject rights against the jurisdictions and processors that apply to the live site.',
+          'Add an effective date and internal review owner if your legal workflow requires it.',
+        ],
+        title: 'Publication checklist',
+      },
       retention: {
         body: () =>
           'Personal data should be kept only for as long as needed for the feature, legal obligation, or operational purpose involved. Operators should also apply reasonable technical and organizational safeguards, while recognizing that no system is perfectly secure.',
         title: 'Retention and security',
       },
-      templateNoteLabel: 'Template note.',
+      templateNoteLabel: 'Before publishing.',
       thirdPartyServices: {
         body: () =>
-          'Projects built from this template may connect to third-party providers such as hosting, analytics, email, auth, comments, or payment tools. Those providers operate under their own terms and privacy policies.',
+          'List the real third-party processors and infrastructure providers that receive personal data, telemetry, or support requests for this site, and link their privacy terms when appropriate.',
         title: 'Third-party services',
       },
       title: 'Privacy Policy',
@@ -134,7 +151,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       yourRights: {
         body: () =>
-          'Depending on the law that applies to your project, users may have rights to access, correct, delete, export, restrict, or object to certain uses of personal data. Review this section against the actual laws and providers you use before launch.',
+          'Describe the real privacy rights that apply to your audience and explain how requests should be made, verified, and answered in practice.',
         title: 'Your rights',
       },
     },
@@ -174,25 +191,34 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       description: (siteName) => `Starter terms for using ${siteName} and related features.`,
       disclaimer: {
         body: () =>
-          'The site may be provided on an "as is" and "as available" basis to the maximum extent allowed by law. Review and adapt this clause to match the jurisdiction, business model, and actual risk profile of the project before launch.',
+          'Adjust liability, warranty, refund, and consumer-rights language to match the real jurisdiction, business model, and risk profile of the published site.',
         title: 'Disclaimer and limitation of liability',
       },
       governingLawVenue: {
         body: ({ governingLaw, venue }) =>
-          `This starter document assumes that disputes are governed by ${governingLaw} and handled in ${venue}. Replace this section with the real law, forum, and mandatory consumer rules that apply to your operation.`,
+          `Replace this placeholder with the actual governing law, forum, venue, arbitration, or mandatory consumer rules that apply to disputes involving the site, including ${governingLaw} and ${venue} only when they are correct.`,
         title: 'Governing law and venue',
       },
       intro: (siteName) =>
-        `These Terms of Service are a reusable starting point for projects built on this template. They govern access to ${siteName} and to any content, accounts, downloads, newsletters, or product features the operator decides to enable.`,
+        `Use these Terms of Service as the public rules for accessing ${siteName}. Before launch, remove product flows you do not offer and adapt the clauses to the real operator, jurisdiction, support model, and commercial setup.`,
       noProfessionalAdvice: {
         body: () =>
-          'This template is commonly used for editorial or educational projects. Content published on top of it should be treated as general information unless the operator clearly states otherwise.',
+          'If the site publishes editorial or educational content, say that clearly. If it provides professional services, regulated advice, or paid deliverables, replace this clause with the real service terms.',
         title: 'No professional advice',
       },
-      templateNoteLabel: 'Template note.',
+      publishChecklist: {
+        items: [
+          'Confirm operator identity, support/legal contact, and governing law or venue before publishing.',
+          'Describe only the features you actually offer, such as accounts, comments, downloads, newsletters, subscriptions, or payments.',
+          'Review acceptable-use, intellectual-property, and licensing clauses against the actual content and business model of the site.',
+          'Check refund, consumer-rights, and liability wording if the site sells anything or serves regulated audiences.',
+        ],
+        title: 'Publication checklist',
+      },
+      templateNoteLabel: 'Before publishing.',
       thirdPartyServices: {
         body: () =>
-          'Projects built from this template may rely on providers such as hosting, analytics, auth, comments, email, or payments. Those providers operate under their own terms and policies.',
+          'Name the real providers that power hosting, analytics, auth, comments, email, payments, or moderation for the published site, and make sure those dependencies match this page.',
         title: 'Third-party services',
       },
       title: 'Terms of Service',
@@ -207,7 +233,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
     privacy: {
       applicableLaw: {
         body: ({ governingLaw }) =>
-          `Esta politica-base assume conformidade com ${governingLaw}. Troque esta secao pela base legal, jurisdicao e obrigacoes de aviso que realmente se aplicam ao seu projeto.`,
+          `Documente aqui o regime real de privacidade que se aplica ao site, incluindo ${governingLaw} quando fizer sentido, junto com base legal, obrigacoes de aviso, transferencia internacional e regras de consumo que realmente governam a operacao.`,
         title: 'Lei aplicavel',
       },
       changes: {
@@ -233,7 +259,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       cookies: {
         body: () =>
-          'Este template pode usar cookies, local storage, scripts de analytics e tecnologias parecidas para comportamento basico do site, preferencias, seguranca, medicao de trafego e fluxos opcionais de marketing. Revise as ferramentas habilitadas antes de publicar.',
+          'Explique quais cookies, chaves de local storage, scripts de analytics ou tecnologias parecidas realmente rodam em producao, por que existem, por quanto tempo persistem e se exigem consentimento na sua jurisdicao.',
         title: 'Cookies, local storage e analytics',
       },
       description: (siteName) => `Como ${siteName} trata dados pessoais, cookies e preferencias do site.`,
@@ -249,16 +275,25 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
         title: 'Como os dados podem ser usados',
       },
       intro: (siteName) =>
-        `Esta Politica de Privacidade e um ponto de partida reutilizavel para projetos feitos com este template. Ela explica como ${siteName} pode coletar, usar, armazenar e compartilhar dados pessoais quando alguem navega no site, assina atualizacoes ou usa recursos opcionais do produto.`,
+        `Use esta pagina como explicacao publica de como ${siteName} trata dados pessoais. Antes do lancamento, troque placeholders, remova fluxos que nao existem e nomeie os provedores e obrigacoes legais reais da sua operacao.`,
+      publishChecklist: {
+        items: [
+          'Troque nome do operador, localizacao, contato juridico e lei aplicavel pelos valores reais de producao.',
+          'Remova referencias a recursos que nao existem e adicione os provedores reais usados para hospedagem, analytics, email, auth, comentarios ou pagamentos.',
+          'Confirme retencao, consentimento e direitos dos titulares com base nas jurisdicoes e nos processadores que valem para o site ao vivo.',
+          'Adicione data de vigencia e responsavel interno pela revisao se isso fizer parte do seu fluxo juridico.',
+        ],
+        title: 'Checklist de publicacao',
+      },
       retention: {
         body: () =>
           'Dados pessoais devem ser mantidos apenas pelo tempo necessario para o recurso, a obrigacao legal ou a necessidade operacional envolvida. O operador tambem deve aplicar salvaguardas tecnicas e organizacionais razoaveis, sabendo que nenhum sistema e totalmente seguro.',
         title: 'Retencao e seguranca',
       },
-      templateNoteLabel: 'Aviso de template.',
+      templateNoteLabel: 'Antes de publicar.',
       thirdPartyServices: {
         body: () =>
-          'Projetos criados a partir deste template podem se integrar com hospedagem, analytics, email, auth, comentarios ou pagamentos. Esses provedores operam sob seus proprios termos e politicas de privacidade.',
+          'Liste os processadores e provedores de infraestrutura que realmente recebem dados pessoais, telemetria ou pedidos de suporte deste site e aponte para suas politicas quando fizer sentido.',
         title: 'Servicos de terceiros',
       },
       title: 'Politica de Privacidade',
@@ -270,7 +305,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       yourRights: {
         body: () =>
-          'Dependendo da lei aplicavel ao seu projeto, usuarios podem ter direitos de acesso, correcao, exclusao, portabilidade, restricao ou oposicao a certos usos de dados pessoais. Revise esta secao com base nas leis e nos provedores reais antes do lancamento.',
+          'Descreva os direitos de privacidade que realmente se aplicam ao seu publico e explique como pedidos devem ser feitos, verificados e respondidos na pratica.',
         title: 'Seus direitos',
       },
     },
@@ -310,25 +345,34 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       description: (siteName) => `Termos-base para uso de ${siteName} e dos recursos relacionados.`,
       disclaimer: {
         body: () =>
-          'O site pode ser fornecido "como esta" e "conforme disponivel" na maior extensao permitida por lei. Revise e adapte esta clausula para a jurisdicao, o modelo de negocio e o risco real do projeto antes do lancamento.',
+          'Ajuste linguagem de responsabilidade, garantia, reembolso e direitos do consumidor para a jurisdicao, o modelo de negocio e o risco real do site publicado.',
         title: 'Isencao e limitacao de responsabilidade',
       },
       governingLawVenue: {
         body: ({ governingLaw, venue }) =>
-          `Este documento-base assume que disputas sao regidas por ${governingLaw} e tratadas em ${venue}. Troque esta secao pela lei, pelo foro e pelas regras obrigatorias de consumo que realmente se aplicam a sua operacao.`,
+          `Troque este placeholder pela lei, pelo foro, pela arbitragem e pelas regras obrigatorias de consumo que realmente se aplicam a disputas envolvendo o site, incluindo ${governingLaw} e ${venue} apenas quando estiverem corretos.`,
         title: 'Lei aplicavel e foro',
       },
       intro: (siteName) =>
-        `Estes Termos de Uso sao um ponto de partida reutilizavel para projetos feitos com este template. Eles regem o acesso a ${siteName} e a qualquer conteudo, conta, download, newsletter ou recurso de produto que o operador resolver habilitar.`,
+        `Use estes Termos de Uso como regras publicas de acesso a ${siteName}. Antes do lancamento, remova fluxos que nao existem e adapte as clausulas ao operador, a jurisdicao, ao suporte e ao modelo comercial reais.`,
       noProfessionalAdvice: {
         body: () =>
-          'Este template costuma ser usado em projetos editoriais ou educacionais. O conteudo publicado em cima dele deve ser tratado como informacao geral, salvo quando o operador declarar algo mais especifico.',
+          'Se o site publica conteudo editorial ou educacional, deixe isso explicito. Se ele oferece servicos profissionais, aconselhamento regulado ou entregas pagas, substitua esta clausula pelos termos reais do servico.',
         title: 'Sem aconselhamento profissional',
       },
-      templateNoteLabel: 'Aviso de template.',
+      publishChecklist: {
+        items: [
+          'Confirme identidade do operador, contato de suporte/juridico e lei aplicavel ou foro antes da publicacao.',
+          'Descreva apenas os recursos que realmente existem, como contas, comentarios, downloads, newsletters, assinaturas ou pagamentos.',
+          'Revise uso aceitavel, propriedade intelectual e licenciamento com base no conteudo e no modelo de negocio reais do site.',
+          'Cheque linguagem de reembolso, direitos do consumidor e limitacao de responsabilidade se o site vender algo ou atender publico regulado.',
+        ],
+        title: 'Checklist de publicacao',
+      },
+      templateNoteLabel: 'Antes de publicar.',
       thirdPartyServices: {
         body: () =>
-          'Projetos criados a partir deste template podem depender de hospedagem, analytics, auth, comentarios, email ou pagamentos. Esses provedores operam sob seus proprios termos e politicas.',
+          'Nomeie os provedores reais que sustentam hospedagem, analytics, auth, comentarios, email, pagamentos ou moderacao do site publicado e confirme que essas dependencias batem com esta pagina.',
         title: 'Servicos de terceiros',
       },
       title: 'Termos de Uso',

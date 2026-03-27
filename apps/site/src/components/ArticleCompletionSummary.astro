@@ -1,13 +1,8 @@
 ---
-import { cn } from '@/lib/cn'
 import { articleCompletionSummaryDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
+import type { ArticleRecommendationCandidate, ArticleRecommendationLink } from '@/lib/article-recommendations'
 import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 import { ui } from '@/lib/ui'
-
-type CompletionLink = {
-  href: string
-  title: string
-}
 
 type TrackSummary = {
   href: string
@@ -18,8 +13,9 @@ type TrackSummary = {
 
 type Props = {
   locale: SiteLocale
-  nextStep?: CompletionLink | null
-  relatedItems?: CompletionLink[]
+  nextStep?: ArticleRecommendationLink | null
+  recommendationCandidates?: ArticleRecommendationCandidate[]
+  relatedItems?: ArticleRecommendationLink[]
   track?: TrackSummary | null
   variant?: 'compact' | 'default'
 }
@@ -27,7 +23,7 @@ type Props = {
 const {
   locale,
   nextStep = null,
-  relatedItems = [],
+  recommendationCandidates = [],
   track = null,
   variant = 'default',
 } = Astro.props
@@ -51,45 +47,46 @@ const quietActionClass = isCompact
   : ui.quietAction
 ---
 
-<div class="grid gap-2">
-  <p class={completionHeadingClass}>
-    <span aria-hidden="true" class="text-site-success">✓</span>
-    <span>{copy.article.finishedArticle}</span>
-  </p>
-  {track ? (
-    <p class={trackMetaClass}>
-      {copy.article.partOfTrack}:{' '}
-      <a class="font-medium text-site-ink transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none" href={track.href}>
-        {track.title}
-      </a>{' '}
-      ({track.stepIndex}/{track.totalSteps})
-    </p>
-  ) : null}
-</div>
-
-{nextStep ? (
+<div
+  class="grid gap-4"
+  {...getDataHookAttributes(articleCompletionSummaryDomHooks.root)}
+  {...getDataHookAttributes(articleCompletionSummaryDomHooks.recommendationCandidates, JSON.stringify(recommendationCandidates))}
+>
   <div class="grid gap-2">
+    <p class={completionHeadingClass}>
+      <span aria-hidden="true" class="text-site-success">✓</span>
+      <span>{copy.article.finishedArticle}</span>
+    </p>
+    {track ? (
+      <p class={trackMetaClass}>
+        {copy.article.partOfTrack}:{' '}
+        <a class="font-medium text-site-ink transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none" href={track.href}>
+          {track.title}
+        </a>{' '}
+        ({track.stepIndex}/{track.totalSteps})
+      </p>
+    ) : null}
+  </div>
+
+  <div
+    class="grid gap-2"
+    hidden={!nextStep}
+    {...getDataHookAttributes(articleCompletionSummaryDomHooks.nextStepSection)}
+  >
     <p class={ui.eyebrow}>{copy.article.nextStep}</p>
-    <a class={ui.subtlePanelLink} href={nextStep.href}>
-      <span class={nextStepTitleClass}>{nextStep.title}</span>
+    <a
+      class={ui.subtlePanelLink}
+      href={nextStep?.href ?? '#'}
+      {...getDataHookAttributes(articleCompletionSummaryDomHooks.nextStepLink)}
+    >
+      <span class={nextStepTitleClass} {...getDataHookAttributes(articleCompletionSummaryDomHooks.nextStepTitle)}>
+        {nextStep?.title ?? ''}
+      </span>
       <span class={nextStepMetaClass}>{copy.article.nextStep} →</span>
     </a>
   </div>
-) : null}
 
-{relatedItems.length > 0 ? (
-  <div class="grid gap-2.5">
-    <p class={ui.eyebrow}>{copy.article.exploreRelated}</p>
-    <div class="flex flex-wrap gap-2">
-      {relatedItems.map((item) => (
-        <a class={cn(ui.badge, ui.badgeLink, 'min-h-0 px-3 py-1.5 normal-case tracking-[0.02em] text-site-ink-soft')} href={item.href}>
-          {item.title}
-        </a>
-      ))}
-    </div>
-  </div>
-) : null}
-
-<button class={quietActionClass} {...getDataHookAttributes(articleCompletionSummaryDomHooks.markUnread)} type="button">
-  {copy.article.markUnread}
-</button>
+  <button class={quietActionClass} {...getDataHookAttributes(articleCompletionSummaryDomHooks.markUnread)} type="button">
+    {copy.article.markUnread}
+  </button>
+</div>

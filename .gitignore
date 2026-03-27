@@ -13,3 +13,4 @@ apps/site/test-results/
 /apps/site/.content/
 apps/site/.env
 apps/site/.env.local
+docs/checklist-proximos-passos.md

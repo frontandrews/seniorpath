@@ -1,18 +1,28 @@
 ---
+import ArticleStickyMeta from '@/components/ArticleStickyMeta.astro'
 import ArticleSharePanel from '@/components/ArticleSharePanel.astro'
 import AuthorByline from '@/components/ui/AuthorByline.astro'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
-import { cn } from '@/lib/cn'
+import { articleReadingDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
 import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
 import { ui } from '@/lib/ui'
+
+type TocHeading = {
+  depth: number
+  slug: string
+  text: string
+}
 
 type Props = {
   alternateLocaleHrefs?: Record<string, string | null>
   createdMeta: string | null
   description: string
+  headings?: TocHeading[]
   locale: SiteLocale
   localeHrefs?: Record<string, string | null>
+  socialImage?: string
+  structuredData?: Record<string, unknown> | Record<string, unknown>[]
   title: string
   updatedMeta?: string | null
   url: string
@@ -22,8 +32,11 @@ const {
   alternateLocaleHrefs = {},
   createdMeta,
   description,
+  headings = [],
   locale,
   localeHrefs = {},
+  socialImage,
+  structuredData = [],
   title,
   updatedMeta = null,
   url,
@@ -34,40 +47,62 @@ const copy = getSiteCopy(locale)
 
 <BaseLayout
   alternateLocaleHrefs={alternateLocaleHrefs}
+  contentWidth="wide"
   description={description}
   localeHrefs={localeHrefs}
+  socialImage={socialImage}
+  structuredData={structuredData}
   title={title}
 >
   <article class="w-full pb-11">
     <ContentArticleHeader
+      className="article-header-wide-shell"
       createdMeta={createdMeta}
+      createdMetaClassName={ui.articleHeaderTagTone}
       description={description}
       title={title}
     >
       <AuthorByline />
       {updatedMeta ? (
-        <p class={cn(ui.articleMetaSubtle, 'mt-3')}>
+        <p class={`mt-3 ${ui.articleHeaderTagTone}`}>
           {copy.article.updatedPrefix} {updatedMeta}
         </p>
       ) : null}
       <slot name="headerMeta" />
     </ContentArticleHeader>
 
-    <div class={ui.articleRail}>
-      <div class="min-w-0">
-        <div class="article-prose">
+    <ArticleStickyMeta
+      className="article-reading-shell mx-auto my-5 w-full xl:hidden"
+      headings={headings}
+      locale={locale}
+      showCompletionInPlace={false}
+    />
+
+    <div class={ui.articleRailLayout}>
+      <div class={ui.articleRailLayoutMain}>
+        <div class="article-prose" {...getDataHookAttributes(articleReadingDomHooks.content)}>
           <slot />
         </div>
+        <div aria-hidden="true" class="h-px" {...getDataHookAttributes(articleReadingDomHooks.end)}></div>
+      </div>
 
-        <ArticleSharePanel
-          description={description}
+      <div class={ui.articleRailLayoutGuide}>
+        <ArticleStickyMeta
+          headings={headings}
           locale={locale}
-          title={title}
-          url={url}
+          showCompletionInPlace={false}
         />
-
-        <slot name="afterContent" />
       </div>
     </div>
+
+    <ArticleSharePanel
+      description={description}
+      locale={locale}
+      title={title}
+      useDetailShell={true}
+      url={url}
+    />
+
+    <slot name="afterContent" />
   </article>
 </BaseLayout>

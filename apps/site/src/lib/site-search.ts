@@ -20,7 +20,25 @@ type PagefindSearchModule = {
 
 let pagefindModule: PagefindSearchModule | null = null
 
-const loadPagefind = new Function('return import("/pagefind/pagefind.js")') as () => Promise<PagefindSearchModule>
+function normalizeBaseUrl(baseUrl: string) {
+  const trimmed = baseUrl.trim()
+
+  if (!trimmed) {
+    return '/'
+  }
+
+  const withLeadingSlash = trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+  return withLeadingSlash.endsWith('/') ? withLeadingSlash : `${withLeadingSlash}/`
+}
+
+export function getPagefindModulePath(baseUrl = import.meta.env.BASE_URL ?? '/') {
+  const normalizedBaseUrl = normalizeBaseUrl(baseUrl)
+  return new URL('pagefind/pagefind.js', `https://example.com${normalizedBaseUrl}`).pathname
+}
+
+async function loadPagefind() {
+  return import(/* @vite-ignore */ getPagefindModulePath()) as Promise<PagefindSearchModule>
+}
 
 export function getSearchResultGroupLabel(
   url: string,

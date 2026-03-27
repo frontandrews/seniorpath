@@ -1,17 +1,20 @@
 export const uiLayout = {
-  articleHeader: 'mx-auto mb-7 max-w-208 border-b border-article-rule pb-5 lg:max-w-4xl',
-  articleRailLayout: 'w-full xl:grid xl:grid-cols-[minmax(0,1fr)_55rem_minmax(0,1fr)]',
-  articleRailLayoutAside:
-    'hidden xl:col-start-3 xl:block xl:h-fit xl:w-72 xl:justify-self-end xl:translate-x-38 xl:sticky xl:top-28',
-  articleRailLayoutMain: 'min-w-0 xl:col-start-2 xl:self-start',
-  articleRail: 'relative mx-auto w-full max-w-4xl',
-  articleSection: 'mx-auto mt-8 max-w-208 border-t border-article-rule pt-8 lg:max-w-4xl',
-  articleShell: 'mx-auto mt-5 w-full max-w-208 pb-11 lg:max-w-4xl',
-  articleTagList: 'mx-auto mt-4 flex max-w-208 flex-wrap gap-2.5 border-t border-article-rule pt-4 lg:max-w-4xl',
+  articleHeader: 'article-reading-shell mx-auto mb-7 w-full border-b border-article-rule pb-5',
+  articleHeaderContentWidth:
+    'mx-auto mb-7 w-full max-w-[min(100%,var(--site-reading-measure))] border-b border-article-rule pb-5',
+  articleRailLayout: 'article-detail-shell article-detail-grid mx-auto w-full',
+  articleRailLayoutCompletion: 'hidden xl:block xl:w-full',
+  articleRailLayoutGuide: 'hidden xl:grid xl:w-full xl:h-fit xl:self-start xl:gap-3 xl:sticky xl:top-28',
+  articleRailLayoutMain: 'min-w-0 xl:self-start',
+  articleRail: 'article-utility-shell relative mx-auto w-full',
+  articleSection: 'article-reading-shell mx-auto mt-8 w-full border-t border-article-rule pt-8',
+  articleShell: 'article-reading-shell mx-auto mt-5 w-full pb-11',
+  articleTagList: 'article-reading-shell mx-auto mt-4 flex w-full flex-wrap gap-2.5 border-t border-article-rule pt-4',
+  articleUtilitySection: 'article-utility-shell mx-auto mt-8 w-full border-t border-article-rule pt-8',
   blogFrame:
-    'mx-auto w-[min(52rem,calc(100vw-2rem))] md:w-[min(52rem,calc(100vw-3rem))] lg:w-[min(56rem,calc(100vw-3rem))]',
+    'mx-auto w-[min(52rem,calc(100vw-2rem))] md:w-[min(52rem,calc(100vw-3rem))] lg:w-[min(59rem,calc(100vw-3rem))]',
   cardsGrid: 'grid gap-4 md:grid-cols-2',
-  compactSection: 'mx-auto mt-4 w-full max-w-208 lg:max-w-4xl',
+  compactSection: 'site-content-shell mx-auto mt-4 w-full',
   frame:
     'mx-auto w-[min(72rem,calc(100vw-2rem))] md:w-[min(72rem,calc(100vw-3rem))] lg:w-[min(78rem,calc(100vw-3rem))]',
   linearList: 'grid gap-0',

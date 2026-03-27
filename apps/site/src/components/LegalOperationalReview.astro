@@ -1,0 +1,61 @@
+---
+import { getOperationalPrivacySnapshot } from '@/lib/operational-privacy'
+import { getDataHookAttributes, legalPageDomHooks } from '@/lib/dom-hooks'
+import { getSiteLocale, type SiteLocale } from '@/lib/site-copy'
+
+type Props = {
+  locale?: SiteLocale
+}
+
+const { locale: requestedLocale = 'en' } = Astro.props
+const locale = getSiteLocale(requestedLocale)
+const snapshot = getOperationalPrivacySnapshot(locale)
+---
+
+<section {...getDataHookAttributes(legalPageDomHooks.operationalReview)}>
+  <h2>{snapshot.title}</h2>
+  <p>{snapshot.summary}</p>
+
+  {snapshot.integrations.length > 0 ? (
+    <>
+      <h3>{snapshot.activeIntegrationsTitle}</h3>
+      <ul>
+        {snapshot.integrations.map((integration) => (
+          <li>
+            <strong>{integration.label}.</strong> {integration.body}
+            {integration.origin ? (
+              <>
+                {' '}
+                <strong>{integration.isThirdParty ? snapshot.externalDependencyLabel : snapshot.firstPartyDependencyLabel}.</strong>{' '}
+                {snapshot.originLabel}: <code>{integration.origin}</code>.
+              </>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+    </>
+  ) : null}
+
+  <h3>{snapshot.browserStorageTitle}</h3>
+  <ul>
+    {snapshot.browserStorage.map((storageItem) => (
+      <li>
+        <code>{storageItem.key}</code>: {storageItem.value}
+      </li>
+    ))}
+  </ul>
+
+  <h3>{snapshot.reviewChecklistTitle}</h3>
+  <ul>
+    {snapshot.reviewChecklist.map((item) => <li>{item}</li>)}
+  </ul>
+
+  {snapshot.publishWarnings.length > 0 ? (
+    <>
+      <h3>{snapshot.publishWarningsTitle}</h3>
+      <ul>
+        {snapshot.publishWarnings.map((item) => <li>{item}</li>)}
+      </ul>
+    </>
+  ) : null}
+</section>

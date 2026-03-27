@@ -1,41 +1,43 @@
-import { siteEvents } from '@/lib/site-config'
+import { readLocalStorageString, writeLocalStorageString } from '@/lib/local-storage'
+import { siteEvents, siteStorageKeys } from '@/lib/site-config'
 
 type ChallengeSolvedDetail = {
   challengeId: string
 }
 
-export function getChallengeSolvedStorageKey(challengeId: string) {
+function getLegacyChallengeSolvedStorageKey(challengeId: string) {
   return challengeId ? `challenge-solved-${challengeId}` : ''
+}
+
+export function getChallengeSolvedStorageKey(challengeId: string) {
+  return challengeId ? `${siteStorageKeys.challengeSolvedPrefix}.${challengeId}.v1` : ''
 }
 
 export function readChallengeSolvedState(challengeId: string) {
   const storageKey = getChallengeSolvedStorageKey(challengeId)
+  const legacyStorageKey = getLegacyChallengeSolvedStorageKey(challengeId)
 
-  if (!storageKey || typeof localStorage === 'undefined') {
+  if (!storageKey) {
     return false
   }
 
-  try {
-    return localStorage.getItem(storageKey) === '1'
-  } catch {
-    return false
-  }
+  return readLocalStorageString(storageKey) === '1' || readLocalStorageString(legacyStorageKey) === '1'
 }
 
 export function markChallengeSolved(challengeId: string) {
   const storageKey = getChallengeSolvedStorageKey(challengeId)
 
   if (!storageKey || typeof window === 'undefined') {
-    return
+    return false
   }
 
-  try {
-    localStorage.setItem(storageKey, '1')
-  } catch {}
+  const didPersist = writeLocalStorageString(storageKey, '1')
 
   window.dispatchEvent(
     new CustomEvent<ChallengeSolvedDetail>(siteEvents.challengeSolved, {
       detail: { challengeId },
     }),
   )
+
+  return didPersist
 }

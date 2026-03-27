@@ -9,19 +9,28 @@ import ChevronRight from '@lucide/astro/icons/chevron-right'
 import { marked } from 'marked'
 
 import ChallengePlayground from '@/components/ChallengePlayground.svelte'
+import ArticleStickyMeta from '@/components/ArticleStickyMeta.astro'
 import SolutionReveal from '@/components/SolutionReveal.svelte'
 import FilterableDirectory from '@/components/FilterableDirectory.svelte'
 import ArticleSection from '@/components/ui/ArticleSection.astro'
 import ContentArticleHeader from '@/components/ui/ContentArticleHeader.astro'
+import HeaderTagMeta from '@/components/ui/HeaderTagMeta.astro'
 import BaseLayout from '@/layouts/BaseLayout.astro'
 import { getArticleHrefFromEntry } from '@/lib/article-links'
 import { getChallengeLanguageLabel, getChallengeLevelLabel, sortChallenges } from '@/lib/challenge-meta'
 import { getChallengeHrefFromEntry, getChallengeIndexHref } from '@/lib/challenge-links'
 import { cn } from '@/lib/cn'
-import { resolveLocalizedEntryHrefMap, resolveLocaleMap } from '@/lib/locale-config'
-import { getSiteCopy, getSiteLocale } from '@/lib/site-copy'
+import { resolveActiveRelatedArticles } from '@/lib/content-integrity'
+import { articleReadingDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
+import { formatEditorialDate } from '@/lib/format-date'
+import { getLocalePath, resolveLocalizedEntryHrefMap, resolveLocaleMap } from '@/lib/locale-config'
+import { resolveEntityOgImageUrl } from '@/lib/og-image'
+import { createBreadcrumbSchema, createLearningResourceSchema } from '@/lib/seo'
+import { getPageTypeLabel } from '@/lib/section-manifest'
+import { getSiteCopy, getSiteDateLocale, getSiteLocale } from '@/lib/site-copy'
 import { getActiveChallengesByLocale, getArticleCollection, getChallengeCollection } from '@/lib/site-content'
 import { ui } from '@/lib/ui'
+import { toHashtagLabel } from '@/lib/article-meta'
 
 type Props = {
   challenge: CollectionEntry<'challenges'>
@@ -31,6 +40,7 @@ const { challenge } = Astro.props
 const { Content } = await render(challenge)
 const locale = getSiteLocale(challenge.data.locale)
 const copy = getSiteCopy(locale)
+const challengeSectionLabel = getPageTypeLabel('challenges', locale)
 const allChallenges = await getChallengeCollection()
 const localizedChallenges = allChallenges.filter(
   (entry) => entry.data.challengeId === challenge.data.challengeId && entry.data.status === 'active',
@@ -52,12 +62,7 @@ const nextChallenge =
     ? activeChallenges[currentChallengeIndex + 1]
     : null
 const allArticles = await getArticleCollection()
-const relatedArticles = allArticles.filter(
-  (entry) =>
-    entry.data.locale === challenge.data.locale &&
-    entry.data.status === 'active' &&
-    challenge.data.relatedArticleIds.includes(entry.data.articleId),
-)
+const relatedArticles = resolveActiveRelatedArticles(allArticles, challenge.data.locale, challenge.data.relatedArticleIds)
 const explicitRelatedChallenges = challenge.data.relatedChallengeIds.flatMap((challengeId) => {
   const relatedEntry = activeChallenges.find((entry) => entry.data.challengeId === challengeId)
 
@@ -75,7 +80,8 @@ const relatedChallenges = [...explicitRelatedChallenges, ...fallbackRelatedChall
 ).slice(0, 3)
 const levelLabel = getChallengeLevelLabel(challenge.data.level, locale)
 const solutionLanguageLabel = getChallengeLanguageLabel(challenge.data.solutionLanguage)
-const detailMeta = `${copy.challenge.estimatedTime}: ${challenge.data.estimatedMinutes} min • ${copy.challenge.solutionLanguage}: ${solutionLanguageLabel}`
+const dateLocale = getSiteDateLocale(locale)
+const formattedPubDate = formatEditorialDate(challenge.data.pubDate, dateLocale)
 const complexityTimeLabel = copy.challenge.complexityTimeLabel
 const complexitySpaceLabel = copy.challenge.complexitySpaceLabel
 const problemStatementHtml = challenge.data.problemStatement
@@ -84,6 +90,34 @@ const problemStatementHtml = challenge.data.problemStatement
 const walkthroughHtml = challenge.data.walkthrough
   ? await marked.parse(challenge.data.walkthrough)
   : null
+const headerTagItems = challenge.data.tags
+  .map((tag) => ({
+    label: toHashtagLabel(tag, locale) ?? tag,
+  }))
+  .filter((item, index, items) => items.findIndex((candidate) => candidate.label === item.label) === index)
+const challengeGuideHeadings = [
+  problemStatementHtml
+    ? {
+        depth: 2,
+        slug: 'read-challenge',
+        text: copy.challenge.readChallenge,
+      }
+    : null,
+  challenge.data.whatToNotice.length > 0
+    ? {
+        depth: 2,
+        slug: 'what-to-notice',
+        text: copy.challenge.whatToNotice,
+      }
+    : null,
+  challenge.data.commonMistakes.length > 0
+    ? {
+        depth: 2,
+        slug: 'common-mistakes',
+        text: copy.challenge.commonMistakes,
+      }
+    : null,
+].filter((item): item is { depth: 2; slug: string; text: string } => Boolean(item))
 const relatedArticleItems = relatedArticles.map((entry) => ({
   href: getArticleHrefFromEntry(entry),
   tags: [],
@@ -94,6 +128,44 @@ const relatedChallengeItems = relatedChallenges.map((entry) => ({
   tags: [],
   title: entry.data.title,
 }))
+const challengeUrl = new URL(Astro.url.pathname, Astro.site ?? Astro.url).toString()
+const socialImage = resolveEntityOgImageUrl(
+  Astro.site ?? Astro.url,
+  'challenges',
+  locale,
+  challenge.data.challengeId,
+)
+const challengeStructuredData = [
+  createLearningResourceSchema({
+    dateModified: challenge.data.updatedDate?.toISOString() ?? null,
+    datePublished: challenge.data.pubDate.toISOString(),
+    description: challenge.data.description,
+    estimatedMinutes: challenge.data.estimatedMinutes,
+    keywords: [...challenge.data.tags, challenge.data.typeLabel, solutionLanguageLabel],
+    level: challenge.data.level,
+    locale,
+    resourceType: challenge.data.typeLabel,
+    teaches: challenge.data.whatToNotice,
+    title: challenge.data.title,
+    url: challengeUrl,
+  }),
+  createBreadcrumbSchema({
+    items: [
+      {
+        name: copy.layout.home,
+        url: new URL(getLocalePath(locale), Astro.site ?? Astro.url).toString(),
+      },
+      {
+        name: challengeSectionLabel,
+        url: new URL(getChallengeIndexHref(locale), Astro.site ?? Astro.url).toString(),
+      },
+      {
+        name: challenge.data.title,
+        url: challengeUrl,
+      },
+    ],
+  }),
+]
 ---
 
 <BaseLayout
@@ -101,56 +173,103 @@ const relatedChallengeItems = relatedChallenges.map((entry) => ({
   contentWidth="wide"
   description={challenge.data.description}
   localeHrefs={localeHrefs}
+  socialImage={socialImage}
+  structuredData={challengeStructuredData}
   title={challenge.data.title}
 >
   <article class="w-full pb-11">
     <ContentArticleHeader
-      createdMeta={`${challenge.data.typeLabel} • ${levelLabel}`}
+      className="article-header-wide-shell"
+      createdMeta={formattedPubDate}
+      createdMetaClassName={ui.articleHeaderTagTone}
       description={challenge.data.description}
-      meta={detailMeta}
       title={challenge.data.title}
+    >
+      <p class={`mt-3 ${ui.articleHeaderTagTone}`}>
+        {challenge.data.typeLabel}
+        <span aria-hidden="true" class="px-2">•</span>
+        {levelLabel}
+        <span aria-hidden="true" class="px-2">•</span>
+        {challenge.data.estimatedMinutes} min
+        <span aria-hidden="true" class="px-2">•</span>
+        {solutionLanguageLabel}
+      </p>
+      <HeaderTagMeta items={headerTagItems} />
+    </ContentArticleHeader>
+
+    <ArticleStickyMeta
+      className="article-reading-shell mx-auto my-5 w-full xl:hidden"
+      categoryLabel={challenge.data.typeLabel}
+      headings={challengeGuideHeadings}
+      levelLabel={levelLabel}
+      locale={locale}
+      readingTimeMinutes={challenge.data.estimatedMinutes}
+      showCompletionInPlace={false}
     />
 
-    {problemStatementHtml ? (
-      <div class="mx-auto mt-6 max-w-4xl">
-        <div class="article-prose" set:html={problemStatementHtml} />
+    <div class={ui.articleRailLayout}>
+      <div class={ui.articleRailLayoutMain}>
+        <div {...getDataHookAttributes(articleReadingDomHooks.content)}>
+          {problemStatementHtml ? (
+            <section class="article-reading-shell mx-auto mt-6 w-full scroll-mt-28" id="read-challenge">
+              <div class="article-prose" set:html={problemStatementHtml} />
+            </section>
+          ) : null}
+
+          {challenge.data.whatToNotice.length > 0 ? (
+            <section class="article-reading-shell mx-auto mt-6 w-full scroll-mt-28" id="what-to-notice">
+              <section class={cn(ui.panel, 'grid gap-3 p-5')}>
+                <p class={ui.eyebrow}>{copy.challenge.whatToNotice}</p>
+                <ul class="grid list-disc gap-2 pl-6 text-[0.98rem] leading-7 text-site-ink-soft marker:text-site-link-hover">
+                  {challenge.data.whatToNotice.map((item) => (
+                    <li class="pl-1">{item}</li>
+                  ))}
+                </ul>
+              </section>
+            </section>
+          ) : null}
+
+          {challenge.data.commonMistakes.length > 0 ? (
+            <section class="article-reading-shell mx-auto mt-6 w-full scroll-mt-28" id="common-mistakes">
+              <section class={cn(ui.panel, 'grid gap-3 p-5')}>
+                <p class={ui.eyebrow}>{copy.challenge.commonMistakes}</p>
+                <ul class="grid list-disc gap-2 pl-6 text-[0.98rem] leading-7 text-site-ink-soft marker:text-site-link-hover">
+                  {challenge.data.commonMistakes.map((item) => (
+                    <li class="pl-1">{item}</li>
+                  ))}
+                </ul>
+              </section>
+            </section>
+          ) : null}
+
+          {walkthroughHtml ? (
+            <div class="article-reading-shell mx-auto mt-8 w-full">
+              <div class="article-prose" set:html={walkthroughHtml} />
+            </div>
+          ) : null}
+
+          <div aria-hidden="true" class="h-px" {...getDataHookAttributes(articleReadingDomHooks.end)}></div>
+        </div>
       </div>
-    ) : null}
 
-    <div class="mx-auto mt-6 grid max-w-4xl gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-      {challenge.data.whatToNotice.length > 0 ? (
-        <section class={cn(ui.panel, 'grid gap-3 p-5')}>
-          <p class={ui.eyebrow}>{copy.challenge.whatToNotice}</p>
-          <ul class="grid gap-2 pl-5 text-[0.98rem] leading-7 text-site-ink-soft">
-            {challenge.data.whatToNotice.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
-
-      {challenge.data.commonMistakes.length > 0 ? (
-        <section class={cn(ui.panel, 'grid gap-3 p-5')}>
-          <p class={ui.eyebrow}>{copy.challenge.commonMistakes}</p>
-          <ul class="grid gap-2 pl-5 text-[0.98rem] leading-7 text-site-ink-soft">
-            {challenge.data.commonMistakes.map((item) => (
-              <li>{item}</li>
-            ))}
-          </ul>
-        </section>
-      ) : null}
+      <div class={ui.articleRailLayoutGuide}>
+        <ArticleStickyMeta
+          categoryLabel={challenge.data.typeLabel}
+          headings={challengeGuideHeadings}
+          levelLabel={levelLabel}
+          locale={locale}
+          readingTimeMinutes={challenge.data.estimatedMinutes}
+          showCompletionInPlace={false}
+        />
+      </div>
     </div>
-
-    {walkthroughHtml ? (
-      <div class="mx-auto mt-8 max-w-4xl">
-        <div class="article-prose" set:html={walkthroughHtml} />
-      </div>
-    ) : null}
 
     {challenge.data.starterCode ? (
       <ChallengePlayground
+        className="article-detail-shell mt-8"
         client:visible
         challengeId={challenge.data.challengeId}
+        locale={locale}
         starterCode={challenge.data.starterCode}
         testCases={challenge.data.testCases}
         solutionLanguage={challenge.data.solutionLanguage}
@@ -160,6 +279,7 @@ const relatedChallengeItems = relatedChallenges.map((entry) => ({
     ) : null}
 
     <SolutionReveal
+      className="article-detail-shell mt-8"
       client:visible
       challengeId={challenge.data.challengeId}
       copy={copy.solutionReveal}
@@ -182,20 +302,8 @@ const relatedChallengeItems = relatedChallenges.map((entry) => ({
       </div>
     </SolutionReveal>
 
-    {relatedChallengeItems.length > 0 ? (
-      <ArticleSection bodyClass="mt-4" title={copy.challenge.relatedChallenges}>
-        <FilterableDirectory items={relatedChallengeItems} layout="cards" />
-      </ArticleSection>
-    ) : null}
-
-    {relatedArticleItems.length > 0 ? (
-      <ArticleSection bodyClass="mt-4" title={copy.challenge.relatedArticles}>
-        <FilterableDirectory items={relatedArticleItems} layout="cards" />
-      </ArticleSection>
-    ) : null}
-
     {previousChallenge || nextChallenge ? (
-      <section class={cn(ui.articleSection, 'grid gap-4 md:grid-cols-2 md:items-stretch')}>
+      <section class="article-detail-shell mx-auto mt-8 grid w-full gap-4 border-t border-article-rule pt-8 md:grid-cols-2 md:items-stretch">
         {nextChallenge ? (
           <a
             class={cn(ui.navCardLink, 'justify-between md:order-3')}
@@ -227,6 +335,18 @@ const relatedChallengeItems = relatedChallenges.map((entry) => ({
           </a>
         ) : <div class="md:order-1" />}
       </section>
+    ) : null}
+
+    {relatedChallengeItems.length > 0 ? (
+      <ArticleSection bodyClass="mt-4" sectionClass={ui.articleUtilitySection} title={copy.challenge.relatedChallenges}>
+        <FilterableDirectory items={relatedChallengeItems} layout="cards" />
+      </ArticleSection>
+    ) : null}
+
+    {relatedArticleItems.length > 0 ? (
+      <ArticleSection bodyClass="mt-4" sectionClass={ui.articleUtilitySection} title={copy.challenge.relatedArticles}>
+        <FilterableDirectory items={relatedArticleItems} layout="cards" />
+      </ArticleSection>
     ) : null}
   </article>
 </BaseLayout>

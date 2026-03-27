@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
 
+  import { syncArticleCompletionSummaryRecommendations } from '@/lib/article-completion-summary'
   import { completedArticlesSetStore } from '@/lib/completed-articles-store'
   import {
     articleCompletionPanelDomHooks,
@@ -318,6 +319,8 @@
     window.addEventListener(readingResetEvent, handleReadingReset)
 
     const unsubscribeCompletedArticles = completedArticlesSetStore.subscribe((completedSet) => {
+      syncArticleCompletionSummaryRecommendations(root, completedSet)
+
       if (completionId) {
         hasCompletedReading = completedSet.has(completionId)
       }

@@ -4,9 +4,9 @@
   color-scheme: dark;
 
   /* Primitive palette and motion */
-  --site-base-bg: #0b1120;
-  --site-base-surface: #16213e;
-  --site-base-surface-strong: #0f3460;
+  --site-base-bg: #1a1b26;
+  --site-base-surface: #1f2335;
+  --site-base-surface-strong: #24283b;
   --site-base-ink: #e0e0ff;
   --site-base-ink-bright: #f5f7ff;
   --site-base-ink-soft: rgba(224, 224, 255, 0.76);
@@ -26,10 +26,10 @@
   --site-bg: var(--site-base-bg);
   --site-surface: var(--site-base-surface);
   --site-surface-strong: var(--site-base-surface-strong);
-  --site-panel: color-mix(in srgb, var(--site-surface) 84%, var(--site-surface-strong));
-  --site-card: color-mix(in srgb, var(--site-surface) 68%, var(--site-surface-strong));
-  --site-panel-muted: color-mix(in srgb, var(--site-panel) 55%, transparent);
-  --site-panel-spotlight: color-mix(in srgb, var(--site-bg) 28%, transparent);
+  --site-panel: color-mix(in srgb, var(--site-surface) 86%, var(--site-surface-strong));
+  --site-card: color-mix(in srgb, var(--site-surface) 72%, var(--site-surface-strong));
+  --site-panel-muted: color-mix(in srgb, var(--site-surface) 74%, var(--site-bg));
+  --site-panel-spotlight: color-mix(in srgb, var(--site-surface-strong) 68%, var(--site-bg));
   --site-panel-border: color-mix(in srgb, var(--site-line) 55%, transparent);
   --site-line: var(--site-base-line);
   --site-line-strong: var(--site-base-line-strong);
@@ -40,8 +40,8 @@
   --site-accent: var(--site-base-accent);
   --site-accent-soft: var(--site-base-surface-strong);
   --site-link-hover: var(--site-base-link);
-  --site-hover-surface: color-mix(in srgb, var(--site-surface-strong) 72%, var(--site-surface));
-  --site-control-hover: color-mix(in srgb, var(--site-surface-strong) 88%, white 12%);
+  --site-hover-surface: color-mix(in srgb, var(--site-surface-strong) 82%, var(--site-surface));
+  --site-control-hover: color-mix(in srgb, var(--site-surface-strong) 90%, var(--site-link-hover) 10%);
   --site-success: var(--site-base-success);
   --site-progress-track: color-mix(in srgb, var(--site-line) 70%, transparent);
   --site-progress-track-strong: color-mix(in srgb, var(--site-bg) 72%, transparent);
@@ -79,6 +79,14 @@
   --site-filter-tone-6-dark: #274737;
   --site-filter-tone-6-light: #e2f2ea;
   --site-content-width: 58rem;
+  --site-article-rail-width: 270px;
+  --site-article-detail-gap: 1.75rem;
+  --site-article-detail-shell-measure: calc(
+    var(--site-reading-measure) + var(--site-article-rail-width) + var(--site-article-detail-gap)
+  );
+  --site-reading-measure: 62ch;
+  --site-reading-shell-measure: 68ch;
+  --site-utility-shell-measure: 55rem;
   --article-font-sans:
     "Helvetica Neue",
     "SF Pro Display",
@@ -89,7 +97,7 @@
     serif;
   --article-heading-color: var(--site-base-ink-bright);
   --article-copy-color: var(--site-base-ink);
-  --article-body-color: rgba(224, 224, 255, 0.82);
+  --article-body-color: rgb(192, 202, 245);
   --article-rule: rgba(124, 124, 255, 0.16);
   --article-surface: color-mix(in srgb, rgba(15, 52, 96, 0.1) 96%, #f3f5f8);
   --article-inline-code-bg: color-mix(in srgb, var(--site-surface-strong) 54%, rgba(11, 17, 32, 0.82));
@@ -102,6 +110,7 @@
   --radius-sm: 14px;
   --radius: 16px;
   --radius-lg: 20px;
+  --site-transition-smooth: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @theme {
@@ -109,7 +118,6 @@
 }
 
 @theme inline {
-  --font-head: "Archivo Black", sans-serif;
   --font-sans: var(--article-font-sans);
 
   --color-article-body: var(--article-body-color);
@@ -150,6 +158,14 @@
   --color-site-surface-strong: var(--site-surface-strong);
 }
 
+html[data-js="false"] [data-js-only="true"] {
+  display: none !important;
+}
+
+html[data-js="true"] [data-no-js-only="true"] {
+  display: none !important;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -161,11 +177,52 @@
     scrollbar-width: thin;
   }
 
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   body {
     @apply m-0 min-w-80 font-sans text-site-ink antialiased;
-    background:
-      radial-gradient(circle at top left, rgba(15, 52, 96, 0.36), transparent 30%),
-      linear-gradient(180deg, #0b1120 0%, #0d1527 48%, #0a1020 100%);
+    background: #1a1b26
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0 auto auto 0;
+    z-index: 70;
+    width: 100%;
+    height: 3px;
+    transform: scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--site-link-hover) 74%, white 26%) 0%,
+      color-mix(in srgb, var(--site-accent) 88%, white 12%) 55%,
+      color-mix(in srgb, var(--site-base-ink-bright) 50%, var(--site-link-hover) 50%) 100%
+    );
+    box-shadow: 0 0 24px color-mix(in srgb, var(--site-link-hover) 28%, transparent);
+    transition:
+      transform 320ms var(--site-transition-smooth),
+      opacity 180ms ease;
+  }
+
+  html.is-page-transitioning body::before {
+    transform: scaleX(1);
+    opacity: 1;
   }
 
   a {
@@ -225,6 +282,66 @@
   }
 }
 
+@keyframes site-view-transition-enter {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes site-view-transition-exit {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+.site-transition-content {
+  view-transition-name: site-page-content;
+}
+
+::view-transition-group(root) {
+  animation-duration: 1ms;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-group(site-page-content) {
+  animation-duration: 120ms;
+}
+
+::view-transition-old(site-page-content) {
+  animation: 120ms ease both site-view-transition-exit;
+}
+
+::view-transition-new(site-page-content) {
+  animation: 120ms ease both site-view-transition-enter;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::before {
+    transition: none;
+  }
+
+  ::view-transition-group(root),
+  ::view-transition-old(root),
+  ::view-transition-new(root),
+  ::view-transition-group(site-page-content),
+  ::view-transition-old(site-page-content),
+  ::view-transition-new(site-page-content) {
+    animation: none !important;
+  }
+}
+
 code,
 pre {
   font-family:
@@ -235,8 +352,42 @@ pre {
 }
 
 @layer components {
+  .site-content-shell {
+    max-width: min(100%, var(--site-article-detail-shell-measure));
+  }
+
+  .article-reading-shell {
+    max-width: min(100%, var(--site-reading-shell-measure));
+  }
+
+  .article-detail-shell {
+    max-width: min(100%, var(--site-article-detail-shell-measure));
+  }
+
+  .article-header-wide-shell {
+    max-width: min(100%, var(--site-article-detail-shell-measure));
+  }
+
+  .article-utility-shell {
+    max-width: min(100%, var(--site-utility-shell-measure));
+  }
+
+  @media (min-width: 80rem) {
+    .article-detail-grid {
+      display: grid;
+      grid-template-columns: minmax(0, var(--site-reading-measure)) var(--site-article-rail-width);
+      column-gap: var(--site-article-detail-gap);
+      align-items: start;
+    }
+  }
+
   .article-prose {
-    @apply mx-auto max-w-208 text-[1.125rem] leading-7 text-article-body;
+    @apply mx-auto w-full text-article-body;
+    max-width: min(100%, var(--site-reading-measure));
+    color: var(--article-body-color);
+    font-size: 1.06rem;
+    letter-spacing: 0.004em;
+    line-height: 1.78;
   }
 
   .article-prose > :first-child {
@@ -244,31 +395,64 @@ pre {
   }
 
   .article-prose h2 {
-    @apply mt-8 mb-1.5 font-sans text-[clamp(1.625rem,3vw,1.75rem)] font-semibold leading-[1.3] tracking-[0.025em] text-article-heading;
+    margin-top: 3rem;
+    margin-bottom: 0.9rem;
+    color: #7aa2f7;
+    font-size: 1.65rem;
+    font-weight: 600;
+    line-height: 1.28;
+    letter-spacing: 0.01em;
     scroll-margin-top: 7rem;
   }
 
   .article-prose h3 {
-    @apply mt-7 mb-2 font-sans text-[clamp(1.25rem,2.3vw,1.5rem)] font-semibold leading-[1.35] text-article-heading;
+    margin-top: 2.4rem;
+    margin-bottom: 0.8rem;
+    color: #7aa2f7;
+    font-size: 1.3rem;
+    font-weight: 600;
+    line-height: 1.35;
     scroll-margin-top: 7rem;
   }
 
-  .article-prose p,
-  .article-prose li {
-    @apply text-[1.125rem] leading-7 text-article-body;
+  .article-prose :where(p, li, dd, figcaption, td, th) {
+    color: var(--article-body-color);
+    font-size: inherit;
+    line-height: inherit;
+  }
+
+  .article-prose :where(ul, ol) {
+    color: var(--article-body-color);
   }
 
   .article-prose p {
-    @apply mb-4.5;
+    margin-bottom: 2em;
   }
 
   .article-prose ul,
   .article-prose ol {
-    @apply mb-5 pl-6;
+    margin-bottom: 2em;
+    padding-left: 1.5rem;
+  }
+
+  .article-prose ul {
+    list-style-type: disc;
+  }
+
+  .article-prose ol {
+    list-style-type: decimal;
   }
 
   .article-prose li + li {
     margin-top: 0.4rem;
+  }
+
+  .article-prose li > :where(p, ul, ol):last-child {
+    margin-bottom: 0;
+  }
+
+  .article-prose li::marker {
+    color: color-mix(in srgb, var(--article-link) 72%, var(--article-copy-color) 28%);
   }
 
   .article-prose blockquote {
@@ -276,7 +460,7 @@ pre {
   }
 
   .article-prose strong {
-    @apply text-article-heading;
+    color: inherit;
   }
 
   .article-prose pre {
@@ -439,15 +623,15 @@ pre {
   }
 
   .article-toc-link.is-read {
-    color: var(--site-ink-soft);
+    color: var(--site-line-strong);
     background: transparent;
-    box-shadow: inset 2px 0 0 color-mix(in srgb, var(--site-line) 70%, transparent);
+    box-shadow: none;
   }
 
   .article-toc-link.is-active {
-    color: var(--site-link-hover);
-    background: color-mix(in srgb, var(--site-accent) 5%, transparent);
-    box-shadow: inset -2px 0 0 color-mix(in srgb, var(--site-link-hover) 78%, transparent);
+    color: var(--site-link-hover) !important;
+    background: transparent;
+    box-shadow: none;
   }
 
   .article-reading-progress.is-complete .article-reading-progress-bar {
@@ -481,9 +665,8 @@ pre {
 
 @media (min-width: 64rem) {
   .article-prose {
-    max-width: 55rem;
-    font-size: 1.2rem;
-    line-height: 1.95;
+    font-size: 1.14rem;
+    line-height: 1.84;
   }
 
   .article-prose h2 {
@@ -494,10 +677,9 @@ pre {
     font-size: clamp(1.38rem, 1.9vw, 1.625rem);
   }
 
-  .article-prose p,
-  .article-prose li {
-    font-size: 1.2rem;
-    line-height: 1.95;
+  .article-prose :where(p, li, dd, figcaption, td, th) {
+    font-size: inherit;
+    line-height: inherit;
   }
 
   .search-pagefind {

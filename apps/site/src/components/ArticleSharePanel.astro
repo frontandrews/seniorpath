@@ -11,13 +11,15 @@ import { articleShareDomHooks, getDataHookAttributes, sharedDomHooks } from '@/l
 import { ui } from '@/lib/ui'
 
 type Props = {
+  className?: string
   description: string
   locale: SiteLocale
   title: string
+  useDetailShell?: boolean
   url: string
 }
 
-const { description, locale, title, url } = Astro.props
+const { className, description, locale, title, useDetailShell = false, url } = Astro.props
 const copy = getSiteCopy(locale)
 const shareText = `${title}\n\n${description}\n\n${url}`
 const whatsappHref = `https://wa.me/?text=${encodeURIComponent(shareText)}`
@@ -25,13 +27,17 @@ const twitterHref = `https://twitter.com/intent/tweet?text=${encodeURIComponent(
 const linkedinHref = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`
 const iconButtonClass = ui.iconButton
 const controllerId = randomUUID()
+const baseSectionClass = useDetailShell
+  ? 'article-detail-shell mx-auto mt-8 w-full border-t border-article-rule pt-8'
+  : ui.articleUtilitySection
 ---
 
 <section
-  class={cn(ui.articleSection, 'grid gap-3 px-0 py-0')}
+  class={cn(baseSectionClass, className, 'grid gap-3 px-0 py-0')}
   {...getDataHookAttributes(articleShareDomHooks.root)}
   {...getDataHookAttributes(sharedDomHooks.controllerId, controllerId)}
   {...getDataHookAttributes(articleShareDomHooks.copyLinkError, copy.article.copyLinkError)}
+  {...getDataHookAttributes(articleShareDomHooks.copyLinkManual, copy.article.copyLinkManual)}
   {...getDataHookAttributes(articleShareDomHooks.copyLinkSuccess, copy.article.copyLinkSuccess)}
   {...getDataHookAttributes(articleShareDomHooks.description, description)}
   {...getDataHookAttributes(articleShareDomHooks.fallback, copy.article.shareFallback)}
@@ -47,6 +53,7 @@ const controllerId = randomUUID()
       <button
         aria-label={copy.article.share}
         class={iconButtonClass}
+        data-js-only="true"
         {...getDataHookAttributes(articleShareDomHooks.nativeButton)}
         title={copy.article.share}
         type="button"
@@ -90,6 +97,7 @@ const controllerId = randomUUID()
       <button
         aria-label={copy.article.copyLink}
         class={iconButtonClass}
+        data-js-only="true"
         {...getDataHookAttributes(articleShareDomHooks.copyButton)}
         title={copy.article.copyLink}
         type="button"
@@ -105,6 +113,22 @@ const controllerId = randomUUID()
     class="hidden text-center text-sm leading-6 text-site-ink-soft lg:text-[0.96rem]"
     {...getDataHookAttributes(articleShareDomHooks.feedback)}
   />
+
+  <div
+    class="hidden grid gap-2"
+    {...getDataHookAttributes(articleShareDomHooks.manualSection)}
+  >
+    <p class="text-center text-sm leading-6 text-site-ink-soft lg:text-[0.96rem]">
+      {copy.article.copyLinkManual}
+    </p>
+    <input
+      class="w-full rounded-xs border border-site-line bg-site-bg px-3 py-2 text-center font-mono text-xs text-site-ink outline-none transition-colors duration-150 focus:border-site-link-hover lg:text-[0.88rem]"
+      readonly
+      type="text"
+      value={url}
+      {...getDataHookAttributes(articleShareDomHooks.manualInput)}
+    />
+  </div>
 
   <ArticleSharePanelClient client:idle controllerId={controllerId} />
 </section>

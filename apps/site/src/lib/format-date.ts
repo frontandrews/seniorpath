@@ -3,10 +3,11 @@ export function formatEditorialDate(
   locale: string,
   options: Intl.DateTimeFormatOptions = {},
 ) {
+  const isCurrentUtcYear = value.getUTCFullYear() === new Date().getUTCFullYear()
   const resolvedOptions: Intl.DateTimeFormatOptions = {
     day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+    month: isCurrentUtcYear ? 'short' : 'long',
+    ...(isCurrentUtcYear ? {} : { year: 'numeric' }),
     timeZone: 'UTC',
     ...options,
   }

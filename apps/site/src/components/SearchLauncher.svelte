@@ -2,6 +2,7 @@
   import { install as installHotkey } from '@github/hotkey'
   import { Command, Dialog } from 'bits-ui'
   import { onMount } from 'svelte'
+  import { getDataHookAttributes, searchLauncherDomHooks } from '@/lib/dom-hooks'
 
   import {
     getSearchResultGroupLabel,
@@ -17,6 +18,7 @@
     hint: string
     loading: string
     noResults: string
+    noJsFallback: string
     placeholder: string
     shortcut: string
     title: string
@@ -32,6 +34,8 @@
     fallbackGroupLabel?: string
     isDev?: boolean
     mobileTriggerClass?: string
+    noJsHref?: string
+    noJsLabel?: string
     searchableSections?: SiteSearchSection[]
     searchResultLinkClass?: string
   }
@@ -45,6 +49,8 @@
     fallbackGroupLabel = '',
     isDev = false,
     mobileTriggerClass = '',
+    noJsHref = '/',
+    noJsLabel = '',
     searchableSections = [],
     searchResultLinkClass = '',
   }: Props = $props()
@@ -185,56 +191,65 @@
   })
 </script>
 
-<Dialog.Root bind:open={getOpen, setOpen}>
-  <button
-    bind:this={desktopTriggerEl}
-    aria-expanded={isOpen}
-    class={desktopTriggerClass}
-    data-hotkey="Mod+k"
-    onclick={() => setOpen(true)}
-    type="button"
-  >
-    <span class="inline-flex items-center gap-2">
+<div data-js-only="true">
+  <Dialog.Root bind:open={getOpen, setOpen}>
+    <button
+      bind:this={desktopTriggerEl}
+      aria-controls="site-search-dialog"
+      aria-expanded={isOpen}
+      aria-haspopup="dialog"
+      class={desktopTriggerClass}
+      data-hotkey="Mod+k"
+      onclick={() => setOpen(true)}
+      {...getDataHookAttributes(searchLauncherDomHooks.desktopTrigger)}
+      type="button"
+    >
+      <span class="inline-flex items-center gap-2">
+        <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <span>{copy.placeholder}</span>
+      </span>
+      <span class="rounded-xs border border-site-line bg-site-surface px-1.5 py-0.5 text-[0.68rem] uppercase tracking-[0.08em] text-site-ink-muted lg:px-2 lg:py-[0.35rem] lg:text-[0.76rem]">
+        {copy.shortcut}
+      </span>
+    </button>
+
+    <button
+      aria-controls="site-search-dialog"
+      aria-expanded={isOpen}
+      aria-haspopup="dialog"
+      class={mobileTriggerClass}
+      onclick={() => setOpen(true)}
+      {...getDataHookAttributes(searchLauncherDomHooks.mobileTrigger)}
+      type="button"
+    >
       <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <circle cx="11" cy="11" r="7" />
         <path d="m20 20-3.5-3.5" />
       </svg>
-      <span>{copy.placeholder}</span>
-    </span>
-    <span class="rounded-xs border border-site-line bg-site-surface px-1.5 py-0.5 text-[0.68rem] uppercase tracking-[0.08em] text-site-ink-muted lg:px-2 lg:py-[0.35rem] lg:text-[0.76rem]">
-      {copy.shortcut}
-    </span>
-  </button>
+      <span class="sr-only">{copy.title}</span>
+    </button>
 
-  <button
-    aria-expanded={isOpen}
-    class={mobileTriggerClass}
-    onclick={() => setOpen(true)}
-    type="button"
-  >
-    <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <circle cx="11" cy="11" r="7" />
-      <path d="m20 20-3.5-3.5" />
-    </svg>
-    <span class="sr-only">{copy.title}</span>
-  </button>
-
-  <Dialog.Portal>
-    <Dialog.Overlay class="search-launcher-backdrop fixed inset-0 z-40 bg-site-overlay/70 backdrop-blur-[2px]" />
-    <Dialog.Content
-      class={`${dialogClass} fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-3xl -translate-x-1/2 -translate-y-1/2 overflow-hidden p-0 md:w-[calc(100%-3rem)]`}
-      onCloseAutoFocus={handleCloseAutoFocus}
-      onOpenAutoFocus={handleOpenAutoFocus}
-    >
-      <Dialog.Title class="sr-only">{copy.title}</Dialog.Title>
-      <Dialog.Description class="sr-only">{copy.hint}</Dialog.Description>
+    <Dialog.Portal>
+      <Dialog.Overlay class="search-launcher-backdrop fixed inset-0 z-40 bg-site-overlay/70 backdrop-blur-[2px]" />
+      <Dialog.Content
+        class={`${dialogClass} fixed inset-0 z-50 overflow-hidden p-0 nav:left-1/2 nav:top-[25%] nav:inset-auto nav:w-[calc(100%-3rem)] nav:-translate-x-1/2 nav:-translate-y-1/2`}
+        id="site-search-dialog"
+        onCloseAutoFocus={handleCloseAutoFocus}
+        onOpenAutoFocus={handleOpenAutoFocus}
+        {...getDataHookAttributes(searchLauncherDomHooks.dialog)}
+      >
+        <Dialog.Title class="sr-only">{copy.title}</Dialog.Title>
+        <Dialog.Description class="sr-only">{copy.hint}</Dialog.Description>
 
       <Command.Root
         class="flex min-h-0 flex-1 flex-col"
         label={copy.title}
         shouldFilter={false}
       >
-        <div class="flex items-center gap-3 border-b border-site-line px-4 py-3 lg:gap-3.5 lg:px-5 lg:py-3.5">
+        <div class="flex items-center gap-3 border-b border-site-line px-4 py-3 pt-[max(0.75rem,env(safe-area-inset-top))] lg:gap-3.5 lg:px-5 lg:py-3.5">
           <svg aria-hidden="true" class="size-4 shrink-0 text-site-ink-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3.5-3.5" />
@@ -244,6 +259,7 @@
             bind:value={searchTerm}
             class="min-w-0 flex-1 bg-transparent text-[1rem] text-site-ink outline-none placeholder:text-site-ink-muted lg:text-[1.08rem]"
             placeholder={copy.placeholder}
+            {...getDataHookAttributes(searchLauncherDomHooks.input)}
           />
           <Dialog.Close
             class={`${mobileTriggerClass} nav:inline-flex`}
@@ -257,7 +273,7 @@
           </Dialog.Close>
         </div>
 
-        <div class="flex min-h-0 flex-1 flex-col gap-3 px-4 py-4 lg:gap-3.5 lg:px-5 lg:py-5">
+        <div class="flex min-h-0 flex-1 flex-col gap-3 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:gap-3.5 lg:px-5 lg:py-5">
           <p class={dialogHintClass}>{copy.hint}</p>
           <Command.List class="min-h-0 flex-1 overflow-hidden">
             <Command.Viewport class="grid min-h-0 flex-1 gap-2 overflow-y-auto pr-1">
@@ -268,10 +284,11 @@
               {:else if results.length > 0}
                 {#each results as result (result.url)}
                   <Command.LinkItem
-                    class={`${searchResultLinkClass} data-[selected]:border-site-accent/60 data-[selected]:bg-site-surface-raised`}
+                    class={`${searchResultLinkClass} data-selected:border-site-accent/60 data-selected:bg-site-surface-raised`}
                     href={result.url}
                     onSelect={() => setOpen(false)}
                     value={result.url}
+                    {...getDataHookAttributes(searchLauncherDomHooks.resultLink)}
                   >
                     <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-site-ink-muted lg:text-[0.76rem]">{getGroupLabel(result.url)}</span>
                     <span class="text-base font-semibold leading-[1.3] text-site-ink lg:text-[1.08rem]">{result.meta?.title ?? result.url}</span>
@@ -289,6 +306,34 @@
           </Command.List>
         </div>
       </Command.Root>
-    </Dialog.Content>
-  </Dialog.Portal>
-</Dialog.Root>
+      </Dialog.Content>
+    </Dialog.Portal>
+  </Dialog.Root>
+</div>
+
+<div class="flex items-center gap-2" data-no-js-only="true">
+  <a
+    class={desktopTriggerClass}
+    href={noJsHref}
+    {...getDataHookAttributes(searchLauncherDomHooks.noJsFallback)}
+  >
+    <span class="inline-flex items-center gap-2">
+      <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="7" />
+        <path d="m20 20-3.5-3.5" />
+      </svg>
+      <span>{noJsLabel}</span>
+    </span>
+  </a>
+  <a
+    aria-label={noJsLabel}
+    class={mobileTriggerClass}
+    href={noJsHref}
+  >
+    <svg aria-hidden="true" class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="7" />
+      <path d="m20 20-3.5-3.5" />
+    </svg>
+    <span class="sr-only">{noJsLabel}</span>
+  </a>
+</div>

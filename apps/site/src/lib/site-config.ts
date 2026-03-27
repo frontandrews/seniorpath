@@ -13,6 +13,11 @@ import {
   isSupportedSectionPageType,
   isSectionEnabled as isEnabledInManifest,
 } from '@/lib/section-manifest'
+import {
+  buildRobotsTxt,
+  resolveRobotsMetaContent,
+  resolveSiteDeployment,
+} from '@/lib/deployment-mode'
 
 type ConfigLocale = BrandLocale
 
@@ -45,24 +50,17 @@ const LEGAL_FALLBACKS = {
     'pt-br': 'o operador do site',
   },
   templateNotice: {
-    en: 'This is a starter template legal page. Review and adapt the policy and terms before publishing this project to production.',
-    'pt-br': 'Este texto e um modelo inicial de template. Revise e adapte a politica e os termos antes de publicar este projeto em producao.',
+    en: 'Replace operator identity, contact channels, jurisdiction, enabled providers, and retention details before publishing this site.',
+    'pt-br': 'Troque identidade do operador, canais de contato, jurisdicao, provedores habilitados e detalhes de retencao antes de publicar este site.',
   },
 } as const
+
+type ScriptDataAttributes = Record<string, string>
 
 function readPublicEnv(value: string | undefined) {
   const normalized = value?.trim()
 
   return normalized && normalized.length > 0 ? normalized : null
-}
-
-function normalizeSiteUrl(value: string | null) {
-  try {
-    const resolved = new URL(value ?? brandConfig.site.url)
-    return resolved.toString().replace(/\/$/, '')
-  } catch {
-    return brandConfig.site.url
-  }
 }
 
 function normalizeStorageNamespace(value: string | null) {
@@ -75,6 +73,32 @@ function normalizeStorageNamespace(value: string | null) {
   return normalized && normalized.length > 0 ? normalized : brandConfig.site.storageNamespace
 }
 
+function normalizeScriptDataAttributes(value: string | null): ScriptDataAttributes {
+  if (!value) {
+    return {}
+  }
+
+  try {
+    const parsed = JSON.parse(value)
+
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return {}
+    }
+
+    return Object.fromEntries(
+      Object.entries(parsed).flatMap(([key, entryValue]) => {
+        if (typeof entryValue !== 'string') {
+          return []
+        }
+
+        return [[key, entryValue]]
+      }),
+    )
+  } catch {
+    return {}
+  }
+}
+
 function getLocalizedFallback(locale: ConfigLocale, values: Record<string, string>) {
   const normalizedLocale = normalizeSiteLocale(locale)
 
@@ -85,7 +109,15 @@ function resolveLocalizedBrandText(locale: ConfigLocale, text: LocalizedBrandTex
   return getLocalizedValue(text, locale)
 }
 
+const siteDeployment = resolveSiteDeployment({
+  activeSiteUrl: readPublicEnv(import.meta.env.SITE),
+  configuredSiteUrl: readPublicEnv(import.meta.env.PUBLIC_SITE_URL) ?? brandConfig.site.url,
+})
+
 export const siteConfig = {
+  author: {
+    ...brandConfig.author,
+  },
   features: { ...brandConfig.features },
   home: {
     ...brandConfig.home,
@@ -93,6 +125,16 @@ export const siteConfig = {
   integrations: {
     comments: {
       ...brandConfig.integrations.comments,
+    },
+    observability: {
+      ...brandConfig.integrations.observability,
+      enabled:
+        brandConfig.integrations.observability.enabled
+        || Boolean(readPublicEnv(import.meta.env.PUBLIC_OBSERVABILITY_SCRIPT_SRC)),
+      scriptDataAttributes: normalizeScriptDataAttributes(
+        readPublicEnv(import.meta.env.PUBLIC_OBSERVABILITY_SCRIPT_DATA_JSON),
+      ),
+      scriptSrc: readPublicEnv(import.meta.env.PUBLIC_OBSERVABILITY_SCRIPT_SRC),
     },
     newsletter: {
       ...brandConfig.integrations.newsletter,
@@ -113,20 +155,35 @@ export const siteConfig = {
     description:
       readPublicEnv(import.meta.env.PUBLIC_SITE_DESCRIPTION) ?? brandConfig.site.description,
     name: readPublicEnv(import.meta.env.PUBLIC_SITE_NAME) ?? brandConfig.site.name,
-    siteUrl: normalizeSiteUrl(readPublicEnv(import.meta.env.PUBLIC_SITE_URL)),
+    productionSiteUrl: siteDeployment.configuredSiteUrl,
+    siteUrl: siteDeployment.siteUrl,
     storageNamespace: normalizeStorageNamespace(
       readPublicEnv(import.meta.env.PUBLIC_STORAGE_NAMESPACE),
     ),
   },
 } as const
 
+export const siteAppearance = {
+  backgroundColor: 'rgb(11 17 32)',
+  themeColor: 'rgb(11 17 32)',
+} as const
+
+export const siteAssetPaths = {
+  favicon: '/favicon.svg',
+  manifest: '/manifest.webmanifest',
+} as const
+
 export const siteUrls = {
   giscusTheme: new URL('/giscus-theme.css?v=1', `${siteConfig.site.siteUrl}/`).toString(),
+  icon: new URL('/icon.svg', `${siteConfig.site.siteUrl}/`).toString(),
+  llms: new URL('/llms.txt', `${siteConfig.site.siteUrl}/`).toString(),
   socialImage: new URL('/og-image.svg', `${siteConfig.site.siteUrl}/`).toString(),
   sitemap: new URL('/sitemap-index.xml', `${siteConfig.site.siteUrl}/`).toString(),
 } as const
 
 export const siteStorageKeys = {
+  challengeCodePrefix: `${siteConfig.site.storageNamespace}.challenge-code`,
+  challengeSolvedPrefix: `${siteConfig.site.storageNamespace}.challenge-solved`,
   completedArticles: `${siteConfig.site.storageNamespace}.completed-articles.v1`,
   localePreference: `${siteConfig.site.storageNamespace}.locale-preference.v1`,
 } as const
@@ -203,8 +260,53 @@ export function getNewsletterActionUrl() {
   return configuredAction
 }
 
+export function getSiteAuthor() {
+  return siteConfig.author
+}
+
+export function getObservabilityScriptConfig() {
+  if (!siteConfig.integrations.observability.enabled) {
+    return null
+  }
+
+  if (!siteConfig.integrations.observability.scriptSrc) {
+    return null
+  }
+
+  return {
+    dataAttributes: siteConfig.integrations.observability.scriptDataAttributes,
+    src: siteConfig.integrations.observability.scriptSrc,
+  }
+}
+
 export function hasCommentsEnabled() {
   return siteConfig.features.comments && siteConfig.integrations.comments.enabled
+}
+
+export function shouldAdvertiseSiteFeed() {
+  return siteDeployment.shouldAdvertiseFeed
+}
+
+export function getSiteRobotsMetaContent(pageNoindex = false) {
+  return resolveRobotsMetaContent({
+    pageNoindex,
+    siteShouldIndex: siteDeployment.shouldIndex,
+  })
+}
+
+export function getRobotsTxtContent() {
+  return buildRobotsTxt({
+    shouldIndex: siteDeployment.shouldIndex,
+    sitemapUrl: siteUrls.sitemap,
+  })
+}
+
+export function getFeedResponseHeaders() {
+  return siteDeployment.shouldIndex
+    ? {}
+    : {
+        'X-Robots-Tag': 'noindex, nofollow',
+      }
 }
 
 export function getFeedMetadata(locale: ConfigLocale) {

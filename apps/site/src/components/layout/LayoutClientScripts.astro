@@ -1,0 +1,173 @@
+---
+import { completionDomHooks, layoutDomHooks } from '@/lib/dom-hooks'
+import { siteEvents, siteStorageKeys } from '@/lib/site-config'
+---
+
+<script
+  data-completed-articles-changed-event={siteEvents.completedArticlesChanged}
+  data-completed-articles-key={siteStorageKeys.completedArticles}
+  data-mobile-complete-text-attr={completionDomHooks.mobileCompleteText.attr}
+  data-mobile-default-text-attr={completionDomHooks.mobileDefaultText.attr}
+  data-completion-item-attr={completionDomHooks.item.attr}
+  data-newsletter-email-id={layoutDomHooks.newsletterEmail.id}
+  data-newsletter-mirror-attr={layoutDomHooks.newsletterMirror.attr}
+  is:inline
+>
+  const currentScript = document.currentScript
+  const completedArticlesChangedEvent =
+    currentScript instanceof HTMLScriptElement ? currentScript.dataset.completedArticlesChangedEvent ?? '' : ''
+  const completedArticlesKey =
+    currentScript instanceof HTMLScriptElement ? currentScript.dataset.completedArticlesKey ?? '' : ''
+  const completionItemAttr =
+    currentScript instanceof HTMLScriptElement ? currentScript.dataset.completionItemAttr ?? '' : ''
+  const mobileCompleteTextAttr =
+    currentScript instanceof HTMLScriptElement ? currentScript.dataset.mobileCompleteTextAttr ?? '' : ''
+  const mobileDefaultTextAttr =
+    currentScript instanceof HTMLScriptElement ? currentScript.dataset.mobileDefaultTextAttr ?? '' : ''
+  const newsletterEmailId =
+    currentScript instanceof HTMLScriptElement ? currentScript.dataset.newsletterEmailId ?? '' : ''
+  const newsletterMirrorAttr =
+    currentScript instanceof HTMLScriptElement ? currentScript.dataset.newsletterMirrorAttr ?? '' : ''
+  const dismissableDetailsSelector = 'details[data-dismiss-on-outside="true"][open]'
+  const transitionPendingClass = 'is-page-transitioning'
+
+  const readCompletedArticles = () => {
+    try {
+      const rawValue = window.localStorage.getItem(completedArticlesKey)
+
+      if (!rawValue) {
+        return []
+      }
+
+      const parsedValue = JSON.parse(rawValue)
+      return Array.isArray(parsedValue) ? parsedValue.filter((value) => typeof value === 'string') : []
+    } catch {
+      return []
+    }
+  }
+
+  const syncCompletedArticleCards = (completedArticleIds) => {
+    const completedSet = new Set(completedArticleIds)
+    const selector = `[${completionItemAttr}]`
+
+    document.querySelectorAll(selector).forEach((card) => {
+      const articleId = card.getAttribute(completionItemAttr)
+      const isComplete = Boolean(articleId && completedSet.has(articleId))
+      card.classList.toggle('is-complete', isComplete)
+
+      const mobileDefaultText = mobileDefaultTextAttr ? card.querySelector(`[${mobileDefaultTextAttr}]`) : null
+      const mobileCompleteText = mobileCompleteTextAttr ? card.querySelector(`[${mobileCompleteTextAttr}]`) : null
+
+      if (mobileDefaultText instanceof HTMLElement) {
+        mobileDefaultText.classList.toggle('hidden', isComplete)
+        mobileDefaultText.classList.toggle('inline-flex', !isComplete)
+      }
+
+      if (mobileCompleteText instanceof HTMLElement) {
+        mobileCompleteText.classList.toggle('hidden', !isComplete)
+        mobileCompleteText.classList.toggle('inline-flex', isComplete)
+      }
+    })
+  }
+
+  const syncNewsletterEmail = () => {
+    const newsletterEmailInput = document.getElementById(newsletterEmailId)
+    const newsletterEmailMirror = document.querySelector(`[${newsletterMirrorAttr}]`)
+
+    if (!(newsletterEmailInput instanceof HTMLInputElement) || !(newsletterEmailMirror instanceof HTMLInputElement)) {
+      return
+    }
+
+    newsletterEmailMirror.value = newsletterEmailInput.value
+  }
+
+  const emitCompletedArticles = () => {
+    syncCompletedArticleCards(readCompletedArticles())
+  }
+
+  const closeDismissableDetailsOutside = (target) => {
+    if (!(target instanceof Node)) {
+      return
+    }
+
+    document.querySelectorAll(dismissableDetailsSelector).forEach((detailsElement) => {
+      if (!(detailsElement instanceof HTMLDetailsElement)) {
+        return
+      }
+
+      if (!detailsElement.contains(target)) {
+        detailsElement.removeAttribute('open')
+      }
+    })
+  }
+
+  const closeDismissableDetailsWithEscape = (target) => {
+    const openDetails = Array.from(document.querySelectorAll(dismissableDetailsSelector)).filter(
+      (detailsElement) => detailsElement instanceof HTMLDetailsElement,
+    )
+
+    if (openDetails.length === 0) {
+      return
+    }
+
+    const parentDetails =
+      target instanceof Element ? target.closest('details[data-dismiss-on-outside="true"][open]') : null
+    const detailsToClose =
+      parentDetails instanceof HTMLDetailsElement
+        ? [parentDetails]
+        : [openDetails.at(-1)].filter((detailsElement) => detailsElement instanceof HTMLDetailsElement)
+
+    detailsToClose.forEach((detailsElement) => {
+      detailsElement.removeAttribute('open')
+      const summary = detailsElement.querySelector('summary')
+
+      if (summary instanceof HTMLElement) {
+        summary.focus()
+      }
+    })
+  }
+
+  const handleNewsletterInput = (event) => {
+    if (!(event.target instanceof HTMLInputElement) || event.target.id !== newsletterEmailId) {
+      return
+    }
+
+    syncNewsletterEmail()
+  }
+
+  const syncJavascriptState = () => {
+    document.documentElement.setAttribute('data-js', 'true')
+  }
+
+  const startPageTransition = () => {
+    document.documentElement.classList.add(transitionPendingClass)
+  }
+
+  const finishPageTransition = () => {
+    syncJavascriptState()
+    document.documentElement.classList.remove(transitionPendingClass)
+  }
+
+  syncJavascriptState()
+  syncNewsletterEmail()
+  emitCompletedArticles()
+
+  document.addEventListener('input', handleNewsletterInput)
+  document.addEventListener('astro:before-preparation', startPageTransition)
+  document.addEventListener('astro:after-swap', finishPageTransition)
+  document.addEventListener('astro:page-load', finishPageTransition)
+  document.addEventListener('pointerdown', (event) => {
+    closeDismissableDetailsOutside(event.target)
+  })
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      closeDismissableDetailsWithEscape(event.target)
+    }
+  })
+  window.addEventListener(completedArticlesChangedEvent, emitCompletedArticles)
+  window.addEventListener('storage', (event) => {
+    if (event.key === completedArticlesKey) {
+      emitCompletedArticles()
+    }
+  })
+</script>

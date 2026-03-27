@@ -1,0 +1,88 @@
+---
+import type { LayoutAlternateLink } from '@/lib/layout-head'
+import { serializeStructuredData } from '@/lib/seo'
+import {
+  getObservabilityScriptConfig,
+  siteAssetPaths,
+  siteAppearance,
+  siteConfig,
+  siteUrls,
+} from '@/lib/site-config'
+
+type StructuredData = Record<string, unknown>
+type ObservabilityScriptConfig = ReturnType<typeof getObservabilityScriptConfig>
+
+type Props = {
+  canonicalUrl: string
+  defaultAlternateHref?: string | null
+  description: string
+  noindex?: boolean
+  observabilityScriptConfig?: ObservabilityScriptConfig
+  pageTitle: string
+  robotsContent?: string | null
+  rssHref?: string | null
+  seoAlternateLinks?: LayoutAlternateLink[]
+  socialImage?: string
+  structuredDataItems?: StructuredData[]
+}
+
+const {
+  canonicalUrl,
+  defaultAlternateHref = null,
+  description,
+  noindex = false,
+  observabilityScriptConfig = null,
+  pageTitle,
+  robotsContent = null,
+  rssHref = null,
+  seoAlternateLinks = [],
+  socialImage = siteUrls.socialImage,
+  structuredDataItems = [],
+} = Astro.props
+---
+
+<meta charset="utf-8" />
+<meta content="width=device-width, initial-scale=1" name="viewport" />
+<script is:inline>
+  document.documentElement.setAttribute('data-js', 'true')
+</script>
+<link href={siteAssetPaths.favicon} rel="icon" sizes="any" type="image/svg+xml" />
+<link href={siteAssetPaths.manifest} rel="manifest" />
+<title>{pageTitle}</title>
+<meta content={siteConfig.site.name} name="application-name" />
+<meta content={description} name="description" />
+<meta content={siteAppearance.themeColor} name="theme-color" />
+{noindex || robotsContent ? <meta content={robotsContent ?? 'noindex,follow'} name="robots" /> : null}
+<link href={canonicalUrl} rel="canonical" />
+<meta content={siteConfig.site.name} property="og:site_name" />
+<meta content={pageTitle} property="og:title" />
+<meta content={description} property="og:description" />
+<meta content="website" property="og:type" />
+<meta content={canonicalUrl} property="og:url" />
+<meta content={socialImage} property="og:image" />
+<meta content={pageTitle} property="og:image:alt" />
+<meta content="1200" property="og:image:width" />
+<meta content="630" property="og:image:height" />
+<meta content="summary_large_image" name="twitter:card" />
+<meta content={pageTitle} name="twitter:title" />
+<meta content={description} name="twitter:description" />
+<meta content={socialImage} name="twitter:image" />
+<meta content={pageTitle} name="twitter:image:alt" />
+<link href={siteUrls.llms} rel="alternate" title="LLMs" type="text/plain" />
+{seoAlternateLinks.map((localeLink) => (
+  <link href={localeLink.absoluteHref} hreflang={localeLink.htmlLang} rel="alternate" />
+))}
+{defaultAlternateHref ? <link href={defaultAlternateHref} hreflang="x-default" rel="alternate" /> : null}
+{rssHref ? <link href={rssHref} rel="alternate" title={`${pageTitle} RSS`} type="application/rss+xml" /> : null}
+{structuredDataItems.map((item) => (
+  <script is:inline type="application/ld+json" set:html={serializeStructuredData(item)} />
+))}
+{observabilityScriptConfig ? (
+  <script
+    async
+    defer
+    is:inline
+    src={observabilityScriptConfig.src}
+    {...observabilityScriptConfig.dataAttributes}
+  ></script>
+) : null}

@@ -14,6 +14,14 @@ export type ShellFeature = 'search' | 'newsletter' | 'comments' | 'localeSwitche
 export type HomeDefaultSection = string
 
 export const brandConfig = {
+  author: {
+    image: {
+      alt: 'Andrews Ribeiro',
+      src: '/andrews.jpg',
+    },
+    name: 'Andrews Ribeiro',
+    role: 'Founder & Engineer',
+  },
   features: {
     comments: false,
     localeSwitcher: true,
@@ -59,6 +67,9 @@ export const brandConfig = {
     comments: {
       enabled: false,
       provider: 'giscus' as const,
+    },
+    observability: {
+      enabled: false,
     },
     newsletter: {
       enabled: false,

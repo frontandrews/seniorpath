@@ -1,5 +1,6 @@
 ---
 import { cn } from '@/lib/cn'
+import { desktopLocaleMenuDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
 import { siteStorageKeys } from '@/lib/storage-keys'
 
 type LocaleLinkItem = {
@@ -41,7 +42,11 @@ function getLocaleChoiceHandler(code: string) {
 ---
 
 <details class="relative" data-dismiss-on-outside="true">
-  <summary aria-label={triggerLabel} class={cn(triggerClass, 'list-none [&::-webkit-details-marker]:hidden')}>
+  <summary
+    aria-label={triggerLabel}
+    class={cn(triggerClass, 'list-none [&::-webkit-details-marker]:hidden')}
+    {...getDataHookAttributes(desktopLocaleMenuDomHooks.trigger)}
+  >
     <span>{currentLocaleCode}</span>
     <svg class="size-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
       <path d="m6 9 6 6 6-6" />
@@ -56,6 +61,7 @@ function getLocaleChoiceHandler(code: string) {
         hreflang={localeLink.htmlLang}
         lang={localeLink.htmlLang}
         onclick={getLocaleChoiceHandler(localeLink.code)}
+        {...getDataHookAttributes(desktopLocaleMenuDomHooks.link, localeLink.code)}
       >
         {localeLink.label}
       </a>

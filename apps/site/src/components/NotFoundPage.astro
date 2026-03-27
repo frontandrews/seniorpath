@@ -1,0 +1,88 @@
+---
+import CompactSection from '@/components/ui/CompactSection.astro'
+import LinkCard from '@/components/ui/LinkCard.astro'
+import PageHeader from '@/components/ui/PageHeader.astro'
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { getHomeDefaultSection } from '@/lib/site-config'
+import { getLocalePath, resolveLocaleHrefMap } from '@/lib/locale-config'
+import {
+  getEnabledSections,
+  getSectionDescription,
+  getSectionHref,
+  getSectionLabel,
+} from '@/lib/section-manifest'
+import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
+import { ui } from '@/lib/ui'
+
+type Props = {
+  locale: SiteLocale
+}
+
+const { locale } = Astro.props
+const copy = getSiteCopy(locale)
+const homeHref = getLocalePath(locale)
+const localeHrefs = resolveLocaleHrefMap((supportedLocale) => getLocalePath(supportedLocale, '404'))
+const enabledSections = getEnabledSections()
+const defaultSectionId = getHomeDefaultSection()
+const preferredSection =
+  enabledSections.find((section) => section.id === defaultSectionId)
+  ?? enabledSections[0]
+const preferredSectionHref = preferredSection ? getSectionHref(preferredSection.id, locale) : null
+const sectionCards = enabledSections
+  .map((section) => ({
+    description: getSectionDescription(section.id, locale),
+    href: getSectionHref(section.id, locale),
+    title: getSectionLabel(section.id, locale),
+  }))
+  .filter(
+    (
+      card,
+    ): card is {
+      description: string
+      href: string
+      title: string
+    } => Boolean(card.href),
+  )
+  .slice(0, 6)
+---
+
+<BaseLayout
+  description={copy.notFound.description}
+  localeHrefs={localeHrefs}
+  noindex={true}
+  pagefind={false}
+  title={copy.notFound.title}
+>
+  <PageHeader description={copy.notFound.description} title={copy.notFound.title}>
+    <p class="m-0 text-[0.72rem] font-bold uppercase tracking-[0.18em] text-site-line-strong">
+      {copy.notFound.eyebrow}
+    </p>
+  </PageHeader>
+
+  <CompactSection>
+    <div class="flex flex-wrap gap-3">
+      <a class={ui.controlButton + ' min-h-11 px-4 text-sm font-semibold'} href={homeHref}>
+        {copy.notFound.homeLabel}
+      </a>
+      {preferredSectionHref ? (
+        <a class={ui.controlButton + ' min-h-11 px-4 text-sm font-semibold'} href={preferredSectionHref}>
+          {preferredSection?.id ? getSectionLabel(preferredSection.id, locale) : copy.layout.home}
+        </a>
+      ) : null}
+    </div>
+  </CompactSection>
+
+  {sectionCards.length > 0 ? (
+    <CompactSection className="grid gap-4">
+      <div class="grid gap-1">
+        <p class={ui.eyebrow}>{copy.notFound.sectionHeading}</p>
+      </div>
+
+      <div class={ui.cardsGrid}>
+        {sectionCards.map((card) => (
+          <LinkCard description={card.description} href={card.href} title={card.title} />
+        ))}
+      </div>
+    </CompactSection>
+  ) : null}
+</BaseLayout>

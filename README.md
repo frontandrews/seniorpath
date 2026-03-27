@@ -175,11 +175,12 @@ The public shell example is [seniorpath.pro](https://seniorpath.pro). Treat it a
 | `pnpm init:content-repo ../repo` | scaffold a minimal external editorial repo |
 | `pnpm verify:starter` | validate the shell with bundled starter content |
 | `pnpm verify:external` | validate the shell against a configured external content repo |
+| `pnpm perf:smoke` | check static build budgets and critical HTML output after a build |
 | `pnpm docs:smoke` | validate local doc links and referenced assets |
 
 ## Public environment variables
 
-These are the currently supported public env vars. No new env vars are needed for the current adoption phase.
+These are the currently supported public env vars.
 
 | Variable | Required | When used | Notes |
 | --- | --- | --- | --- |
@@ -195,6 +196,16 @@ These are the currently supported public env vars. No new env vars are needed fo
 | `PUBLIC_LEGAL_EMAIL` | optional | same as above | falls back to template copy |
 | `PUBLIC_SUPPORT_EMAIL` | optional | same as above | falls back to template copy |
 | `PUBLIC_NEWSLETTER_URL` | optional | only when newsletter is enabled in `brand.config.ts` | newsletter stays off by default |
+| `PUBLIC_OBSERVABILITY_SCRIPT_SRC` | optional | only when you want to inject a provider script without hard-coding a vendor | renders one async/defer script tag |
+| `PUBLIC_OBSERVABILITY_SCRIPT_DATA_JSON` | optional | same as above | JSON object rendered as script attributes such as `data-*` |
+| `PUBLIC_CSP_SCRIPT_SRC` | optional | only when you add third-party scripts | space-separated origins appended to generated CSP |
+| `PUBLIC_CSP_STYLE_SRC` | optional | only when you add third-party stylesheets | space-separated origins appended to generated CSP |
+| `PUBLIC_CSP_FONT_SRC` | optional | only when you add third-party font origins | space-separated origins appended to generated CSP |
+| `PUBLIC_CSP_IMG_SRC` | optional | only when you add third-party image origins | space-separated origins appended to generated CSP |
+| `PUBLIC_CSP_CONNECT_SRC` | optional | only when you add third-party APIs or analytics beacons | space-separated origins appended to generated CSP |
+| `PUBLIC_CSP_FRAME_SRC` | optional | only when you add third-party embeds | space-separated origins appended to generated CSP |
+| `PUBLIC_CSP_FORM_ACTION` | optional | only when forms submit to third parties | space-separated origins appended to generated CSP |
+| `PUBLIC_CSP_WORKER_SRC` | optional | only when worker origins need expansion beyond the default | space-separated origins appended to generated CSP |
 | `PUBLIC_GISCUS_REPO` | only if comments are enabled | comments | comments stay off by default |
 | `PUBLIC_GISCUS_REPO_ID` | only if comments are enabled | comments | required with Giscus |
 | `PUBLIC_GISCUS_CATEGORY` | only if comments are enabled | comments | required with Giscus |
@@ -207,6 +218,10 @@ These are the currently supported public env vars. No new env vars are needed fo
 | `PUBLIC_GISCUS_STRICT` | optional | comments | defaults to `0` |
 
 `newsletter` is intentionally offline until you enable the feature and set `PUBLIC_NEWSLETTER_URL`.
+
+Author byline defaults now live in `apps/site/src/brand/brand.config.ts`, so name, role, and avatar can move with the shell brand instead of staying hard-coded in UI components.
+
+Dependency update PRs are now automated through `.github/dependabot.yml` for the pnpm workspace and GitHub Actions.
 
 ## Architecture
 

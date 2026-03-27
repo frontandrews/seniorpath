@@ -107,3 +107,5 @@ SITE_CONTENT_DIR=../your-content-repo pnpm build
 ```
 
 If those pass, the shell can already consume the external repo correctly.
+
+See [operations.md](./operations.md) for the short operational map that connects this guide with deploy, release, and rebrand.

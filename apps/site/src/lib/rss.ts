@@ -15,7 +15,7 @@ export async function getArticleFeedItems(locale: SiteLocale): Promise<ArticleFe
   const articles = await getCollection('articles')
 
   return articles
-    .filter((entry) => entry.data.locale === locale && entry.data.status !== 'archived')
+    .filter((entry) => entry.data.locale === locale && entry.data.status === 'active')
     .sort((left, right) => getArticleRecencyDate(right).getTime() - getArticleRecencyDate(left).getTime())
     .map((entry) => ({
       description: entry.data.description,

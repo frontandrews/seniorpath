@@ -1,7 +1,18 @@
 <script lang="ts">
   import type { EditorView } from '@codemirror/view'
   import { onMount, onDestroy } from 'svelte'
+  import { copyTextToClipboard } from '@/lib/clipboard'
+  import { cn } from '@/lib/cn'
   import { markChallengeSolved } from '@/lib/challenge-progress'
+  import { challengePlaygroundDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
+  import {
+    hasLocalStorageAccess,
+    readLocalStorageString,
+    removeLocalStorageString,
+    writeLocalStorageString,
+  } from '@/lib/local-storage'
+  import { siteStorageKeys } from '@/lib/site-config'
+  import { getSiteCopy, type SiteLocale } from '@/lib/site-copy'
   import { buildUrlWithQueryParam, encodeBase64UrlValue, readBase64QueryParam } from '@/lib/url-state'
 
   type TestCase = {
@@ -18,19 +29,27 @@
     error?: string
   }
 
+  type EfficiencyMessagePart =
+    | { type: 'text'; value: string }
+    | { type: 'time' | 'space' | 'solutionLabel'; value: string }
+
   type Props = {
+    className?: string
     challengeId?: string
     complexity?: { time: string; space: string } | null
     hints?: string[]
+    locale?: SiteLocale
     solutionLanguage?: 'javascript' | 'typescript' | 'python'
     starterCode: string
     testCases?: TestCase[]
   }
 
   let {
+    className = '',
     starterCode,
     testCases = [],
     solutionLanguage = 'typescript',
+    locale = 'en',
     challengeId = '',
     hints = [],
     complexity = null,
@@ -53,16 +72,28 @@
   let unlockedHints = $state(0)
   let solvedAtAttempt = $state<number | null>(null)
   let shareCopied = $state(false)
+  let shareFallbackUrl = $state('')
+  let storageAvailable = $state(true)
 
   let supportsExecution = $derived(
     solutionLanguage === 'javascript' || solutionLanguage === 'typescript',
   )
+  let copy = $derived(getSiteCopy(locale))
+  let playgroundCopy = $derived(copy.challengePlayground)
   let passCount = $derived(results.filter((result) => result.pass).length)
   let failCount = $derived(results.filter((result) => !result.pass).length)
   let allPass = $derived(hasRun && !compileError && failCount === 0 && passCount > 0)
 
   function getCodeStorageKey() {
+    return challengeId ? `${siteStorageKeys.challengeCodePrefix}.${challengeId}.v1` : ''
+  }
+
+  function getLegacyCodeStorageKey() {
     return challengeId ? `challenge-code-${challengeId}` : ''
+  }
+
+  function syncStorageAvailability() {
+    storageAvailable = !challengeId || hasLocalStorageAccess()
   }
 
   function resolveInitialCode() {
@@ -74,15 +105,13 @@
 
     const codeStorageKey = getCodeStorageKey()
 
-    if (!codeStorageKey || typeof localStorage === 'undefined') {
+    if (!codeStorageKey) {
       return starterCode
     }
 
-    try {
-      return localStorage.getItem(codeStorageKey) ?? starterCode
-    } catch {
-      return starterCode
-    }
+    return readLocalStorageString(codeStorageKey)
+      ?? readLocalStorageString(getLegacyCodeStorageKey())
+      ?? starterCode
   }
 
   function persistCode(nextCode: string) {
@@ -92,14 +121,89 @@
       return
     }
 
-    try {
-      localStorage.setItem(codeStorageKey, nextCode)
-    } catch {}
+    if (!writeLocalStorageString(codeStorageKey, nextCode)) {
+      storageAvailable = false
+    }
   }
 
   function getFunctionName(code: string): string {
     const match = code.match(/(?:export\s+)?(?:async\s+)?function\s+(\w+)/)
     return match?.[1] ?? 'solution'
+  }
+
+  function formatCopy(template: string, values: Record<string, string | number>) {
+    return Object.entries(values).reduce(
+      (result, [key, value]) => result.replaceAll(`{${key}}`, String(value)),
+      template,
+    )
+  }
+
+  function formatAttemptCountLabel(count: number) {
+    return formatCopy(
+      count === 1 ? playgroundCopy.attemptsSingular : playgroundCopy.attemptsPlural,
+      { count },
+    )
+  }
+
+  function formatHintStatus(revealed: number, total: number) {
+    if (revealed === 0) {
+      return playgroundCopy.hintAvailable
+    }
+
+    if (revealed >= total) {
+      return playgroundCopy.allHintsRevealed
+    }
+
+    return formatCopy(
+      revealed === 1 ? playgroundCopy.hintsRevealedSingular : playgroundCopy.hintsRevealedPlural,
+      { count: revealed, total },
+    )
+  }
+
+  function formatSolvedAtAttempt(attempt: number) {
+    return attempt === 1
+      ? playgroundCopy.solvedFirstAttempt
+      : formatCopy(playgroundCopy.solvedNthAttempt, { attempt })
+  }
+
+  function formatPassingResultsLabel(passing: number, total: number) {
+    return formatCopy(playgroundCopy.resultsPassing, {
+      passCount: passing,
+      totalCount: total,
+    })
+  }
+
+  function getEfficiencyMessageParts(template: string, values: Record<'time' | 'space' | 'solutionLabel', string>) {
+    const parts: EfficiencyMessagePart[] = []
+    const tokenPattern = /\{(time|space|solutionLabel)\}/g
+    let lastIndex = 0
+
+    for (const match of template.matchAll(tokenPattern)) {
+      const matchIndex = match.index ?? 0
+
+      if (matchIndex > lastIndex) {
+        parts.push({
+          type: 'text',
+          value: template.slice(lastIndex, matchIndex),
+        })
+      }
+
+      const token = match[1] as keyof typeof values
+      parts.push({
+        type: token,
+        value: values[token],
+      })
+      lastIndex = matchIndex + match[0].length
+    }
+
+    if (lastIndex < template.length) {
+      parts.push({
+        type: 'text',
+        value: template.slice(lastIndex),
+      })
+    }
+
+    return parts
   }
 
   /**
@@ -192,12 +296,13 @@ const __cases = ${JSON.stringify(cases)};
   }
 
   onMount(async () => {
+    syncStorageAvailability()
     code = resolveInitialCode()
     hasResolvedInitialCode = true
 
     try {
       if (!editorEl) {
-        mountError = 'Editor indisponivel'
+        mountError = playgroundCopy.editorUnavailable
         return
       }
 
@@ -227,6 +332,9 @@ const __cases = ${JSON.stringify(cases)};
             EditorView.updateListener.of((update) => {
               if (update.docChanged) {
                 code = update.state.doc.toString()
+                shareCopied = false
+                shareFallbackUrl = ''
+                clearShareCopiedTimeout()
                 persistCode(code)
               }
             }),
@@ -257,9 +365,14 @@ const __cases = ${JSON.stringify(cases)};
   function reset() {
     code = starterCode
     const codeStorageKey = getCodeStorageKey()
+    const legacyCodeStorageKey = getLegacyCodeStorageKey()
 
-    if (codeStorageKey) {
-      try { localStorage.removeItem(codeStorageKey) } catch {}
+    if (codeStorageKey && !removeLocalStorageString(codeStorageKey)) {
+      storageAvailable = false
+    }
+
+    if (legacyCodeStorageKey && !removeLocalStorageString(legacyCodeStorageKey)) {
+      storageAvailable = false
     }
     if (editorView) {
       editorView.dispatch({
@@ -269,6 +382,8 @@ const __cases = ${JSON.stringify(cases)};
     results = []
     hasRun = false
     compileError = ''
+    shareCopied = false
+    shareFallbackUrl = ''
   }
 
   onDestroy(() => {
@@ -282,7 +397,7 @@ const __cases = ${JSON.stringify(cases)};
     if (running) return
     if (!supportsExecution) {
       results = []
-      compileError = 'Execucao interativa disponivel apenas para JavaScript e TypeScript.'
+      compileError = playgroundCopy.interactiveExecutionOnly
       hasRun = true
       return
     }
@@ -306,7 +421,7 @@ const __cases = ${JSON.stringify(cases)};
       try {
         jsCode = stripTypes(code)
       } catch (e) {
-        compileError = e instanceof Error ? e.message : 'Erro ao processar tipos TypeScript'
+        compileError = e instanceof Error ? e.message : playgroundCopy.processTypeScriptError
         running = false
         hasRun = true
         return
@@ -321,7 +436,7 @@ const __cases = ${JSON.stringify(cases)};
       blob = new Blob([workerScript], { type: 'application/javascript' })
       blobUrl = URL.createObjectURL(blob)
     } catch (e) {
-      compileError = 'Erro ao criar ambiente de execução'
+      compileError = playgroundCopy.createExecutionEnvironmentError
       running = false
       hasRun = true
       return
@@ -343,10 +458,12 @@ const __cases = ${JSON.stringify(cases)};
         const allPassed = results.length > 0 && results.every((r) => r.pass)
         if (allPassed) {
           if (solvedAtAttempt === null) solvedAtAttempt = attemptCount
-          markChallengeSolved(challengeId)
+          if (!markChallengeSolved(challengeId)) {
+            storageAvailable = false
+          }
         }
       } else if (event.data?.__type === 'worker-error') {
-        compileError = event.data.error ?? 'Erro de execucao'
+        compileError = event.data.error ?? playgroundCopy.executionError
         running = false
         hasRun = true
         clearRunTimeout()
@@ -355,10 +472,10 @@ const __cases = ${JSON.stringify(cases)};
     }
 
     worker.onerror = (error) => {
-      const msg = error.message ?? 'Erro de execução'
+      const msg = error.message ?? playgroundCopy.executionError
       const line = error.lineno
       // lineno maps directly to the user's code since jsCode is prepended first
-      compileError = line && line > 0 ? `Linha ${line}: ${msg}` : msg
+      compileError = line && line > 0 ? formatCopy(playgroundCopy.lineMessage, { line, message: msg }) : msg
       running = false
       hasRun = true
       clearRunTimeout()
@@ -369,7 +486,7 @@ const __cases = ${JSON.stringify(cases)};
       if (running) {
         running = false
         hasRun = true
-        compileError = 'Tempo limite excedido. Verifique se há loops infinitos.'
+        compileError = playgroundCopy.executionTimeout
         disposeWorker(worker)
       }
     }, 10000)
@@ -380,25 +497,27 @@ const __cases = ${JSON.stringify(cases)};
   }
 
   async function shareCode() {
-    try {
-      const url = buildUrlWithQueryParam('code', encodeBase64UrlValue(code))
+    const url = buildUrlWithQueryParam('code', encodeBase64UrlValue(code))
 
-      if (!url || typeof navigator.clipboard?.writeText !== 'function') {
-        return
-      }
+    if (!url) {
+      return
+    }
 
-      await navigator.clipboard.writeText(url.toString())
+    const shareUrl = url.toString()
+
+    if (await copyTextToClipboard(shareUrl)) {
+      shareFallbackUrl = ''
       shareCopied = true
       clearShareCopiedTimeout()
       shareCopiedTimer = setTimeout(() => {
         shareCopied = false
         shareCopiedTimer = null
       }, 2000)
-    } catch {}
-  }
+      return
+    }
 
-  function ordinal(n: number): string {
-    return `${n}ª`
+    shareCopied = false
+    shareFallbackUrl = shareUrl
   }
 
   function handleFallbackInput(event: Event) {
@@ -406,7 +525,30 @@ const __cases = ${JSON.stringify(cases)};
   }
 </script>
 
-<div class="mx-auto mt-10 max-w-4xl">
+<div
+  class={cn('article-utility-shell mx-auto mt-10 w-full rounded-xl border border-site-line bg-site-panel p-5', className)}
+  data-no-js-only="true"
+  data-pagefind-ignore
+  {...getDataHookAttributes(challengePlaygroundDomHooks.noJsFallback)}
+>
+  <div class="grid gap-4">
+    <p class="text-sm leading-6 text-site-ink-soft">
+      {playgroundCopy.noJsDescription}
+    </p>
+    <div class="grid gap-2">
+      <p class="text-xs font-semibold uppercase tracking-[0.16em] text-site-ink-muted">
+        {playgroundCopy.noJsCodeLabel}
+      </p>
+      <pre class="overflow-x-auto rounded-xs border border-site-line bg-site-bg px-4 py-3 text-sm leading-6 text-site-ink"><code>{starterCode}</code></pre>
+    </div>
+  </div>
+</div>
+
+<div
+  class={cn('article-utility-shell mx-auto mt-10 w-full', className)}
+  data-js-only="true"
+  {...getDataHookAttributes(challengePlaygroundDomHooks.root)}
+>
   <div class="challenge-playground-shell overflow-hidden rounded-xl border border-site-line">
     <!-- Toolbar -->
     <div class="challenge-playground-toolbar flex items-center justify-between gap-4 border-b px-4 py-2.5">
@@ -421,27 +563,28 @@ const __cases = ${JSON.stringify(cases)};
         {#if hasResolvedInitialCode && code !== starterCode}
           <button
             onclick={reset}
-            title="Voltar ao código inicial"
+            title={playgroundCopy.resetTitle}
             class="challenge-playground-toolbar-action inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs transition-colors"
           >
             <svg class="size-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
               <path d="M3 3v5h5" />
             </svg>
-            Reset
+            {playgroundCopy.reset}
           </button>
         {/if}
       </div>
       <div class="flex items-center gap-3">
         {#if attemptCount > 0}
           <span class="challenge-playground-meta text-xs">
-            {attemptCount === 1 ? '1 tentativa' : `${attemptCount} tentativas`}
+            {formatAttemptCountLabel(attemptCount)}
           </span>
         {/if}
         <button
           onclick={run}
           disabled={running || !supportsExecution}
-          title={supportsExecution ? 'Executar (Ctrl+Enter)' : 'Execucao interativa disponivel apenas para JavaScript e TypeScript'}
+          title={supportsExecution ? playgroundCopy.runTitle : playgroundCopy.interactiveExecutionOnly}
+          {...getDataHookAttributes(challengePlaygroundDomHooks.runButton)}
           class="challenge-playground-primary inline-flex items-center gap-2 rounded-md px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-90 active:opacity-75 disabled:opacity-60"
         >
           {#if running}
@@ -454,7 +597,7 @@ const __cases = ${JSON.stringify(cases)};
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
               ></path>
             </svg>
-            Executando...
+            {playgroundCopy.running}
           {:else if supportsExecution}
             <svg
               class="size-3.5"
@@ -465,18 +608,36 @@ const __cases = ${JSON.stringify(cases)};
             >
               <polygon points="5 3 19 12 5 21 5 3" />
             </svg>
-            Executar
+            {playgroundCopy.run}
           {:else}
-            Execucao indisponivel
+            {playgroundCopy.runUnavailable}
           {/if}
         </button>
       </div>
     </div>
 
+    {#if !storageAvailable}
+      <div
+        class="challenge-playground-panel border-b px-4 py-3"
+        {...getDataHookAttributes(challengePlaygroundDomHooks.storageWarning)}
+      >
+        <div class="challenge-playground-warning-card flex items-start gap-2.5 rounded-md px-3 py-2">
+          <svg class="challenge-playground-warning-ink mt-0.5 size-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <p class="challenge-playground-warning-copy text-xs">
+            {playgroundCopy.storageUnavailable}
+          </p>
+        </div>
+      </div>
+    {/if}
+
     <!-- CodeMirror editor (or fallback textarea) -->
     {#if mountError}
       <div class="challenge-playground-editor-error border-b p-3 font-mono text-xs">
-        Editor error: {mountError}
+        {playgroundCopy.editorErrorPrefix}: {mountError}
       </div>
     {/if}
     <div bind:this={editorEl} class="max-h-[480px] min-h-48 overflow-auto"></div>
@@ -494,13 +655,7 @@ const __cases = ${JSON.stringify(cases)};
       <div class="challenge-playground-panel border-t px-4 py-3">
         <div class="flex items-center justify-between">
           <span class="challenge-playground-meta text-xs">
-            {#if unlockedHints === 0}
-              Travado? Dicas disponíveis.
-            {:else if unlockedHints < hints.length}
-              {unlockedHints}/{hints.length} dica{unlockedHints === 1 ? '' : 's'} revelada{unlockedHints === 1 ? '' : 's'}
-            {:else}
-              Todas as dicas reveladas
-            {/if}
+            {formatHintStatus(unlockedHints, hints.length)}
           </span>
           {#if unlockedHints < hints.length}
             <button
@@ -512,7 +667,7 @@ const __cases = ${JSON.stringify(cases)};
                 <line x1="12" y1="8" x2="12" y2="12" />
                 <line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
-              {unlockedHints === 0 ? 'Ver dica' : 'Próxima dica'}
+              {unlockedHints === 0 ? playgroundCopy.showHint : playgroundCopy.nextHint}
             </button>
           {/if}
         </div>
@@ -548,7 +703,7 @@ const __cases = ${JSON.stringify(cases)};
               </svg>
             </span>
             <div>
-              <p class="challenge-playground-issue-title text-sm font-medium">Erro de execução</p>
+              <p class="challenge-playground-issue-title text-sm font-medium">{playgroundCopy.executionErrorTitle}</p>
               <p class="challenge-playground-body mt-1 font-mono text-xs">{compileError}</p>
             </div>
           </div>
@@ -559,11 +714,12 @@ const __cases = ${JSON.stringify(cases)};
                 ? 'challenge-playground-success-ink'
                 : 'challenge-playground-issue-ink'}"
             >
-              {passCount}/{results.length} testes passando
+              {formatPassingResultsLabel(passCount, results.length)}
             </span>
             {#if allPass}
               <span
                 class="badge-allpass challenge-playground-success-badge inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
+                {...getDataHookAttributes(challengePlaygroundDomHooks.allPassingBadge)}
               >
                 <svg
                   class="size-3"
@@ -574,7 +730,7 @@ const __cases = ${JSON.stringify(cases)};
                 >
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
-                Todos passando
+                {playgroundCopy.testsAllPassing}
               </span>
             {/if}
           </div>
@@ -585,30 +741,46 @@ const __cases = ${JSON.stringify(cases)};
                 <div class="flex flex-wrap items-center gap-4">
                   {#if solvedAtAttempt !== null}
                     <span class="challenge-playground-success-copy text-xs font-medium">
-                      {solvedAtAttempt === 1 ? 'Resolvido na primeira tentativa!' : `Resolvido na ${ordinal(solvedAtAttempt)} tentativa`}
+                      {formatSolvedAtAttempt(solvedAtAttempt)}
                     </span>
                   {/if}
                 </div>
                 <button
                   onclick={shareCode}
-                  title="Copiar link com sua solução"
+                  title={playgroundCopy.shareTitle}
                   class="challenge-playground-share inline-flex items-center gap-1.5 rounded px-2.5 py-1 text-xs font-medium transition-colors"
                 >
                   {#if shareCopied}
                     <svg class="size-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
-                    Link copiado!
+                    {playgroundCopy.linkCopied}
                   {:else}
                     <svg class="size-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                       <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
                       <polyline points="16 6 12 2 8 6" />
                       <line x1="12" y1="2" x2="12" y2="15" />
                     </svg>
-                    Compartilhar
+                    {playgroundCopy.share}
                   {/if}
                 </button>
               </div>
+              {#if shareFallbackUrl}
+                <div class="grid gap-2 rounded-md border border-site-line/70 px-3 py-2">
+                  <p class="challenge-playground-meta text-xs">
+                    {playgroundCopy.shareManualCopy}
+                  </p>
+                  <input
+                    class="challenge-playground-fallback rounded-md border border-site-line bg-transparent px-3 py-2 font-mono text-xs outline-none"
+                    readonly
+                    type="text"
+                    value={shareFallbackUrl}
+                    onclick={(event) => (event.currentTarget as HTMLInputElement).select()}
+                    onfocus={(event) => (event.currentTarget as HTMLInputElement).select()}
+                    {...getDataHookAttributes(challengePlaygroundDomHooks.shareUrl)}
+                  />
+                </div>
+              {/if}
               {#if complexity}
                 <div class="challenge-playground-warning-card flex items-start gap-2.5 rounded-md px-3 py-2">
                   <svg class="challenge-playground-warning-ink mt-0.5 size-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -617,7 +789,19 @@ const __cases = ${JSON.stringify(cases)};
                     <line x1="12" y1="16" x2="12.01" y2="16" />
                   </svg>
                   <p class="challenge-playground-warning-copy text-xs">
-                    Sua solução passa. Existe uma versão mais eficiente — solução ótima em tempo <strong class="font-mono">{complexity.time}</strong> e espaço <strong class="font-mono">{complexity.space}</strong>. Veja em "Ver solução".
+                    {#each getEfficiencyMessageParts(playgroundCopy.successfulButMoreEfficient, {
+                      time: complexity.time,
+                      space: complexity.space,
+                      solutionLabel: copy.solutionReveal.buttonLabel,
+                    }) as part}
+                      {#if part.type === 'text'}
+                        {part.value}
+                      {:else if part.type === 'solutionLabel'}
+                        <strong>{part.value}</strong>
+                      {:else}
+                        <strong class="font-mono">{part.value}</strong>
+                      {/if}
+                    {/each}
                   </p>
                 </div>
               {/if}
@@ -664,14 +848,14 @@ const __cases = ${JSON.stringify(cases)};
                   {#if !result.pass}
                     <div class="mt-1.5 grid gap-1">
                       {#if result.error}
-                        <p class="challenge-playground-error-copy font-mono text-xs">Erro: {result.error}</p>
+                        <p class="challenge-playground-error-copy font-mono text-xs">{playgroundCopy.errorLabel}: {result.error}</p>
                       {:else}
                         <p class="challenge-playground-meta font-mono text-xs">
-                          esperado:
+                          {playgroundCopy.expectedLabel}:
                           <span class="challenge-playground-body">{JSON.stringify(result.expected)}</span>
                         </p>
                         <p class="challenge-playground-meta font-mono text-xs">
-                          recebido:
+                          {playgroundCopy.receivedLabel}:
                           <span class="challenge-playground-error-copy">{JSON.stringify(result.actual)}</span>
                         </p>
                       {/if}

@@ -1,5 +1,7 @@
 ---
+import starterAuthorImage from '@/assets/andrews-avatar.webp'
 import { cn } from '@/lib/cn'
+import { getSiteAuthor } from '@/lib/site-config'
 import { ui } from '@/lib/ui'
 
 type Props = {
@@ -7,19 +9,41 @@ type Props = {
 }
 
 const { className = '' } = Astro.props
+const author = getSiteAuthor()
+const hasAuthorImage = Boolean(author.image.src)
+const optimizedStarterImages = {
+  '/andrews.jpg': starterAuthorImage,
+} as const
+const optimizedAuthorImage =
+  author.image.src && author.image.src in optimizedStarterImages
+    ? optimizedStarterImages[author.image.src as keyof typeof optimizedStarterImages]
+    : null
 ---
 
 <div class={cn('mt-4 flex items-center gap-3', className)}>
-  <img
-    alt="Andrews Ribeiro"
-    class="size-11 shrink-0 rounded-full border border-article-rule bg-article-surface object-cover"
-    height="48"
-    loading="lazy"
-    src="/andrews.jpg"
-    width="48"
-  />
+  {optimizedAuthorImage ? (
+    <img
+      alt={author.image.alt || author.name}
+      class="size-11 shrink-0 rounded-full border border-article-rule bg-article-surface object-cover"
+      decoding="async"
+      height={optimizedAuthorImage.height}
+      loading="lazy"
+      src={optimizedAuthorImage.src}
+      width={optimizedAuthorImage.width}
+    />
+  ) : hasAuthorImage ? (
+    <img
+      alt={author.image.alt || author.name}
+      class="size-11 shrink-0 rounded-full border border-article-rule bg-article-surface object-cover"
+      decoding="async"
+      height="48"
+      loading="lazy"
+      src={author.image.src}
+      width="48"
+    />
+  ) : null}
   <div class="grid gap-0.5">
-    <p class={ui.articleBylineName}>Andrews Ribeiro</p>
-    <p class={ui.articleMetaSubtle}>Founder & Engineer</p>
+    <p class={ui.articleBylineName}>{author.name}</p>
+    {author.role ? <p class={ui.articleMetaSubtle}>{author.role}</p> : null}
   </div>
 </div>

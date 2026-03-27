@@ -10,6 +10,10 @@ function getLocalStorage() {
   }
 }
 
+export function hasLocalStorageAccess() {
+  return getLocalStorage() !== null
+}
+
 export function readLocalStorageString(key: string) {
   try {
     return getLocalStorage()?.getItem(key) ?? null
@@ -20,7 +24,28 @@ export function readLocalStorageString(key: string) {
 
 export function writeLocalStorageString(key: string, value: string) {
   try {
-    getLocalStorage()?.setItem(key, value)
+    const storage = getLocalStorage()
+
+    if (!storage) {
+      return false
+    }
+
+    storage.setItem(key, value)
+    return true
+  } catch {
+    return false
+  }
+}
+
+export function removeLocalStorageString(key: string) {
+  try {
+    const storage = getLocalStorage()
+
+    if (!storage) {
+      return false
+    }
+
+    storage.removeItem(key)
     return true
   } catch {
     return false

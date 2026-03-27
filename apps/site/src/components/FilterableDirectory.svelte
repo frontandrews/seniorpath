@@ -4,7 +4,8 @@
   import { cn } from '@/lib/cn'
   import { completedArticlesSetStore } from '@/lib/completed-articles-store'
   import type { DirectoryItem, DirectoryTag } from '@/lib/directory'
-  import { completionDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
+  import { completionDomHooks, directoryFilterDomHooks, getDataHookAttributes } from '@/lib/dom-hooks'
+  import { createResizeObserver } from '@/lib/resize-observer'
   import { readQueryParam, setQueryParam, subscribeToQueryParam } from '@/lib/url-state'
   import { ui } from '@/lib/ui'
   import { directoryLinkVariants, directoryListVariants, filterChipVariants } from '@/lib/ui-variants'
@@ -21,6 +22,7 @@
     layout?: 'rows' | 'cards'
     moreFiltersHref?: string | null
     moreFiltersLabel?: string
+    noJsMessage?: string
     noteItemsLabel?: string
     sectionLabel?: string
   }
@@ -37,6 +39,7 @@
     moreFiltersLabel = 'more',
     fewerFiltersLabel = 'Show less',
     moreFiltersHref = null,
+    noJsMessage = '',
     availableFilters = [],
     filterQueryKey = null,
   }: Props = $props()
@@ -313,9 +316,20 @@
       hasInitializedQueryFilter = true
     }
 
-    resizeObserver = new ResizeObserver(() => {
+    resizeObserver = createResizeObserver(() => {
       void scheduleCollapsedCategoryMeasurement()
     })
+
+    if (!resizeObserver) {
+      const handleResize = () => {
+        void scheduleCollapsedCategoryMeasurement()
+      }
+
+      window.addEventListener('resize', handleResize)
+      cleanup.push(() => {
+        window.removeEventListener('resize', handleResize)
+      })
+    }
 
     void scheduleCollapsedCategoryMeasurement()
 
@@ -381,9 +395,18 @@
     {#if filters.length > 0 || hasTypeFilters}
       <div class="relative grid justify-items-start gap-2">
         {#if filterLabel}
-          <p class={filterLabelClass}>{filterLabel}</p>
+          <p class={filterLabelClass} data-js-only="true">{filterLabel}</p>
         {/if}
-        <div class="flex flex-wrap justify-start gap-2.5">
+        {#if noJsMessage}
+          <p
+            class="text-sm leading-6 text-site-ink-soft"
+            data-no-js-only="true"
+            {...getDataHookAttributes(directoryFilterDomHooks.noJsNote)}
+          >
+            {noJsMessage}
+          </p>
+        {/if}
+        <div class="flex flex-wrap justify-start gap-2.5" data-js-only="true">
           {#if hasTypeFilters}
             <button
               aria-pressed={activeType === 'all'}
@@ -461,6 +484,7 @@
             aria-hidden="true"
             bind:this={filterMeasureContainer}
             class="pointer-events-none invisible absolute left-0 top-0 -z-10 flex w-full flex-wrap justify-start gap-2.5 overflow-hidden"
+            data-js-only="true"
           >
             {#if hasTypeFilters}
               <button class={filterChipVariants({ active: activeType === 'all' })} {...getMeasureChipAttributes(measureChipValues.type)} type="button">
@@ -525,7 +549,7 @@
               {/if}
             </div>
           {/if}
-          <div class="grid gap-2 md:pr-20 lg:pr-24">
+          <div class="grid min-w-0 gap-2">
             <h3 class={cn('content-directory-title', ui.linearItemTitle, 'transition-colors duration-150')} {...getDataHookAttributes(completionDomHooks.title)}>
               {item.title}
             </h3>
