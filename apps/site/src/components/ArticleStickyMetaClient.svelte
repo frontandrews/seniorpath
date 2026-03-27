@@ -39,9 +39,19 @@
     const readingResetEvent = siteEvents.articleReadingReset
     const shouldShowCompletionInPlace = readDataHookValue(articleStickyMetaDomHooks.showCompletionInPlace, root) === 'true'
     const links = queryAllByHook<HTMLAnchorElement>(root, articleStickyMetaDomHooks.tocLink)
-    const progressBar = queryByHook<HTMLElement>(root, articleStickyMetaDomHooks.readingProgressBar)
-    const progressValue = queryByHook<HTMLElement>(root, articleStickyMetaDomHooks.readingProgressValue)
     const progressSection = queryByHook<HTMLElement>(root, articleStickyMetaDomHooks.readingProgress)
+    const progressBars = [
+      queryByHook<HTMLElement>(root, articleStickyMetaDomHooks.readingProgressBar),
+      ...queryAllByHook<HTMLElement>(root, articleStickyMetaDomHooks.mobileReadingProgressBar),
+    ].filter((element): element is HTMLElement => element instanceof HTMLElement)
+    const progressValues = [
+      queryByHook<HTMLElement>(root, articleStickyMetaDomHooks.readingProgressValue),
+      ...queryAllByHook<HTMLElement>(root, articleStickyMetaDomHooks.mobileReadingProgressValue),
+    ].filter((element): element is HTMLElement => element instanceof HTMLElement)
+    const progressIndicators = [
+      progressSection,
+      ...queryAllByHook<HTMLElement>(root, articleStickyMetaDomHooks.mobileReadingProgress),
+    ].filter((element): element is HTMLElement => element instanceof HTMLElement)
     const markUnreadButton = queryByHook<HTMLButtonElement>(root, articleCompletionSummaryDomHooks.markUnread)
     const stickyDirection = queryByHook<HTMLElement>(root, articleStickyMetaDomHooks.stickyDirection)
     const tocSection = queryByHook<HTMLElement>(root, articleStickyMetaDomHooks.tocSection)
@@ -59,6 +69,24 @@
     let isResettingToUnread = false
     let resetUntil = 0
     let resetTimeout = 0
+
+    const setProgressWidth = (width: string) => {
+      progressBars.forEach((bar) => {
+        bar.style.width = width
+      })
+    }
+
+    const setProgressValue = (value: string) => {
+      progressValues.forEach((progressValue) => {
+        progressValue.textContent = value
+      })
+    }
+
+    const setProgressCompleted = (isComplete: boolean) => {
+      progressIndicators.forEach((indicator) => {
+        indicator.classList.toggle('is-complete', isComplete)
+      })
+    }
 
     type ReadingResetDetail = string | {
       completionId?: string
@@ -126,15 +154,9 @@
         markArticleCompleted(completionId)
       }
 
-      if (progressBar instanceof HTMLElement) {
-        progressBar.style.width = '100%'
-      }
-
-      if (progressValue instanceof HTMLElement) {
-        progressValue.textContent = '100%'
-      }
-
-      progressSection?.classList.add('is-complete')
+      setProgressWidth('100%')
+      setProgressValue('100%')
+      setProgressCompleted(true)
       showStickyDirection()
 
       window.requestAnimationFrame(() => {
@@ -148,15 +170,9 @@
       isResettingToUnread = true
       resetUntil = window.performance.now() + 700
       hasCompletedReading = false
-      progressSection?.classList.remove('is-complete')
-
-      if (progressBar instanceof HTMLElement) {
-        progressBar.style.width = '0%'
-      }
-
-      if (progressValue instanceof HTMLElement) {
-        progressValue.textContent = '0%'
-      }
+      setProgressCompleted(false)
+      setProgressWidth('0%')
+      setProgressValue('0%')
 
       hideStickyDirection()
 
@@ -215,8 +231,7 @@
 
       if (
         !(readingContent instanceof HTMLElement) ||
-        !(progressBar instanceof HTMLElement) ||
-        !(progressValue instanceof HTMLElement)
+        progressBars.length === 0
       ) {
         return
       }
@@ -240,9 +255,9 @@
 
       if (resetActive) {
         hideStickyDirection()
-        progressSection?.classList.remove('is-complete')
-        progressBar.style.width = '0%'
-        progressValue.textContent = '0%'
+        setProgressCompleted(false)
+        setProgressWidth('0%')
+        setProgressValue('0%')
         return
       }
 
@@ -267,10 +282,10 @@
         return
       }
 
-      progressSection?.classList.remove('is-complete')
+      setProgressCompleted(false)
       hideStickyDirection()
-      progressBar.style.width = `${progress}%`
-      progressValue.textContent = `${rounded}%`
+      setProgressWidth(`${progress}%`)
+      setProgressValue(`${rounded}%`)
     }
 
     const schedule = () => {

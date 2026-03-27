@@ -117,6 +117,9 @@ export const articleReadingDomHooks = {
 } as const
 
 export const articleStickyMetaDomHooks = {
+  mobileReadingProgress: createDataHook('data-mobile-reading-progress'),
+  mobileReadingProgressBar: createDataHook('data-mobile-reading-progress-bar'),
+  mobileReadingProgressValue: createDataHook('data-mobile-reading-progress-value'),
   readingProgress: createDataHook('data-reading-progress'),
   readingProgressBar: createDataHook('data-reading-progress-bar'),
   readingProgressValue: createDataHook('data-reading-progress-value'),

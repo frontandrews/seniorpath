@@ -666,6 +666,12 @@ pre {
     box-shadow: none;
   }
 
+  @media (max-width: 79.99rem) {
+    .article-toc-link.is-read {
+      color: var(--site-link-hover);
+    }
+  }
+
   .article-toc-link.is-active {
     color: var(--site-link-hover) !important;
     background: transparent;

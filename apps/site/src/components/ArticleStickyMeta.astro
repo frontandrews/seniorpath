@@ -67,7 +67,7 @@ const controllerId = randomUUID()
     class={cn(
       ui.panel,
       ui.spotlightPanel,
-      'gap-3 px-4 py-3.5 lg:px-4 lg:py-4 xl:border-0 xl:bg-transparent xl:max-h-[calc(100vh-8.5rem)] xl:overflow-y-auto',
+      'gap-3 border-0 bg-transparent px-0 py-0 lg:px-0 lg:py-0 xl:px-4 xl:py-4 xl:max-h-[calc(100vh-8.5rem)] xl:overflow-y-auto',
     )}
     {...getDataHookAttributes(sharedDomHooks.controllerId, controllerId)}
     {...getDataHookAttributes(articleCompletionPanelDomHooks.completionId, completionId ?? '')}
@@ -100,7 +100,7 @@ const controllerId = randomUUID()
                 <a
                   class={cn(
                     'article-toc-link',
-                    'px-0 py-0.5 text-[0.9rem] leading-[1.45] text-site-line-strong transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none lg:text-[0.94rem]',
+                    'px-0 py-0.5 text-[0.9rem] leading-[1.45] text-site-link-hover transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none xl:text-site-line-strong lg:text-[0.94rem]',
                     heading.depth > 2 && 'ml-2 text-[0.82rem] lg:text-[0.88rem]',
                   )}
                   {...getDataHookAttributes(articleStickyMetaDomHooks.tocLink)}
@@ -117,7 +117,7 @@ const controllerId = randomUUID()
       </div>
     ) : null}
 
-    <div class="article-reading-progress grid gap-2 border-t border-site-line pt-4" data-js-only="true" {...getDataHookAttributes(articleStickyMetaDomHooks.readingProgress)}>
+    <div class="article-reading-progress hidden gap-2 border-t border-site-line pt-4 xl:grid" data-js-only="true" {...getDataHookAttributes(articleStickyMetaDomHooks.readingProgress)}>
       <div class="flex items-center gap-3">
         <div class={cn('min-w-0 flex-1', ui.progressTrack)}>
           <div
@@ -147,6 +147,28 @@ const controllerId = randomUUID()
         />
       </div>
     ) : null}
+
+    <div
+      aria-hidden="true"
+      class="article-reading-progress article-reading-progress-mobile pointer-events-none fixed inset-x-0 bottom-0 z-40 border-t border-site-line bg-site-panel px-3 pt-0 pb-0 shadow-[0_-12px_30px_color-mix(in_srgb,var(--site-bg)_35%,transparent)] xl:hidden"
+      data-js-only="true"
+      {...getDataHookAttributes(articleStickyMetaDomHooks.mobileReadingProgress)}
+    >
+      <div class="article-reading-shell mx-auto flex w-full items-center gap-2.5">
+        <div class={cn('min-w-0 flex-1', ui.progressTrackStrong, 'h-1')}>
+          <div
+            class={cn(ui.progressBar, 'article-reading-progress-bar')}
+            {...getDataHookAttributes(articleStickyMetaDomHooks.mobileReadingProgressBar)}
+          />
+        </div>
+        <p
+          class={cn(ui.progressMeta, 'article-reading-progress-value shrink-0 text-site-line-strong')}
+          {...getDataHookAttributes(articleStickyMetaDomHooks.mobileReadingProgressValue)}
+        >
+          0%
+        </p>
+      </div>
+    </div>
 
     <ArticleStickyMetaClient client:idle controllerId={controllerId} />
   </section>
