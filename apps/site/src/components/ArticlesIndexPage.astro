@@ -58,34 +58,40 @@ const isPaginatedArchivePage = !isPreview && paginatedItems.currentPage > 1
     title={title}
   />
 
-  <CompactSection>
-    {visibleItems.length > 0 ? (
-      <DirectoryList items={visibleItems} layout="rows" />
-    ) : (
-      <p class={ui.bodyCopy}>{copy.articlesIndex.comingSoon}</p>
-    )}
+  <div data-pagefind-ignore>
+    <CompactSection>
+      {visibleItems.length > 0 ? (
+        <DirectoryList items={visibleItems} layout="rows" />
+      ) : (
+        <p class={ui.bodyCopy}>{copy.articlesIndex.comingSoon}</p>
+      )}
 
-    {isPreview || paginatedItems.currentPage === 1 ? (
-      <div class="mt-6 flex flex-wrap justify-center gap-3">
-        {isPreview ? (
-          <a class={ui.controlButton + ' min-h-11 px-4 text-sm font-semibold'} href={getArticlesIndexHref(locale)}>
-            {copy.articlesIndex.viewAllLabel}
-          </a>
-        ) : null}
-      </div>
-    ) : null}
+      {isPreview || paginatedItems.currentPage === 1 ? (
+        <div class="mt-6 flex flex-wrap justify-center gap-3">
+          {isPreview ? (
+            <a class={ui.controlButton + ' min-h-11 px-4 text-sm font-semibold'} href={getArticlesIndexHref(locale)}>
+              {copy.articlesIndex.viewAllLabel}
+            </a>
+          ) : null}
+        </div>
+      ) : null}
 
-    {!isPreview ? (
-      <DirectoryPagination
-        currentPage={paginatedItems.currentPage}
-        getHref={(targetPage) => getArticlesPageHref(locale, targetPage)}
-        nextLabel={copy.directory.nextPage}
-        pageCount={paginatedItems.pageCount}
-        pageLabel={copy.directory.page}
-        previousLabel={copy.directory.previousPage}
-      />
-    ) : null}
-  </CompactSection>
+      {!isPreview ? (
+        <DirectoryPagination
+          currentPage={paginatedItems.currentPage}
+          getHref={(targetPage) => getArticlesPageHref(locale, targetPage)}
+          nextLabel={copy.directory.nextPage}
+          pageCount={paginatedItems.pageCount}
+          pageLabel={copy.directory.page}
+          previousLabel={copy.directory.previousPage}
+        />
+      ) : null}
+    </CompactSection>
+  </div>
 
-  {isHome ? <RecentlyUpdatedSection items={recentUpdates} locale={locale} /> : null}
+  {isHome ? (
+    <div data-pagefind-ignore>
+      <RecentlyUpdatedSection items={recentUpdates} locale={locale} />
+    </div>
+  ) : null}
 </BaseLayout>

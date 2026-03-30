@@ -55,7 +55,7 @@ export const uiRecipes = {
   quietAction:
     'w-fit text-[0.78rem] font-medium text-site-ink-muted transition-colors duration-150 hover:text-site-link-hover focus-visible:text-site-link-hover focus-visible:outline-none lg:text-[0.86rem]',
   searchDialog:
-    'flex h-dvh w-screen max-w-none flex-col overflow-hidden bg-site-panel nav:site-overlay-shadow nav:mx-auto nav:my-[6vh] nav:h-auto nav:max-h-[min(84dvh,42rem)] nav:w-full nav:max-w-184 nav:rounded-lg nav:border nav:border-site-line lg:max-w-200',
+    'flex h-dvh w-screen max-w-none flex-col overflow-hidden bg-site-panel nav:site-overlay-shadow nav:mx-auto nav:my-[6vh] nav:h-[min(84dvh,42rem)] nav:max-h-[min(84dvh,42rem)] nav:w-full nav:max-w-184 nav:rounded-lg nav:border nav:border-site-line lg:max-w-200',
   searchResultLink: `grid gap-1 rounded-xs px-3 py-3 ${interactiveTone} lg:gap-1.5 lg:px-4 lg:py-3.5`,
   spotlightPanel:
     'grid gap-4 border border-site-panel-border bg-site-panel-spotlight px-4 py-4 lg:px-5 lg:py-5',

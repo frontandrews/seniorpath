@@ -51,7 +51,7 @@ function addOriginIfPresent(target, value) {
 }
 
 function buildContentSecurityPolicy() {
-  const scriptSrc = new Set(["'self'", "'unsafe-inline'"])
+  const scriptSrc = new Set(["'self'", "'unsafe-inline'", "'wasm-unsafe-eval'"])
   const styleSrc = new Set(["'self'", "'unsafe-inline'"])
   const fontSrc = new Set(["'self'", 'data:'])
   const imgSrc = new Set(["'self'", 'data:', 'https:', 'blob:'])

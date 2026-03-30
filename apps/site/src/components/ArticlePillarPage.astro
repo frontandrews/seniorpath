@@ -48,10 +48,12 @@ const items = branchSections.map((section) => ({
 >
   <PageHeader breadcrumbs={breadcrumbItems} description={description} title={title} />
 
-  <CompactSection>
-    <FilterableDirectory
-      items={items}
-      layout="cards"
-    />
-  </CompactSection>
+  <div data-pagefind-ignore>
+    <CompactSection>
+      <FilterableDirectory
+        items={items}
+        layout="cards"
+      />
+    </CompactSection>
+  </div>
 </BaseLayout>

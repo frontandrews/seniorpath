@@ -43,6 +43,7 @@ const localeHrefs = resolveLocaleHrefMap((supportedLocale) =>
 const tracksHref = getTracksHref(locale) ?? '/'
 const lowerCaseLocale = getSiteLowerCaseLocale(locale)
 const shareUrl = Astro.url.href
+const comingSoonLabel = copy.articlesIndex.comingSoon
 const socialImage = resolveEntityOgImageUrl(
   Astro.site ?? Astro.url,
   'tracks',
@@ -51,7 +52,9 @@ const socialImage = resolveEntityOgImageUrl(
 )
 const allArticles = await getArticleCollection()
 const allRoadmaps = resolveEditorialRoadmaps(locale as EditorialLocale, allArticles)
-const trackItems = roadmap.articleNodes.map((node, index) => ({
+const trackItems = roadmap.articleNodes
+  .filter((node): node is typeof roadmap.articleNodes[number] & { href: string } => Boolean(node.href))
+  .map((node, index) => ({
   articleId: node.articleId,
   href: node.href,
   stepLabel: String(index + 1),
@@ -67,11 +70,15 @@ const trackMetaItems = [
 const trackStructuredData = [
   createTrackSchema({
     description: roadmap.summary,
-    items: roadmap.articleNodes.map((node) => ({
-      description: node.post.data.description,
-      title: node.post.data.title,
-      url: new URL(node.href, Astro.site ?? Astro.url).toString(),
-    })),
+    items: roadmap.articleNodes.flatMap((node) =>
+      node.href
+        ? [{
+            description: node.post.data.description,
+            title: node.post.data.title,
+            url: new URL(node.href, Astro.site ?? Astro.url).toString(),
+          }]
+        : [],
+    ),
     level: roadmap.level,
     locale,
     title: roadmap.title,
@@ -108,12 +115,16 @@ const otherTrackItems = orderedOtherRoadmaps
     tags: [],
     title: entry.title,
   }))
-const fallbackArticleItems = roadmap.articleNodes.map((node) => ({
-  completionId: node.articleId,
+const toTrackDirectoryItem = (node: ResolvedEditorialRoadmap['nodes'][number] & { kind: 'article' }) => ({
+  completionId: node.isAvailableInLocale ? node.articleId : undefined,
   href: node.href,
+  meta: node.isAvailableInLocale ? undefined : comingSoonLabel,
   tags: [],
   title: node.post.data.title,
-}))
+})
+const fallbackArticleItems = roadmap.nodes
+  .filter((node): node is ResolvedEditorialRoadmap['nodes'][number] & { kind: 'article' } => node.kind === 'article')
+  .map(toTrackDirectoryItem)
 const standaloneArticleItems: typeof fallbackArticleItems = []
 const groupedConceptSections: Array<{
   articleItems: typeof fallbackArticleItems
@@ -132,12 +143,7 @@ roadmap.nodes.forEach((node) => {
     return
   }
 
-  const articleItem = {
-    completionId: node.articleId,
-    href: node.href,
-    tags: [],
-    title: node.post.data.title,
-  }
+  const articleItem = toTrackDirectoryItem(node)
 
   if (activeConceptSection) {
     activeConceptSection.articleItems.push(articleItem)
@@ -164,49 +170,51 @@ roadmap.nodes.forEach((node) => {
     </div>
   </PageHeader>
 
-  <TrackProgressPanel
-    items={trackItems}
-    locale={locale}
-    totalReadingMinutes={roadmap.estimatedReadingMinutes}
-  />
+  <div data-pagefind-ignore>
+    <TrackProgressPanel
+      items={trackItems}
+      locale={locale}
+      totalReadingMinutes={roadmap.estimatedReadingMinutes}
+    />
 
-  <CompactSection className="xl:mt-0">
-    {groupedConceptSections.length > 0 ? (
-      <div class={ui.linearList}>
-        {standaloneArticleItems.length > 0 ? (
-          <div class="pb-4">
-            <FilterableDirectory items={standaloneArticleItems} layout="cards" />
-          </div>
-        ) : null}
+    <CompactSection className="xl:mt-0">
+      {groupedConceptSections.length > 0 ? (
+        <div class={ui.linearList}>
+          {standaloneArticleItems.length > 0 ? (
+            <div class="pb-4">
+              <FilterableDirectory items={standaloneArticleItems} layout="cards" />
+            </div>
+          ) : null}
 
-        {groupedConceptSections.map(({ articleItems, node }, index) => (
-          <TrackConceptPanel
-            articleItems={articleItems}
-            className={index === 0 && standaloneArticleItems.length === 0 ? 'border-t-0' : ''}
-            locale={locale}
-            node={node}
-          />
-        ))}
-      </div>
-    ) : (
-      <FilterableDirectory items={fallbackArticleItems} layout="cards" />
-    )}
-  </CompactSection>
+          {groupedConceptSections.map(({ articleItems, node }, index) => (
+            <TrackConceptPanel
+              articleItems={articleItems}
+              className={index === 0 && standaloneArticleItems.length === 0 ? 'border-t-0' : ''}
+              locale={locale}
+              node={node}
+            />
+          ))}
+        </div>
+      ) : (
+        <FilterableDirectory items={fallbackArticleItems} layout="cards" />
+      )}
+    </CompactSection>
 
-  <ArticleSharePanel
-    description={roadmap.summary}
-    locale={locale}
-    title={roadmap.title}
-    url={shareUrl}
-  />
+    <ArticleSharePanel
+      description={roadmap.summary}
+      locale={locale}
+      title={roadmap.title}
+      url={shareUrl}
+    />
 
-  {otherTrackItems.length > 0 ? (
-    <ArticleSection
-      bodyClass="mt-4"
-      sectionClass={ui.articleUtilitySection}
-      title={copy.startHere.otherTracks}
-    >
-      <FilterableDirectory items={otherTrackItems} layout="cards" />
-    </ArticleSection>
-  ) : null}
+    {otherTrackItems.length > 0 ? (
+      <ArticleSection
+        bodyClass="mt-4"
+        sectionClass={ui.articleUtilitySection}
+        title={copy.startHere.otherTracks}
+      >
+        <FilterableDirectory items={otherTrackItems} layout="cards" />
+      </ArticleSection>
+    ) : null}
+  </div>
 </BaseLayout>

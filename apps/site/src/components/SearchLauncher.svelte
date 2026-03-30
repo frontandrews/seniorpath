@@ -235,7 +235,7 @@
     <Dialog.Portal>
       <Dialog.Overlay class="search-launcher-backdrop fixed inset-0 z-40 bg-site-overlay/70 backdrop-blur-[2px]" />
       <Dialog.Content
-        class={`${dialogClass} fixed inset-0 z-50 overflow-hidden p-0 nav:left-1/2 nav:top-[25%] nav:inset-auto nav:w-[calc(100%-3rem)] nav:-translate-x-1/2 nav:-translate-y-1/2`}
+        class={`${dialogClass} fixed inset-0 z-50 flex max-h-dvh overflow-hidden p-0 nav:left-1/2 nav:top-1/2 nav:inset-auto nav:w-[calc(100%-3rem)] nav:-translate-x-1/2 nav:-translate-y-1/2`}
         id="site-search-dialog"
         onCloseAutoFocus={handleCloseAutoFocus}
         onOpenAutoFocus={handleOpenAutoFocus}
@@ -245,7 +245,7 @@
         <Dialog.Description class="sr-only">{copy.hint}</Dialog.Description>
 
       <Command.Root
-        class="flex min-h-0 flex-1 flex-col"
+        class="flex h-full min-h-0 flex-1 flex-col"
         label={copy.title}
         shouldFilter={false}
       >
@@ -276,7 +276,7 @@
         <div class="flex min-h-0 flex-1 flex-col gap-3 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] lg:gap-3.5 lg:px-5 lg:py-5">
           <p class={dialogHintClass}>{copy.hint}</p>
           <Command.List class="min-h-0 flex-1 overflow-hidden">
-            <Command.Viewport class="grid min-h-0 flex-1 gap-2 overflow-y-auto pr-1">
+            <Command.Viewport class="grid h-full min-h-0 flex-1 gap-2 overflow-y-auto overscroll-contain pr-1">
               {#if isSearching}
                 <Command.Loading forceMount class="m-0 text-sm text-site-ink-muted lg:text-[0.96rem]">
                   {copy.loading}
@@ -293,7 +293,9 @@
                     <span class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-site-ink-muted lg:text-[0.76rem]">{getGroupLabel(result.url)}</span>
                     <span class="text-base font-semibold leading-[1.3] text-site-ink lg:text-[1.08rem]">{result.meta?.title ?? result.url}</span>
                     {#if result.excerpt}
-                      <span class="text-sm leading-6 text-site-ink-soft lg:text-[0.98rem]">{result.excerpt}</span>
+                      <span class="text-sm leading-6 text-site-ink-soft lg:text-[0.98rem] [&_mark]:bg-transparent [&_mark]:font-semibold [&_mark]:text-site-link-hover">
+                        {@html result.excerpt}
+                      </span>
                     {/if}
                   </Command.LinkItem>
                 {/each}

@@ -69,23 +69,27 @@ const copy = getSiteCopy(locale)
       description={description}
       title={title}
     >
-      <AuthorByline />
-      {updatedMeta ? (
-        <p class={`mt-3 ${ui.articleHeaderTagTone}`}>
-          {copy.article.updatedPrefix} {updatedMeta}
-        </p>
-      ) : null}
-      <slot name="headerMeta" />
+      <div data-pagefind-ignore>
+        <AuthorByline />
+        {updatedMeta ? (
+          <p class={`mt-3 ${ui.articleHeaderTagTone}`}>
+            {copy.article.updatedPrefix} {updatedMeta}
+          </p>
+        ) : null}
+        <slot name="headerMeta" />
+      </div>
     </ContentArticleHeader>
 
-    <ArticleStickyMeta
-      className="article-reading-shell mx-auto my-5 w-full xl:hidden"
-      completionId={completionId}
-      headings={headings}
-      locale={locale}
-      nextStep={nextStep}
-      showCompletionInPlace={false}
-    />
+    <div data-pagefind-ignore>
+      <ArticleStickyMeta
+        className="article-reading-shell mx-auto my-5 w-full xl:hidden"
+        completionId={completionId}
+        headings={headings}
+        locale={locale}
+        nextStep={nextStep}
+        showCompletionInPlace={false}
+      />
+    </div>
 
     <div class={ui.articleRailLayout}>
       <div class={ui.articleRailLayoutMain}>
@@ -95,7 +99,7 @@ const copy = getSiteCopy(locale)
         <div aria-hidden="true" class="h-px" {...getDataHookAttributes(articleReadingDomHooks.end)}></div>
       </div>
 
-      <div class={ui.articleRailLayoutGuide}>
+      <div class={ui.articleRailLayoutGuide} data-pagefind-ignore>
         <ArticleStickyMeta
           completionId={completionId}
           headings={headings}
@@ -115,23 +119,25 @@ const copy = getSiteCopy(locale)
       </div>
     </div>
 
-    {completionId ? (
-      <ArticleCompletionPanel
-        className="mt-6"
-        completionId={completionId}
+    <div data-pagefind-ignore>
+      {completionId ? (
+        <ArticleCompletionPanel
+          className="mt-6"
+          completionId={completionId}
+          locale={locale}
+          nextStep={nextStep}
+        />
+      ) : null}
+
+      <ArticleSharePanel
+        description={description}
         locale={locale}
-        nextStep={nextStep}
+        title={title}
+        useDetailShell={true}
+        url={url}
       />
-    ) : null}
 
-    <ArticleSharePanel
-      description={description}
-      locale={locale}
-      title={title}
-      useDetailShell={true}
-      url={url}
-    />
-
-    <slot name="afterContent" />
+      <slot name="afterContent" />
+    </div>
   </article>
 </BaseLayout>

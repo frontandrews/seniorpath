@@ -197,15 +197,17 @@ const challengeStructuredData = [
       <HeaderTagMeta items={headerTagItems} />
     </ContentArticleHeader>
 
-    <ArticleStickyMeta
-      className="article-reading-shell mx-auto my-5 w-full xl:hidden"
-      categoryLabel={challenge.data.typeLabel}
-      headings={challengeGuideHeadings}
-      levelLabel={levelLabel}
-      locale={locale}
-      readingTimeMinutes={challenge.data.estimatedMinutes}
-      showCompletionInPlace={false}
-    />
+    <div data-pagefind-ignore>
+      <ArticleStickyMeta
+        className="article-reading-shell mx-auto my-5 w-full xl:hidden"
+        categoryLabel={challenge.data.typeLabel}
+        headings={challengeGuideHeadings}
+        levelLabel={levelLabel}
+        locale={locale}
+        readingTimeMinutes={challenge.data.estimatedMinutes}
+        showCompletionInPlace={false}
+      />
+    </div>
 
     <div class={ui.articleRailLayout}>
       <div class={ui.articleRailLayoutMain}>
@@ -252,7 +254,7 @@ const challengeStructuredData = [
         </div>
       </div>
 
-      <div class={ui.articleRailLayoutGuide}>
+      <div class={ui.articleRailLayoutGuide} data-pagefind-ignore>
         <ArticleStickyMeta
           categoryLabel={challenge.data.typeLabel}
           headings={challengeGuideHeadings}
@@ -302,51 +304,53 @@ const challengeStructuredData = [
       </div>
     </SolutionReveal>
 
-    {previousChallenge || nextChallenge ? (
-      <section class="article-detail-shell mx-auto mt-8 grid w-full gap-4 border-t border-article-rule pt-8 md:grid-cols-2 md:items-stretch">
-        {nextChallenge ? (
-          <a
-            class={cn(ui.navCardLink, 'justify-between md:order-3')}
-            href={getChallengeHrefFromEntry(nextChallenge)}
-          >
-            <span class="grid gap-1 content-start text-left md:ml-auto md:justify-items-end md:text-right">
-              <span class={cn(ui.eyebrowSentence, 'inline-flex items-center gap-1.5 leading-none md:justify-self-end')}>
-                <span class="leading-none">{copy.challenge.nextChallenge}</span>
-                <ArrowRight aria-hidden="true" class="size-3.5 shrink-0 md:hidden" />
+    <div data-pagefind-ignore>
+      {previousChallenge || nextChallenge ? (
+        <section class="article-detail-shell mx-auto mt-8 grid w-full gap-4 border-t border-article-rule pt-8 md:grid-cols-2 md:items-stretch">
+          {nextChallenge ? (
+            <a
+              class={cn(ui.navCardLink, 'justify-between md:order-3')}
+              href={getChallengeHrefFromEntry(nextChallenge)}
+            >
+              <span class="grid gap-1 content-start text-left md:ml-auto md:justify-items-end md:text-right">
+                <span class={cn(ui.eyebrowSentence, 'inline-flex items-center gap-1.5 leading-none md:justify-self-end')}>
+                  <span class="leading-none">{copy.challenge.nextChallenge}</span>
+                  <ArrowRight aria-hidden="true" class="size-3.5 shrink-0 md:hidden" />
+                </span>
+                <span class={ui.linkCardTitle}>{nextChallenge.data.title}</span>
               </span>
-              <span class={ui.linkCardTitle}>{nextChallenge.data.title}</span>
-            </span>
-            <ChevronRight aria-hidden="true" class="hidden size-6 shrink-0 text-article-body md:block" />
-          </a>
-        ) : <div class="md:order-3" />}
-        {previousChallenge ? (
-          <a
-            class={cn(ui.navCardLink, 'text-left md:order-1')}
-            href={getChallengeHrefFromEntry(previousChallenge)}
-          >
-            <ChevronLeft aria-hidden="true" class="hidden size-6 shrink-0 text-article-body md:block" />
-            <span class="grid gap-1 content-start">
-              <span class={cn(ui.eyebrowSentence, 'inline-flex items-center gap-1.5 leading-none')}>
-                <ArrowLeft aria-hidden="true" class="size-3.5 shrink-0 md:hidden" />
-                <span class="leading-none">{copy.challenge.previousChallenge}</span>
+              <ChevronRight aria-hidden="true" class="hidden size-6 shrink-0 text-article-body md:block" />
+            </a>
+          ) : <div class="md:order-3" />}
+          {previousChallenge ? (
+            <a
+              class={cn(ui.navCardLink, 'text-left md:order-1')}
+              href={getChallengeHrefFromEntry(previousChallenge)}
+            >
+              <ChevronLeft aria-hidden="true" class="hidden size-6 shrink-0 text-article-body md:block" />
+              <span class="grid gap-1 content-start">
+                <span class={cn(ui.eyebrowSentence, 'inline-flex items-center gap-1.5 leading-none')}>
+                  <ArrowLeft aria-hidden="true" class="size-3.5 shrink-0 md:hidden" />
+                  <span class="leading-none">{copy.challenge.previousChallenge}</span>
+                </span>
+                <span class={ui.linkCardTitle}>{previousChallenge.data.title}</span>
               </span>
-              <span class={ui.linkCardTitle}>{previousChallenge.data.title}</span>
-            </span>
-          </a>
-        ) : <div class="md:order-1" />}
-      </section>
-    ) : null}
+            </a>
+          ) : <div class="md:order-1" />}
+        </section>
+      ) : null}
 
-    {relatedChallengeItems.length > 0 ? (
-      <ArticleSection bodyClass="mt-4" sectionClass={ui.articleUtilitySection} title={copy.challenge.relatedChallenges}>
-        <FilterableDirectory items={relatedChallengeItems} layout="cards" />
-      </ArticleSection>
-    ) : null}
+      {relatedChallengeItems.length > 0 ? (
+        <ArticleSection bodyClass="mt-4" sectionClass={ui.articleUtilitySection} title={copy.challenge.relatedChallenges}>
+          <FilterableDirectory items={relatedChallengeItems} layout="cards" />
+        </ArticleSection>
+      ) : null}
 
-    {relatedArticleItems.length > 0 ? (
-      <ArticleSection bodyClass="mt-4" sectionClass={ui.articleUtilitySection} title={copy.challenge.relatedArticles}>
-        <FilterableDirectory items={relatedArticleItems} layout="cards" />
-      </ArticleSection>
-    ) : null}
+      {relatedArticleItems.length > 0 ? (
+        <ArticleSection bodyClass="mt-4" sectionClass={ui.articleUtilitySection} title={copy.challenge.relatedArticles}>
+          <FilterableDirectory items={relatedArticleItems} layout="cards" />
+        </ArticleSection>
+      ) : null}
+    </div>
   </article>
 </BaseLayout>

@@ -59,9 +59,15 @@ const {
     title={title}
   />
 
-  <CompactSection>
-    <slot />
-  </CompactSection>
+  <div data-pagefind-ignore>
+    <CompactSection>
+      <slot />
+    </CompactSection>
+  </div>
 
-  {recentUpdatesLocale ? <RecentlyUpdatedSection items={recentUpdates} locale={recentUpdatesLocale} /> : null}
+  {recentUpdatesLocale ? (
+    <div data-pagefind-ignore>
+      <RecentlyUpdatedSection items={recentUpdates} locale={recentUpdatesLocale} />
+    </div>
+  ) : null}
 </BaseLayout>

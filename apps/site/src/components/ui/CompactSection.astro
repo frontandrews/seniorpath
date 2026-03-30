@@ -6,9 +6,9 @@ type Props = {
   className?: string
 }
 
-const { className = '' } = Astro.props
+const { className = '', ...rest } = Astro.props
 ---
 
-<section class={cn(ui.compactSection, className)}>
+<section {...rest} class={cn(ui.compactSection, className)}>
   <slot />
 </section>

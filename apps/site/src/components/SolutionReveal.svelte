@@ -81,7 +81,6 @@
 
 <div data-js-only="true">
   <Dialog.Root bind:open={getOpen, setOpen}>
-    <div class="article-utility-shell mx-auto mt-10 w-full">
     <div class={cn('article-utility-shell mx-auto mt-10 w-full', className)}>
       {#if !revealed}
         <div class="flex flex-col items-center gap-4 rounded-xl border border-site-line bg-site-panel px-6 py-8 text-center">

@@ -68,6 +68,8 @@ PUBLIC_CSP_SCRIPT_SRC="https://analytics.example.com"
 PUBLIC_CSP_CONNECT_SRC="https://analytics.example.com https://api.example.com"
 ```
 
+The baseline `script-src` already includes `'wasm-unsafe-eval'` because the shipped site search runtime (`pagefind`) loads WebAssembly in the browser.
+
 ## Cache policy
 
 - `/_astro/*`: `public, max-age=31536000, immutable`
