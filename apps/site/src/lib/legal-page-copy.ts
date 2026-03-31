@@ -195,7 +195,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       governingLawVenue: {
         body: ({ governingLaw, venue }) =>
-          `Replace this placeholder with the actual governing law, forum, venue, arbitration, or mandatory consumer rules that apply to disputes involving the site, including ${governingLaw} and ${venue} only when they are correct.`,
+          `These terms are governed by ${governingLaw}. Disputes related to the site should be handled in ${venue}, except where mandatory consumer or privacy rules require a different forum.`,
         title: 'Governing law and venue',
       },
       intro: (siteName) =>
@@ -348,7 +348,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       governingLawVenue: {
         body: ({ governingLaw, venue }) =>
-          `Troque este placeholder pela lei, pelo foro, pela arbitragem e pelas regras obrigatorias de consumo que realmente se aplicam a disputas envolvendo o site, incluindo ${governingLaw} e ${venue} apenas quando estiverem corretos.`,
+          `Estes termos sao regidos por ${governingLaw}. Disputas relacionadas ao site devem ser tratadas em ${venue}, salvo quando regras obrigatorias de consumo ou privacidade exigirem foro diferente.`,
         title: 'Lei aplicavel e foro',
       },
       intro: (siteName) =>

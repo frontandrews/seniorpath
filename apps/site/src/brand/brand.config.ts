@@ -76,11 +76,11 @@ export const brandConfig = {
     },
   },
   legal: {
-    governingLaw: null,
-    governingVenue: null,
+    governingLaw: 'the laws of Brazil',
+    governingVenue: 'the courts of Niteroi, Rio de Janeiro, Brazil',
     legalEmail: null,
-    ownerLocation: null,
-    ownerName: null,
+    ownerLocation: 'Niteroi, Rio de Janeiro, Brazil',
+    ownerName: 'Fengsoft Servicos em Tecnologia e Educacao LTDA',
     routes: {
       privacy: {
         en: 'privacy',
