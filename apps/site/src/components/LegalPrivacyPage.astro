@@ -1,14 +1,12 @@
 ---
 import StaticArticlePage from '@/components/ui/StaticArticlePage.astro'
 import LegalOperationalReview from '@/components/LegalOperationalReview.astro'
-import { getDataHookAttributes, legalPageDomHooks } from '@/lib/dom-hooks'
 import { getLegalContactLinks } from '@/lib/legal-contact'
 import { getLegalPageCopy } from '@/lib/legal-page-copy'
 import {
   getLegalGoverningLaw,
   getLegalOperatorLocation,
   getLegalOperatorName,
-  getLegalTemplateNotice,
   siteConfig,
 } from '@/lib/site-config'
 import { resolveLocaleHrefMap } from '@/lib/locale-config'
@@ -26,7 +24,6 @@ const privacyContactEmail = legalEmail ?? supportEmail
 const operatorName = getLegalOperatorName(locale)
 const operatorLocation = getLegalOperatorLocation(locale)
 const governingLaw = getLegalGoverningLaw(locale)
-const templateNotice = getLegalTemplateNotice(locale)
 const localeHrefs = resolveLocaleHrefMap((supportedLocale) => getPrivacyHref(supportedLocale))
 const copy = getLegalPageCopy(locale).privacy
 const copyContext = {
@@ -43,20 +40,7 @@ const copyContext = {
   localeHrefs={localeHrefs}
   title={copy.title}
 >
-  <blockquote>
-    <p>
-      <strong>{copy.templateNoteLabel}</strong> {templateNotice}
-    </p>
-  </blockquote>
-
   <p>{copy.intro(siteConfig.site.name)}</p>
-
-  <section {...getDataHookAttributes(legalPageDomHooks.publicationChecklist)}>
-    <h2>{copy.publishChecklist.title}</h2>
-    <ul>
-      {copy.publishChecklist.items.map((item) => <li>{item}</li>)}
-    </ul>
-  </section>
 
   <h2>{copy.whoControls.title}</h2>
   <p>

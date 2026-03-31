@@ -79,7 +79,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
     privacy: {
       applicableLaw: {
         body: ({ governingLaw }) =>
-          `Document the real privacy regime that applies to the site, including ${governingLaw} when relevant, plus any lawful-basis, notice, transfer, or consumer-rights requirements that actually govern your operation.`,
+          `This policy should be interpreted under ${governingLaw}, alongside any mandatory privacy or consumer rules that apply to the visitor's location.`,
         title: 'Applicable law',
       },
       changes: {
@@ -90,12 +90,11 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       collectedData: {
         body: () => '',
         items: [
-          'Contact details you choose to send, such as name, email, or support messages',
-          'Account or authentication data if login features are enabled',
-          'Usage data such as visited pages, clicks, timestamps, and navigation paths',
-          'Technical data such as IP address, browser, device type, and operating system',
-          'Preference data stored in the browser, such as locale, progress markers, or UI state',
-          'Data received from third-party providers you actively use, such as auth, payments, or comments',
+          'Information you choose to send, such as email messages or newsletter signup details when those forms are available',
+          'Usage data such as visited pages, clicks, scroll depth, timestamps, and navigation paths',
+          'Technical data such as IP address, browser, device type, language, and operating system',
+          'Preference data stored in the browser, such as locale choice and reading progress markers',
+          'Comment-related data if comments are enabled through Giscus and GitHub',
         ],
         title: 'What data may be collected',
       },
@@ -105,41 +104,41 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       cookies: {
         body: () =>
-          'State which cookies, local storage keys, analytics scripts, or similar technologies actually run in production, why they exist, how long they persist, and whether consent is required in your jurisdiction.',
+          'This site uses browser storage to remember language preference and reading progress. It may also use cookies or similar identifiers from Microsoft Clarity to understand navigation patterns, heatmaps, and session replay so the site can be improved.',
         title: 'Cookies, local storage, and analytics',
       },
       description: (siteName) => `How ${siteName} handles personal data, cookies, and site preferences.`,
       howDataIsUsed: {
         body: () => '',
         items: [
-          'Run, maintain, and improve the site and any related features',
-          'Remember preferences and keep optional account or progress flows working',
-          'Measure traffic, understand usage, and improve navigation or content quality',
-          'Send newsletters, updates, transactional messages, or launch communications when enabled',
+          'Operate, maintain, and improve the site and its editorial experience',
+          'Remember preferences such as language choice and reading progress',
+          'Measure traffic and understand how visitors use the site through analytics and session replay',
+          'Respond to messages and process newsletter subscriptions when those flows are used',
           'Prevent abuse, investigate incidents, and comply with legal obligations',
         ],
         title: 'How data may be used',
       },
       intro: (siteName) =>
-        `Use this page as the public explanation of how ${siteName} handles personal data. Before launch, replace placeholders, remove flows you do not offer, and name the real providers and legal duties that apply to your operation.`,
+        `${siteName} is a content-focused site. This page explains, in plain language, what limited data may be collected when you browse the site, sign up for updates, or interact with optional features such as comments.`,
       publishChecklist: {
         items: [
-          'Replace operator name, location, legal contact, and governing law with real production values.',
-          'Remove references to features you do not offer and add the providers you actually use for hosting, analytics, email, auth, comments, or payments.',
-          'Confirm retention, consent, and data-subject rights against the jurisdictions and processors that apply to the live site.',
-          'Add an effective date and internal review owner if your legal workflow requires it.',
+          'Review contact information and governing-law details periodically.',
+          'Keep this policy aligned with the real providers enabled in production.',
+          'Update this page if newsletter, comments, or analytics flows materially change.',
+          'Review consent and retention requirements when the site starts serving new regions or new data flows.',
         ],
         title: 'Publication checklist',
       },
       retention: {
         body: () =>
-          'Personal data should be kept only for as long as needed for the feature, legal obligation, or operational purpose involved. Operators should also apply reasonable technical and organizational safeguards, while recognizing that no system is perfectly secure.',
+          'Personal data is kept only for as long as reasonably necessary for the related feature, legal duty, or operational need. The site operator applies reasonable technical safeguards, but no internet-connected service can guarantee absolute security.',
         title: 'Retention and security',
       },
       templateNoteLabel: 'Before publishing.',
       thirdPartyServices: {
         body: () =>
-          'List the real third-party processors and infrastructure providers that receive personal data, telemetry, or support requests for this site, and link their privacy terms when appropriate.',
+          'This site may rely on Cloudflare for hosting and delivery, Microsoft Clarity for analytics and session replay, and Giscus/GitHub for comments when comments are enabled. Those providers may receive technical and usage data necessary to deliver their services.',
         title: 'Third-party services',
       },
       title: 'Privacy Policy',
@@ -151,7 +150,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       yourRights: {
         body: () =>
-          'Describe the real privacy rights that apply to your audience and explain how requests should be made, verified, and answered in practice.',
+          'You can request information about the personal data you have shared directly with the site, and you can ask for correction or deletion when applicable. For requests related to data you submitted directly, use the contact channel listed on this page.',
         title: 'Your rights',
       },
     },
@@ -233,7 +232,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
     privacy: {
       applicableLaw: {
         body: ({ governingLaw }) =>
-          `Documente aqui o regime real de privacidade que se aplica ao site, incluindo ${governingLaw} quando fizer sentido, junto com base legal, obrigacoes de aviso, transferencia internacional e regras de consumo que realmente governam a operacao.`,
+          `Esta politica deve ser interpretada conforme ${governingLaw}, junto com eventuais regras obrigatorias de privacidade e consumo aplicaveis ao local da pessoa visitante.`,
         title: 'Lei aplicavel',
       },
       changes: {
@@ -244,12 +243,11 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       collectedData: {
         body: () => '',
         items: [
-          'Dados de contato que a pessoa decidir enviar, como nome, email ou mensagens de suporte',
-          'Dados de conta ou autenticacao, se recursos de login estiverem habilitados',
-          'Dados de uso, como paginas visitadas, cliques, horarios e caminhos de navegacao',
-          'Dados tecnicos, como IP, navegador, tipo de dispositivo e sistema operacional',
-          'Dados de preferencia guardados no navegador, como locale, progresso ou estado da interface',
-          'Dados recebidos de provedores terceiros usados de forma ativa, como auth, pagamentos ou comentarios',
+          'Informacoes que voce decidir enviar, como mensagens por email ou dados de inscricao em newsletter quando esse fluxo existir',
+          'Dados de uso, como paginas visitadas, cliques, profundidade de rolagem, horarios e caminhos de navegacao',
+          'Dados tecnicos, como IP, navegador, tipo de dispositivo, idioma e sistema operacional',
+          'Dados de preferencia guardados no navegador, como escolha de idioma e marcadores de progresso de leitura',
+          'Dados ligados a comentarios se os comentarios estiverem habilitados via Giscus e GitHub',
         ],
         title: 'Que dados podem ser coletados',
       },
@@ -259,41 +257,41 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       cookies: {
         body: () =>
-          'Explique quais cookies, chaves de local storage, scripts de analytics ou tecnologias parecidas realmente rodam em producao, por que existem, por quanto tempo persistem e se exigem consentimento na sua jurisdicao.',
+          'Este site usa armazenamento no navegador para lembrar idioma e progresso de leitura. Tambem pode usar cookies ou identificadores parecidos do Microsoft Clarity para entender navegacao, mapas de calor e session replay com o objetivo de melhorar a experiencia do site.',
         title: 'Cookies, local storage e analytics',
       },
       description: (siteName) => `Como ${siteName} trata dados pessoais, cookies e preferencias do site.`,
       howDataIsUsed: {
         body: () => '',
         items: [
-          'Operar, manter e melhorar o site e os recursos relacionados',
-          'Memorizar preferencias e manter funcionando fluxos opcionais de conta ou progresso',
-          'Medir trafego, entender uso e melhorar navegacao ou qualidade do conteudo',
-          'Enviar newsletter, atualizacoes, mensagens transacionais ou comunicacoes de lancamento quando existir',
+          'Operar, manter e melhorar o site e a experiencia editorial',
+          'Memorizar preferencias como idioma e progresso de leitura',
+          'Medir trafego e entender como visitantes usam o site por analytics e session replay',
+          'Responder mensagens e processar inscricoes de newsletter quando esses fluxos forem usados',
           'Prevenir abuso, investigar incidentes e cumprir obrigacoes legais',
         ],
         title: 'Como os dados podem ser usados',
       },
       intro: (siteName) =>
-        `Use esta pagina como explicacao publica de como ${siteName} trata dados pessoais. Antes do lancamento, troque placeholders, remova fluxos que nao existem e nomeie os provedores e obrigacoes legais reais da sua operacao.`,
+        `${siteName} e um site focado em conteudo. Esta pagina explica de forma objetiva quais dados limitados podem ser coletados quando voce navega pelo site, se inscreve para receber atualizacoes ou usa recursos opcionais como comentarios.`,
       publishChecklist: {
         items: [
-          'Troque nome do operador, localizacao, contato juridico e lei aplicavel pelos valores reais de producao.',
-          'Remova referencias a recursos que nao existem e adicione os provedores reais usados para hospedagem, analytics, email, auth, comentarios ou pagamentos.',
-          'Confirme retencao, consentimento e direitos dos titulares com base nas jurisdicoes e nos processadores que valem para o site ao vivo.',
-          'Adicione data de vigencia e responsavel interno pela revisao se isso fizer parte do seu fluxo juridico.',
+          'Revise periodicamente os dados de contato e a informacao sobre lei aplicavel.',
+          'Mantenha esta pagina alinhada aos provedores realmente ativos em producao.',
+          'Atualize a politica se newsletter, comentarios ou analytics mudarem de forma relevante.',
+          'Revise consentimento e retencao quando o site passar a atender novas regioes ou novos fluxos de dados.',
         ],
         title: 'Checklist de publicacao',
       },
       retention: {
         body: () =>
-          'Dados pessoais devem ser mantidos apenas pelo tempo necessario para o recurso, a obrigacao legal ou a necessidade operacional envolvida. O operador tambem deve aplicar salvaguardas tecnicas e organizacionais razoaveis, sabendo que nenhum sistema e totalmente seguro.',
+          'Dados pessoais sao mantidos apenas pelo tempo razoavelmente necessario para o recurso relacionado, uma obrigacao legal ou uma necessidade operacional. O operador aplica salvaguardas tecnicas razoaveis, mas nenhum servico conectado a internet consegue garantir seguranca absoluta.',
         title: 'Retencao e seguranca',
       },
       templateNoteLabel: 'Antes de publicar.',
       thirdPartyServices: {
         body: () =>
-          'Liste os processadores e provedores de infraestrutura que realmente recebem dados pessoais, telemetria ou pedidos de suporte deste site e aponte para suas politicas quando fizer sentido.',
+          'Este site pode usar Cloudflare para hospedagem e entrega, Microsoft Clarity para analytics e session replay e Giscus/GitHub para comentarios quando comentarios estiverem habilitados. Esses provedores podem receber dados tecnicos e de uso necessarios para prestar seus servicos.',
         title: 'Servicos de terceiros',
       },
       title: 'Politica de Privacidade',
@@ -305,7 +303,7 @@ const legalPageCopy: Record<string, LegalPageCopy> = {
       },
       yourRights: {
         body: () =>
-          'Descreva os direitos de privacidade que realmente se aplicam ao seu publico e explique como pedidos devem ser feitos, verificados e respondidos na pratica.',
+          'Voce pode pedir informacoes sobre dados pessoais enviados diretamente ao site e solicitar correcao ou exclusao quando isso for aplicavel. Para pedidos ligados a dados enviados por voce, use o canal de contato informado nesta pagina.',
         title: 'Seus direitos',
       },
     },

@@ -111,8 +111,8 @@ const operationalPrivacyCopy: Record<string, OperationalPrivacyCopy> = {
       'Posts subscriber email addresses to the configured newsletter endpoint for signup or mailing-list delivery.',
     newsletterLabel: 'Newsletter endpoint',
     observabilityBody:
-      'Loads an observability or analytics script that may collect traffic, referral, and browser metadata.',
-    observabilityLabel: 'Observability script',
+      'Loads analytics tooling that may collect traffic, referral, browser metadata, heatmaps, and session replay data to improve the site experience.',
+    observabilityLabel: 'Analytics and session replay',
     originLabel: 'Origin',
     publishWarningsTitle: 'Publish blockers to review',
     reviewChecklistTitle: 'Operational privacy checklist',
@@ -156,8 +156,8 @@ const operationalPrivacyCopy: Record<string, OperationalPrivacyCopy> = {
       'Envia emails de inscricao para o endpoint configurado de newsletter ou mailing list.',
     newsletterLabel: 'Endpoint de newsletter',
     observabilityBody:
-      'Carrega um script de observabilidade ou analytics que pode coletar trafego, origem de visita e metadados do navegador.',
-    observabilityLabel: 'Script de observabilidade',
+      'Carrega tooling de analytics que pode coletar trafego, origem de visita, metadados do navegador, mapas de calor e session replay para melhorar a experiencia do site.',
+    observabilityLabel: 'Analytics e session replay',
     originLabel: 'Origem',
     publishWarningsTitle: 'Pendencias para publicar',
     reviewChecklistTitle: 'Checklist operacional de privacidade',
