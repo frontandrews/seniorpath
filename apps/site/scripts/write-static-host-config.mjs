@@ -60,6 +60,10 @@ function buildContentSecurityPolicy() {
   const formAction = new Set(["'self'"])
   const workerSrc = new Set(["'self'", 'blob:'])
 
+  // Cloudflare Pages/Web Analytics can inject the RUM beacon at the edge.
+  scriptSrc.add('https://static.cloudflareinsights.com')
+  connectSrc.add('https://cloudflareinsights.com')
+
   const hasGiscusConfig = [
     readPublicEnv('PUBLIC_GISCUS_REPO'),
     readPublicEnv('PUBLIC_GISCUS_REPO_ID'),
