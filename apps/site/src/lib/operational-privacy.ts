@@ -317,7 +317,9 @@ export function getOperationalPrivacySnapshot(locale?: SiteLocale) {
     legalEmail: legalEmail?.value ?? supportEmail?.value ?? null,
     locale: resolvedLocale,
     newsletterActionUrl: getNewsletterActionUrl(),
-    observabilityScriptUrl: observabilityScriptConfig?.src ?? null,
+    observabilityScriptUrl:
+      observabilityScriptConfig?.src
+      ?? (observabilityScriptConfig?.clarityProjectId ? 'https://www.clarity.ms/tag/' : null),
     ownerLocation: siteConfig.legal.ownerLocation,
     ownerName: siteConfig.legal.ownerName,
     siteOrigin: getConfiguredSiteOrigin(),
