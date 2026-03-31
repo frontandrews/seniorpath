@@ -23,6 +23,7 @@ interface ImportMetaEnv {
   readonly PUBLIC_GISCUS_THEME?: string
   readonly PUBLIC_GOVERNING_LAW?: string
   readonly PUBLIC_GOVERNING_VENUE?: string
+  readonly PUBLIC_CLARITY_PROJECT_ID?: string
   readonly PUBLIC_LEGAL_EMAIL?: string
   readonly PUBLIC_LEGAL_OWNER_LOCATION?: string
   readonly PUBLIC_LEGAL_OWNER_NAME?: string

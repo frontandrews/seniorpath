@@ -196,6 +196,7 @@ These are the currently supported public env vars.
 | `PUBLIC_LEGAL_EMAIL` | optional | same as above | falls back to template copy |
 | `PUBLIC_SUPPORT_EMAIL` | optional | same as above | falls back to template copy |
 | `PUBLIC_NEWSLETTER_URL` | optional | only when newsletter is enabled in `brand.config.ts` | newsletter stays off by default |
+| `PUBLIC_CLARITY_PROJECT_ID` | optional | only when you want Microsoft Clarity | injects the Clarity bootstrap and expands CSP for Clarity origins |
 | `PUBLIC_OBSERVABILITY_SCRIPT_SRC` | optional | only when you want to inject a provider script without hard-coding a vendor | renders one async/defer script tag |
 | `PUBLIC_OBSERVABILITY_SCRIPT_DATA_JSON` | optional | same as above | JSON object rendered as script attributes such as `data-*` |
 | `PUBLIC_CSP_SCRIPT_SRC` | optional | only when you add third-party scripts | space-separated origins appended to generated CSP |

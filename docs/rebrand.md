@@ -26,6 +26,7 @@ Update `apps/site/.env` or your hosting env vars:
 
 Set the legal and support vars only when you have real values for them.
 If you want a provider script for analytics or monitoring without hard-coding a vendor, set `PUBLIC_OBSERVABILITY_SCRIPT_SRC` and optionally `PUBLIC_OBSERVABILITY_SCRIPT_DATA_JSON`.
+If you want Microsoft Clarity specifically, set `PUBLIC_CLARITY_PROJECT_ID`.
 
 ## 3. Rename or disable sections
 

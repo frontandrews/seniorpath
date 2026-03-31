@@ -114,6 +114,9 @@ const siteDeployment = resolveSiteDeployment({
   configuredSiteUrl: readPublicEnv(import.meta.env.PUBLIC_SITE_URL) ?? brandConfig.site.url,
 })
 
+const clarityProjectId = readPublicEnv(import.meta.env.PUBLIC_CLARITY_PROJECT_ID)
+const observabilityScriptSrc = readPublicEnv(import.meta.env.PUBLIC_OBSERVABILITY_SCRIPT_SRC)
+
 export const siteConfig = {
   author: {
     ...brandConfig.author,
@@ -130,11 +133,13 @@ export const siteConfig = {
       ...brandConfig.integrations.observability,
       enabled:
         brandConfig.integrations.observability.enabled
-        || Boolean(readPublicEnv(import.meta.env.PUBLIC_OBSERVABILITY_SCRIPT_SRC)),
+        || Boolean(observabilityScriptSrc)
+        || Boolean(clarityProjectId),
+      clarityProjectId,
       scriptDataAttributes: normalizeScriptDataAttributes(
         readPublicEnv(import.meta.env.PUBLIC_OBSERVABILITY_SCRIPT_DATA_JSON),
       ),
-      scriptSrc: readPublicEnv(import.meta.env.PUBLIC_OBSERVABILITY_SCRIPT_SRC),
+      scriptSrc: observabilityScriptSrc,
     },
     newsletter: {
       ...brandConfig.integrations.newsletter,
@@ -269,11 +274,15 @@ export function getObservabilityScriptConfig() {
     return null
   }
 
-  if (!siteConfig.integrations.observability.scriptSrc) {
+  if (
+    !siteConfig.integrations.observability.scriptSrc
+    && !siteConfig.integrations.observability.clarityProjectId
+  ) {
     return null
   }
 
   return {
+    clarityProjectId: siteConfig.integrations.observability.clarityProjectId,
     dataAttributes: siteConfig.integrations.observability.scriptDataAttributes,
     src: siteConfig.integrations.observability.scriptSrc,
   }

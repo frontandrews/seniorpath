@@ -72,6 +72,12 @@ function buildContentSecurityPolicy() {
     frameSrc.add('https://giscus.app')
   }
 
+  if (readPublicEnv('PUBLIC_CLARITY_PROJECT_ID')) {
+    scriptSrc.add('https://*.clarity.ms')
+    connectSrc.add('https://*.clarity.ms')
+    connectSrc.add('https://c.bing.com')
+  }
+
   addOriginIfPresent(scriptSrc, readPublicEnv('PUBLIC_OBSERVABILITY_SCRIPT_SRC'))
   addOriginIfPresent(formAction, readPublicEnv('PUBLIC_NEWSLETTER_URL'))
 
