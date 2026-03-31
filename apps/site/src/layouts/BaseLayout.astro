@@ -1,7 +1,6 @@
 ---
 import '@/styles/global.css'
 
-import { ClientRouter } from 'astro:transitions'
 import BookTextIcon from '@lucide/astro/icons/book-text'
 import BrainIcon from '@lucide/astro/icons/brain'
 import NewspaperIcon from '@lucide/astro/icons/newspaper'
@@ -169,7 +168,6 @@ const robotsContent = getSiteRobotsMetaContent(noindex)
 <!doctype html>
 <html class="dark" data-js="false" lang={getLocaleHtmlLang(currentLocale)}>
   <head>
-    <ClientRouter fallback="animate" />
     <LayoutHead
       canonicalUrl={canonicalUrl}
       defaultAlternateHref={defaultAlternateHref}
